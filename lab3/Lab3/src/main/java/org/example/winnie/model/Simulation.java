@@ -1,10 +1,13 @@
 package org.example.winnie.model;
 
+import org.example.winnie.iterationCounter.IterationCounter;
+
 public class Simulation {
 
     private static final Object sync = new Object();
     public void start() {
-        Pot pot = new Pot(20);
+        IterationCounter iterationCounter = new IterationCounter(10);
+        Pot pot = new Pot(20, iterationCounter);
         Bear bear = new Bear(pot);
         Bee[] bees = new Bee[4];
         for (int i = 0; i < bees.length; i++) {
@@ -12,11 +15,14 @@ public class Simulation {
             bees[i].start();
         }
         bear.start();
+
+
         try {
-            sync.wait();
+            iterationCounter.await();
         } catch (InterruptedException e) {
             throw new RuntimeException(e);
         }
+
         bear.interrupt();
         for (Bee bee : bees) {
             bee.interrupt();

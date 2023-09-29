@@ -6,6 +6,8 @@ public class Bee extends Thread{
     private final Pot pot;
     private final Integer id;
 
+    private static final Object beeSync = new Object();
+
     public Bee(int id, Pot pot) {
         this.pot = pot;
         this.id = id;
@@ -28,10 +30,13 @@ public class Bee extends Thread{
                     System.out.println("Pot is full!");
                     pot.notify();
                 }
+            }
+            synchronized (beeSync) {
                 try {
-                    pot.wait(0);
+                    beeSync.notify();
+                    beeSync.wait(0);
                 } catch (InterruptedException e) {
-                    throw new RuntimeException(e);
+                    return;
                 }
             }
         }

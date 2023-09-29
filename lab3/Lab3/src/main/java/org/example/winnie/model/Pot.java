@@ -1,15 +1,15 @@
 package org.example.winnie.model;
 
+import org.example.winnie.iterationCounter.IterationCounter;
+
 public class Pot {
     private final int sizeLimit;
     private int sizeFilled;
-    private int iterationCount;
-    private final int numIterations;
-    public Pot(int sizeLimit) {
-        numIterations = 10;
+    private final IterationCounter iterationCounter;
+    public Pot(int sizeLimit, IterationCounter iterationCounter) {
         this.sizeLimit = sizeLimit;
         sizeFilled = 0;
-        iterationCount = 0;
+        this.iterationCounter = iterationCounter;
     }
 
     public void addPortion() {
@@ -25,11 +25,7 @@ public class Pot {
 
     public void toEmpty() {
         sizeFilled = 0;
-        iterationCount++;
-    }
-
-    public int iterationCount() {
-        return iterationCount;
+        iterationCounter.done();
     }
 
 }
