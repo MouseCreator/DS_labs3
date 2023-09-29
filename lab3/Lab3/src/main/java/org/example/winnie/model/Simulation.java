@@ -4,9 +4,10 @@ import org.example.winnie.iterationCounter.IterationCounter;
 
 public class Simulation {
 
-    private static final Object sync = new Object();
+
     public void start() {
-        IterationCounter iterationCounter = new IterationCounter(10);
+        int nIterations = 10;
+        IterationCounter iterationCounter = new IterationCounter(nIterations);
         Pot pot = new Pot(20, iterationCounter);
         Bear bear = new Bear(pot);
         Bee[] bees = new Bee[4];

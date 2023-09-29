@@ -5,6 +5,11 @@ import org.example.winnie.iterationCounter.IterationCounter;
 public class Pot {
     private final int sizeLimit;
     private int sizeFilled;
+
+    public IterationCounter getIterationCounter() {
+        return iterationCounter;
+    }
+
     private final IterationCounter iterationCounter;
     public Pot(int sizeLimit, IterationCounter iterationCounter) {
         this.sizeLimit = sizeLimit;

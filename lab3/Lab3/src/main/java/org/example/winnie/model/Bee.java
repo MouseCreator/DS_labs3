@@ -24,6 +24,9 @@ public class Bee extends Thread{
                         return;
                     }
                 }
+                if (pot.getIterationCounter().isDone()) {
+                    return;
+                }
                 System.out.println("Bee " + id + " added portion");
                 pot.addPortion();
                 if (pot.isFull()) {

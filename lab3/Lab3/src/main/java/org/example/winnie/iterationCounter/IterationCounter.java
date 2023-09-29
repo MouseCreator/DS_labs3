@@ -12,11 +12,19 @@ public class IterationCounter {
             object.wait();
         }
     }
+
+    public int toGo() {
+        return iterationsToGo;
+    }
     public void done() {
         synchronized (object) {
             iterationsToGo--;
             if (iterationsToGo == 0)
                 object.notifyAll();
         }
+    }
+
+    public boolean isDone() {
+        return toGo() == 0;
     }
 }

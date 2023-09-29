@@ -17,6 +17,9 @@ public class Bear extends Thread{
                         return;
                     }
                 }
+                if (pot.getIterationCounter().isDone()) {
+                    return;
+                }
                 System.out.println("Bear eats the honey");
                 pot.toEmpty();
                 pot.notifyAll();
