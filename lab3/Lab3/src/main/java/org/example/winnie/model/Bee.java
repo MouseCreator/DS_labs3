@@ -25,7 +25,13 @@ public class Bee extends Thread{
                 System.out.println("Bee " + id + " added portion");
                 pot.addPortion();
                 if (pot.isFull()) {
+                    System.out.println("Pot is full!");
                     pot.notify();
+                }
+                try {
+                    pot.wait(0);
+                } catch (InterruptedException e) {
+                    throw new RuntimeException(e);
                 }
             }
         }

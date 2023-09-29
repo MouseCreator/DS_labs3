@@ -1,7 +1,10 @@
 package org.example.winnie;
 
+import org.example.winnie.model.Simulation;
+
 public class Main {
     public static void main(String[] args) {
-        System.out.println("Hello world!");
+        Simulation simulation = new Simulation();
+        simulation.start();
     }
 }
