@@ -19,6 +19,7 @@ public class Simulation {
 
         List<Thread> threads = new LinkedList<>();
         CountDownLatch countDownLatch = new CountDownLatch(nIterations);
+
         threads.add(startProvider(provider, table, semaphore, nIterations));
         threads.add(startSmoker(smokers.get(0), table, semaphore, countDownLatch));
         threads.add(startSmoker(smokers.get(1), table, semaphore, countDownLatch));
