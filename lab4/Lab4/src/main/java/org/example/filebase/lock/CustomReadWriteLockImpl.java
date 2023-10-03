@@ -17,6 +17,7 @@ public class CustomReadWriteLockImpl implements CustomReadWriteLock {
     private final Object writeSync = new Object();
     private final Object readSync = new Object();
     private int readEntered = 0;
+    private int writeEntered = 0;
     private boolean writeLocked = false;
     private class ReadLock implements CustomLock {
 
@@ -26,7 +27,7 @@ public class CustomReadWriteLockImpl implements CustomReadWriteLock {
                 ++readEntered;
             }
             synchronized (writeSync) {
-                while (writeLocked)
+                while (writeLocked && writeEntered > 0)
                     writeSync.wait();
                 writeLocked = true;
             }
@@ -50,6 +51,7 @@ public class CustomReadWriteLockImpl implements CustomReadWriteLock {
         @Override
         public void lock() throws InterruptedException {
             synchronized (writeSync) {
+                writeEntered++;
                 while (writeLocked)
                     writeSync.wait();
                 writeLocked = true;
@@ -60,6 +62,7 @@ public class CustomReadWriteLockImpl implements CustomReadWriteLock {
         public void unlock() {
             synchronized (writeSync) {
                 writeLocked = false;
+                writeEntered--;
                 writeSync.notifyAll();
             }
         }
