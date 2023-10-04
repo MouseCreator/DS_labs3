@@ -10,6 +10,7 @@ import org.example.filebase.model.PersonFactory;
 import org.example.filebase.model.PersonParser;
 import org.example.filebase.pool.Pool;
 import org.example.filebase.pool.PoolImpl;
+import org.example.flowerbed.model.Simulation;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -18,7 +19,7 @@ import java.util.Random;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 
-public class TaskManager {
+public class TaskManager implements Simulation {
     private final Pool<Person> personPool = new PoolImpl<>();
     private final PersonParser personParser = new PersonParser();
     private final Factory<Person> personFactory = new PersonFactory(new DataGeneratorImpl());

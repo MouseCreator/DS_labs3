@@ -2,7 +2,7 @@ package org.example.filebase.manager;
 
 import org.example.filebase.lock.CustomReadWriteLock;
 
-public class SynchronizedFileManager implements FileManager{
+public class SynchronizedFileManager implements SynchronizedManager{
 
     private final CustomReadWriteLock customReadWriteLock;
     private final FileManager fileManager;

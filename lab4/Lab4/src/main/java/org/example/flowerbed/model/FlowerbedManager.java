@@ -61,15 +61,13 @@ public class FlowerbedManager {
             readWriteLock.readLock().lock();
             String s = getFlowerStates();
             fileManager.append(file, s);
-        } catch (InterruptedException e) {
-            throw new RuntimeException(e);
         } finally {
             readWriteLock.readLock().unlock();
         }
     }
 
     private String getFlowerStates() {
-        StringBuilder builder = new StringBuilder();
+        StringBuilder builder = new StringBuilder("\n===========\n");
         for (Flower[] flowerRow : flowerbed.getFlowers()) {
             for (Flower flower : flowerRow) {
                 builder.append(flower.print()).append(" ");
@@ -78,5 +76,9 @@ public class FlowerbedManager {
         }
         return builder.toString();
 
+    }
+
+    public void init(int n, int m) {
+        flowerbed.initArray(n, m);
     }
 }
