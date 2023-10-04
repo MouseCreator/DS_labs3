@@ -272,28 +272,6 @@ func notDone(done chan int) bool {
 	}
 }
 
-func (g *Graph) rtPriceChange(done chan int) {
-	for notDone(done) {
-		weight := 1 + rand.Intn(100)
-		writeLocked(g, g.changeRandomWeight, weight)
-		time.Sleep(100 * time.Millisecond)
-	}
-}
-
-func (g *Graph) rtEdgesChange(done chan int) {
-	for notDone(done) {
-		action := rand.Intn(2)
-		if action == 0 {
-			weight := 1 + rand.Intn(100)
-			writeLocked(g, g.addRandomEdge, weight)
-		} else {
-			writeLocked(g, g.removeRandomEdge)
-		}
-		time.Sleep(100 * time.Millisecond)
-
-	}
-}
-
 func selectId(present []bool) int {
 	for i, v := range present {
 		if v == false {
@@ -307,10 +285,33 @@ func selectId(present []bool) int {
 func selectExistingId(present []bool) int {
 	for i, v := range present {
 		if v == true {
+			present[i] = false
 			return i
 		}
 	}
-	panic("Cannot generate id for node!")
+	panic("Cannot get node to remove!")
+}
+
+func (g *Graph) rtPriceChange(done chan int) {
+	for notDone(done) {
+		weight := 1 + rand.Intn(100)
+		writeLocked(g, g.changeRandomWeight, weight)
+		time.Sleep(150 * time.Millisecond)
+	}
+}
+
+func (g *Graph) rtEdgesChange(done chan int) {
+	for notDone(done) {
+		action := rand.Intn(2)
+		if action == 0 {
+			weight := 1 + rand.Intn(100)
+			writeLocked(g, g.addRandomEdge, weight)
+		} else {
+			writeLocked(g, g.removeRandomEdge)
+		}
+		time.Sleep(200 * time.Millisecond)
+
+	}
 }
 
 func (g *Graph) rtNodesChange(done chan int) {
@@ -330,6 +331,15 @@ func (g *Graph) rtNodesChange(done chan int) {
 			id := selectExistingId(present)
 			writeLocked(g, g.removeNode, strconv.Itoa(id))
 		}
+		time.Sleep(300 * time.Millisecond)
+
+	}
+}
+
+func (g *Graph) rtPathFinder(done chan int) {
+
+	for notDone(done) {
+		readLocked(g, g.findRandomPath)
 		time.Sleep(100 * time.Millisecond)
 
 	}
