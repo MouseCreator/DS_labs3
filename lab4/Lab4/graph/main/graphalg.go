@@ -6,6 +6,7 @@ import (
 	"reflect"
 	"strconv"
 	"sync"
+	"time"
 )
 
 type Node struct {
@@ -174,9 +175,11 @@ func notDone(done chan int) bool {
 	}
 }
 
-func rtPriceChange(done chan int) {
+func (g *Graph) rtPriceChange(done chan int) {
 	for notDone(done) {
-
+		weight := 1 + rand.Intn(100)
+		readLocked(g, g.changeRandomWeight, weight)
+		time.Sleep(100 * time.Millisecond)
 	}
 }
 
