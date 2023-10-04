@@ -3,6 +3,7 @@ package main
 import (
 	"fmt"
 	"math/rand"
+	"reflect"
 	"strconv"
 	"sync"
 )
@@ -97,6 +98,10 @@ func (g *Graph) print() {
 func (g *Graph) changeRandomWeight(weight int) {
 	var randomNode Node
 	var randomEdges []Edge
+
+	if len(g.nodesMap) == 0 {
+		return
+	}
 	for key, edges := range g.nodesMap {
 		randomNode = key
 		randomEdges = edges
@@ -107,6 +112,9 @@ func (g *Graph) changeRandomWeight(weight int) {
 	changeWeight(&edge, weight)
 	inc := edge.to
 	incEdge := g.findEdge(*inc, randomNode)
+	if incEdge == nil {
+		fmt.Println("ERROR: NO INCIDENT EDGE")
+	}
 	changeWeight(incEdge, weight)
 }
 
@@ -120,10 +128,49 @@ func (g *Graph) findEdge(from Node, to Node) *Edge {
 	return nil
 }
 
+func readLocked(g *Graph, fn interface{}, params ...interface{}) {
+	g.mutex.RLock()
+	defer g.mutex.RUnlock()
+
+	f := reflect.ValueOf(fn)
+	if len(params) != f.Type().NumIn() {
+		panic("Incorrect number of parameters for function")
+	}
+
+	inputs := make([]reflect.Value, len(params))
+	for i, param := range params {
+		inputs[i] = reflect.ValueOf(param)
+	}
+	f.Call(inputs)
+}
+
+func writeLocked(g *Graph, fn interface{}, params ...interface{}) {
+	g.mutex.Lock()
+	defer g.mutex.Unlock()
+
+	f := reflect.ValueOf(fn)
+	if len(params) != f.Type().NumIn() {
+		panic("Incorrect number of parameters for function")
+	}
+
+	inputs := make([]reflect.Value, len(params))
+	for i, param := range params {
+		inputs[i] = reflect.ValueOf(param)
+	}
+	f.Call(inputs)
+}
+
 func changeWeight(edge *Edge, newWeight int) {
 	edge.weight = newWeight
 }
 
+func rtPriceChange() {
+
+}
+
 func main() {
+	graph := Graph{sync.RWMutex{}, make(map[Node][]Edge)}
+
+	readLocked(&graph, graph.findEdge(1, 2))
 	fmt.Println("Hello!")
 }
