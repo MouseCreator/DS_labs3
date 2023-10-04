@@ -292,15 +292,16 @@ func selectExistingId(present []bool) int {
 	panic("Cannot get node to remove!")
 }
 
-func (g *Graph) rtPriceChange(done chan int) {
+func (g *Graph) rtPriceChange(done chan int, group *sync.WaitGroup) {
 	for notDone(done) {
 		weight := 1 + rand.Intn(100)
 		writeLocked(g, g.changeRandomWeight, weight)
 		time.Sleep(150 * time.Millisecond)
 	}
+	group.Done()
 }
 
-func (g *Graph) rtEdgesChange(done chan int) {
+func (g *Graph) rtEdgesChange(done chan int, group *sync.WaitGroup) {
 	for notDone(done) {
 		action := rand.Intn(2)
 		if action == 0 {
@@ -312,9 +313,10 @@ func (g *Graph) rtEdgesChange(done chan int) {
 		time.Sleep(200 * time.Millisecond)
 
 	}
+	group.Done()
 }
 
-func (g *Graph) rtNodesChange(done chan int) {
+func (g *Graph) rtNodesChange(done chan int, group *sync.WaitGroup) {
 	const NodeLimit = 100
 	currentNodes := 0
 	present := make([]bool, NodeLimit)
@@ -334,15 +336,16 @@ func (g *Graph) rtNodesChange(done chan int) {
 		time.Sleep(300 * time.Millisecond)
 
 	}
+	group.Done()
 }
 
-func (g *Graph) rtPathFinder(done chan int) {
+func (g *Graph) rtPathFinder(done chan int, group *sync.WaitGroup) {
 
 	for notDone(done) {
 		readLocked(g, g.findRandomPath)
 		time.Sleep(100 * time.Millisecond)
-
 	}
+	group.Done()
 }
 
 func main() {
