@@ -1,9 +1,10 @@
 package main
 
 import (
+	"bufio"
 	"fmt"
-	"math"
 	"math/rand"
+	"os"
 	"reflect"
 	"strconv"
 	"sync"
@@ -28,6 +29,7 @@ func (g *Graph) addNode(id string) {
 	node := Node{id}
 	edges := make([]Edge, 0)
 	g.nodesMap[node] = edges
+	fmt.Println("Added node: " + node.id)
 }
 
 func (g *Graph) removeNode(id string) {
@@ -37,17 +39,18 @@ func (g *Graph) removeNode(id string) {
 				inc := v.to
 				edges2 := g.nodesMap[*inc]
 				edges2 = remove(edges2, node)
-				g.nodesMap[*inc] = edges
+				g.nodesMap[*inc] = edges2
 			}
 			delete(g.nodesMap, node)
-			return
+			break
 		}
 	}
+	fmt.Println("Removed node: " + id)
 }
 
 func remove(edges []Edge, node Node) []Edge {
 	for i, edge := range edges {
-		if edge.to == &node {
+		if edge.to.id == node.id {
 			return removeEdgeIndex(edges, i)
 		}
 	}
@@ -72,21 +75,23 @@ func (g *Graph) addEdge(fromNode *Node, toNode *Node, weight int) {
 }
 
 func (g *Graph) addRandomEdge(weight int) {
-	var fromNode *Node
-	var toNode *Node
 
 	if len(g.nodesMap) < 2 {
 		return
 	}
 	iter := 0
+	var fromNode *Node
+	var toNode *Node
 	for key := range g.nodesMap {
 		if iter == 0 {
+			tempFromNode := key
+			fromNode = &tempFromNode
 			iter++
-			fromNode = &key
 			continue
 		}
 		if iter == 1 {
-			toNode = &key
+			tempToNode := key
+			toNode = &tempToNode
 			break
 		}
 	}
@@ -95,7 +100,7 @@ func (g *Graph) addRandomEdge(weight int) {
 	}
 
 	g.addEdge(fromNode, toNode, weight)
-
+	fmt.Println("Added edge between " + fromNode.id + " and " + toNode.id + ", weight: " + strconv.Itoa(weight))
 }
 
 func (g *Graph) removeRandomEdge() {
@@ -110,13 +115,16 @@ func (g *Graph) removeRandomEdge() {
 		randomEdges = edges
 		break
 	}
+	if len(randomEdges) == 0 {
+		return
+	}
 	randomIndex := rand.Intn(len(randomEdges))
 	edge := randomEdges[randomIndex]
 	inc := edge.to
 
-	remove(g.nodesMap[randomNode], *inc)
-	remove(g.nodesMap[*inc], randomNode)
-
+	g.nodesMap[randomNode] = remove(g.nodesMap[randomNode], *inc)
+	g.nodesMap[*inc] = remove(g.nodesMap[*inc], randomNode)
+	fmt.Println("Removed edge between " + randomNode.id + " and " + inc.id)
 }
 
 func (g *Graph) print() {
@@ -145,21 +153,27 @@ func (g *Graph) changeRandomWeight(weight int) {
 		randomEdges = edges
 		break
 	}
+	if len(randomEdges) == 0 {
+		return
+	}
 	randomIndex := rand.Intn(len(randomEdges))
 	edge := randomEdges[randomIndex]
 	changeWeight(&edge, weight)
 	inc := edge.to
 	incEdge := g.findEdge(*inc, randomNode)
 	if incEdge == nil {
-		panic("No incident edge")
+		g.print()
+		panic("No incident edge " + inc.id + " " + randomNode.id)
+
 	}
 	changeWeight(incEdge, weight)
+	fmt.Println("Changed weight between " + randomNode.id + " and " + inc.id + " to " + strconv.Itoa(weight))
 }
 
 func (g *Graph) findEdge(from Node, to Node) *Edge {
 	edgesFrom := g.nodesMap[from]
 	for _, edge := range edgesFrom {
-		if edge.to == &to {
+		if edge.to.id == to.id {
 			return &edge
 		}
 	}
@@ -202,7 +216,7 @@ func (g *Graph) dijkstra(from Node, to Node) {
 	visited := make(map[Node]bool)
 	distances := make(map[Node]int)
 	for node := range g.nodesMap {
-		distances[node] = math.MaxInt32
+		distances[node] = -1
 	}
 	distances[from] = 0
 	for len(visited) < len(g.nodesMap) {
@@ -213,11 +227,11 @@ func (g *Graph) dijkstra(from Node, to Node) {
 		visited[*node] = true
 
 		for _, edge := range g.nodesMap[*node] {
-			if distances[*node]+edge.weight < distances[*edge.to] {
+			if distances[*node]+edge.weight < distances[*edge.to] || distances[*edge.to] == -1 {
 				distances[*edge.to] = distances[*node] + edge.weight
 			}
 		}
-		if *node == to {
+		if node.id == to.id {
 			fmt.Println("Distance between " + from.id + " and " + to.id + " is " + strconv.Itoa(distances[*node]))
 			return
 		}
@@ -226,13 +240,24 @@ func (g *Graph) dijkstra(from Node, to Node) {
 }
 
 func minDistNode(distances map[Node]int, visited map[Node]bool) *Node {
-	minV := math.MaxInt32
+	minV := -1
 	var minNode *Node
+	minNode = nil
 	for node, distance := range distances {
-		if !visited[node] && distance < minV {
-			minV = distance
-			minNode = &node
+		if minV == -1 {
+			if !visited[node] && distance != -1 {
+				minV = distance
+				nodeC := node
+				minNode = &nodeC
+			}
+		} else {
+			if !visited[node] && distance != -1 && distance < minV {
+				minV = distance
+				nodeC := node
+				minNode = &nodeC
+			}
 		}
+
 	}
 	return minNode
 }
@@ -262,11 +287,13 @@ func changeWeight(edge *Edge, newWeight int) {
 	edge.weight = newWeight
 }
 
-func notDone(done chan int) bool {
+func notDone(done *chan int) bool {
 	select {
-	case d := <-done:
-		done <- d
-		return false
+	case _, ok := <-*done:
+		if !ok {
+			return false
+		}
+		return true
 	default:
 		return true
 	}
@@ -292,31 +319,33 @@ func selectExistingId(present []bool) int {
 	panic("Cannot get node to remove!")
 }
 
-func (g *Graph) rtPriceChange(done chan int, group *sync.WaitGroup) {
+func (g *Graph) rtPriceChange(done *chan int, group *sync.WaitGroup) {
 	for notDone(done) {
 		weight := 1 + rand.Intn(100)
 		writeLocked(g, g.changeRandomWeight, weight)
 		time.Sleep(150 * time.Millisecond)
 	}
+	fmt.Println("Done Price")
 	group.Done()
 }
 
-func (g *Graph) rtEdgesChange(done chan int, group *sync.WaitGroup) {
+func (g *Graph) rtEdgesChange(done *chan int, group *sync.WaitGroup) {
 	for notDone(done) {
-		action := rand.Intn(2)
-		if action == 0 {
+		action := rand.Intn(10)
+		if action != 0 {
 			weight := 1 + rand.Intn(100)
 			writeLocked(g, g.addRandomEdge, weight)
 		} else {
 			writeLocked(g, g.removeRandomEdge)
 		}
-		time.Sleep(200 * time.Millisecond)
+		time.Sleep(250 * time.Millisecond)
 
 	}
+	fmt.Println("Done Edges")
 	group.Done()
 }
 
-func (g *Graph) rtNodesChange(done chan int, group *sync.WaitGroup) {
+func (g *Graph) rtNodesChange(done *chan int, group *sync.WaitGroup) {
 	const NodeLimit = 100
 	currentNodes := 0
 	present := make([]bool, NodeLimit)
@@ -333,23 +362,44 @@ func (g *Graph) rtNodesChange(done chan int, group *sync.WaitGroup) {
 			id := selectExistingId(present)
 			writeLocked(g, g.removeNode, strconv.Itoa(id))
 		}
-		time.Sleep(300 * time.Millisecond)
+		time.Sleep(400 * time.Millisecond)
 
 	}
+	fmt.Println("Done Nodes")
 	group.Done()
 }
 
-func (g *Graph) rtPathFinder(done chan int, group *sync.WaitGroup) {
+func (g *Graph) rtPathFinder(done *chan int, group *sync.WaitGroup) {
 
 	for notDone(done) {
 		readLocked(g, g.findRandomPath)
 		time.Sleep(100 * time.Millisecond)
 	}
+	fmt.Println("Done Finder")
 	group.Done()
 }
 
 func main() {
-	//graph := Graph{sync.RWMutex{}, make(map[Node][]Edge)}
+	graph := Graph{sync.RWMutex{}, make(map[Node][]Edge)}
+	group := sync.WaitGroup{}
+	group.Add(4)
+	done := make(chan int)
 
-	fmt.Println("Hello!")
+	go graph.rtNodesChange(&done, &group)
+	go graph.rtEdgesChange(&done, &group)
+	go graph.rtPriceChange(&done, &group)
+	go graph.rtPathFinder(&done, &group)
+
+	reader := bufio.NewReader(os.Stdin)
+
+	_, err := reader.ReadString('\n')
+
+	if err != nil {
+		fmt.Println("Error reading input:", err)
+		return
+	}
+
+	close(done)
+	group.Wait()
+
 }
