@@ -45,12 +45,6 @@ func (g *Graph) removeNode(id string) {
 	}
 }
 
-func removeEdgeIndex(s []Edge, index int) []Edge {
-	ret := make([]Edge, 0)
-	ret = append(ret, s[:index]...)
-	return append(ret, s[index+1:]...)
-}
-
 func remove(edges []Edge, node Node) []Edge {
 	for i, edge := range edges {
 		if edge.to == &node {
@@ -58,6 +52,12 @@ func remove(edges []Edge, node Node) []Edge {
 		}
 	}
 	return edges
+}
+
+func removeEdgeIndex(s []Edge, index int) []Edge {
+	ret := make([]Edge, 0)
+	ret = append(ret, s[:index]...)
+	return append(ret, s[index+1:]...)
 }
 
 func (g *Graph) addEdge(fromNode *Node, toNode *Node, weight int) {
@@ -94,6 +94,27 @@ func (g *Graph) addRandomEdge(weight int) {
 
 }
 
+func (g *Graph) removeRandomEdge() {
+	var randomNode Node
+	var randomEdges []Edge
+
+	if len(g.nodesMap) == 0 {
+		return
+	}
+	for key, edges := range g.nodesMap {
+		randomNode = key
+		randomEdges = edges
+		break
+	}
+	randomIndex := rand.Intn(len(randomEdges))
+	edge := randomEdges[randomIndex]
+	inc := edge.to
+
+	remove(g.nodesMap[randomNode], *inc)
+	remove(g.nodesMap[*inc], randomNode)
+
+}
+
 func (g *Graph) print() {
 	str := ""
 	for node, edges := range g.nodesMap {
@@ -126,7 +147,7 @@ func (g *Graph) changeRandomWeight(weight int) {
 	inc := edge.to
 	incEdge := g.findEdge(*inc, randomNode)
 	if incEdge == nil {
-		fmt.Println("ERROR: NO INCIDENT EDGE")
+		panic("No incident edge")
 	}
 	changeWeight(incEdge, weight)
 }
