@@ -1,8 +1,10 @@
 package org.example.filebase.lock;
 
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
 import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.atomic.AtomicInteger;
 
 class CustomReadWriteLockImplTest {
 
@@ -46,5 +48,81 @@ class CustomReadWriteLockImplTest {
             throw new RuntimeException(e);
         }
 
+    }
+
+    @Test
+    void testWritesBlocking() {
+        CustomReadWriteLock lock = new CustomReadWriteLockImpl();
+        CountDownLatch startLatch = new CountDownLatch(1);
+        AtomicInteger sum = new AtomicInteger(0);
+        int N = 100;
+        Thread writer = new Thread(() -> {
+            try {
+                lock.writeLock().lock();
+                startLatch.countDown();
+                for (int i = 0; i <= N; i++) {
+                    sum.addAndGet(i);
+                }
+            } catch (InterruptedException e) {
+                throw new RuntimeException(e);
+            } finally {
+                lock.writeLock().unlock();
+            }
+        });
+        writer.start();
+        ReaderThread reader1 = new ReaderThread(sum, startLatch, lock);
+        ReaderThread reader2 = new ReaderThread(sum, startLatch, lock);
+
+        reader1.start();
+        reader2.start();
+
+
+        try {
+            writer.join();
+            reader1.join();
+            reader2.join();
+
+            int expected = estimateSum(N);
+
+            Assertions.assertEquals(expected, reader1.getReadValue());
+            Assertions.assertEquals(expected, reader2.getReadValue());
+
+        } catch (InterruptedException e) {
+            throw new RuntimeException(e);
+        }
+
+    }
+
+    private int estimateSum(int n) {
+        return n * (n+1) / 2;
+    }
+
+    private static class ReaderThread extends Thread {
+
+        private int readValue;
+        private final AtomicInteger sum;
+        private final CountDownLatch startLatch;
+        private final CustomReadWriteLock lock;
+
+        private ReaderThread(AtomicInteger sum, CountDownLatch startLatch, CustomReadWriteLock lock) {
+            this.sum = sum;
+            this.startLatch = startLatch;
+            this.lock = lock;
+        }
+
+        public void run() {
+            try {
+                startLatch.await();
+                lock.readLock().lock();
+                readValue = sum.intValue();
+                lock.readLock().unlock();
+            } catch (InterruptedException e) {
+                throw new RuntimeException(e);
+            }
+        }
+
+        public int getReadValue() {
+            return readValue;
+        }
     }
 }
