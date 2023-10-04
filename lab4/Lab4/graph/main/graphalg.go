@@ -325,7 +325,6 @@ func (g *Graph) rtPriceChange(done *chan int, group *sync.WaitGroup) {
 		writeLocked(g, g.changeRandomWeight, weight)
 		time.Sleep(150 * time.Millisecond)
 	}
-	fmt.Println("Done Price")
 	group.Done()
 }
 
@@ -341,7 +340,6 @@ func (g *Graph) rtEdgesChange(done *chan int, group *sync.WaitGroup) {
 		time.Sleep(250 * time.Millisecond)
 
 	}
-	fmt.Println("Done Edges")
 	group.Done()
 }
 
@@ -365,7 +363,6 @@ func (g *Graph) rtNodesChange(done *chan int, group *sync.WaitGroup) {
 		time.Sleep(400 * time.Millisecond)
 
 	}
-	fmt.Println("Done Nodes")
 	group.Done()
 }
 
@@ -375,7 +372,6 @@ func (g *Graph) rtPathFinder(done *chan int, group *sync.WaitGroup) {
 		readLocked(g, g.findRandomPath)
 		time.Sleep(100 * time.Millisecond)
 	}
-	fmt.Println("Done Finder")
 	group.Done()
 }
 
