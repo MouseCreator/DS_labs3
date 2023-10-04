@@ -93,6 +93,51 @@ class CustomReadWriteLockImplTest {
 
     }
 
+    private static class CInteger {
+        private int i;
+        public void increment() {
+            i++;
+        }
+        public int get() {
+            return i;
+        }
+    }
+    @Test
+    void testWriterMutualBlocking() {
+        CustomReadWriteLock lock = new CustomReadWriteLockImpl();
+        CInteger cInteger = new CInteger();
+        int N = 1000;
+
+        Runnable r = () -> {
+            try {
+                lock.writeLock().lock();
+                for (int i = 0; i < N; i++) {
+                    cInteger.increment();
+                }
+            } catch (InterruptedException e) {
+                throw new RuntimeException(e);
+            } finally {
+                lock.writeLock().unlock();
+            }
+        };
+
+        Thread writer = new Thread(r);
+        writer.start();
+        Thread writer2 = new Thread(r);
+        writer2.start();
+
+        try {
+            writer.join();
+            writer2.join();
+
+            Assertions.assertEquals(2 * N, cInteger.get());
+        } catch (InterruptedException e) {
+            throw new RuntimeException(e);
+        }
+
+
+    }
+
     private int estimateSum(int n) {
         return n * (n+1) / 2;
     }
