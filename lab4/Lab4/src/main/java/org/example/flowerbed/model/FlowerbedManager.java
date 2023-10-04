@@ -3,11 +3,16 @@ package org.example.flowerbed.model;
 import org.example.filebase.manager.FileManager;
 import org.example.filebase.manager.FileManagerImpl;
 
+import java.util.Random;
 import java.util.concurrent.locks.ReadWriteLock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 
 public class FlowerbedManager {
+    private static final double MODIFY_CHANCE = 0.3;
+    private static final double SPAWN_CHANCE = 0.1;
     private final ReadWriteLock readWriteLock = new ReentrantReadWriteLock();
+
+    private final Random random = new Random();
 
     private final Flowerbed flowerbed = new Flowerbed();
 
@@ -32,10 +37,14 @@ public class FlowerbedManager {
             readWriteLock.writeLock().lock();
 
             for (Flower flower : flowerbed) {
+                if (random.nextDouble() >= MODIFY_CHANCE)
+                    continue;
                 if (flower.getState().equals(Flower.State.WITHERED)) {
                     flower.setState(Flower.State.DEAD);
                 } else if (flower.getState().equals(Flower.State.DEAD)) {
-                    flower.setState(Flower.State.GROWING);
+                    if (random.nextDouble() < SPAWN_CHANCE) {
+                        flower.setState(Flower.State.GROWING);
+                    }
                 } else {
                     flower.setState(Flower.State.WITHERED);
                 }

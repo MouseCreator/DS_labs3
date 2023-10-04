@@ -44,7 +44,7 @@ public class FlowerbedSimulation implements Simulation {
             while (!Thread.interrupted()) {
                 flowerbedManager.waterFlowers();
                 try {
-                    Thread.sleep(800);
+                    Thread.sleep(1600);
                 } catch (InterruptedException e) {
                     return;
                 }
@@ -58,7 +58,7 @@ public class FlowerbedSimulation implements Simulation {
             while (!Thread.interrupted()) {
                 flowerbedManager.modifyFlowers();
                 try {
-                    Thread.sleep(1500);
+                    Thread.sleep(1400);
                 } catch (InterruptedException e) {
                     return;
                 }
