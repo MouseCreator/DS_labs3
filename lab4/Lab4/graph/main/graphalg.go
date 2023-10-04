@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	"strconv"
 	"sync"
 )
 
@@ -75,6 +76,20 @@ func (g *Graph) addEdge(from string, to string, weight int) {
 	*toEdges = append(*toEdges, Edge{fromNode, weight})
 	g.nodesMap[*fromNode] = *fromEdges
 	g.nodesMap[*toNode] = *toEdges
+
+}
+
+func (g *Graph) print() {
+	str := ""
+	for node, edges := range g.nodesMap {
+		str = str + node.id + " => "
+		for _, edge := range edges {
+			weight := strconv.Itoa(edge.weight)
+			str = str + edge.to.id + " (" + weight + "), "
+		}
+		str += "\n"
+	}
+	fmt.Println(str)
 
 }
 
