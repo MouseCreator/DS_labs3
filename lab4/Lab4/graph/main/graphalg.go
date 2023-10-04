@@ -90,6 +90,10 @@ func (g *Graph) addRandomEdge(weight int) {
 			break
 		}
 	}
+	if g.findEdge(*fromNode, *toNode) != nil {
+		return
+	}
+
 	g.addEdge(fromNode, toNode, weight)
 
 }
@@ -278,9 +282,56 @@ func (g *Graph) rtPriceChange(done chan int) {
 
 func (g *Graph) rtEdgesChange(done chan int) {
 	for notDone(done) {
-		weight := 1 + rand.Intn(100)
-		writeLocked(g, g.changeRandomWeight, weight)
+		action := rand.Intn(2)
+		if action == 0 {
+			weight := 1 + rand.Intn(100)
+			writeLocked(g, g.addRandomEdge, weight)
+		} else {
+			writeLocked(g, g.removeRandomEdge)
+		}
 		time.Sleep(100 * time.Millisecond)
+
+	}
+}
+
+func selectId(present []bool) int {
+	for i, v := range present {
+		if v == false {
+			present[i] = true
+			return i
+		}
+	}
+	panic("Cannot generate id for node!")
+}
+
+func selectExistingId(present []bool) int {
+	for i, v := range present {
+		if v == true {
+			return i
+		}
+	}
+	panic("Cannot generate id for node!")
+}
+
+func (g *Graph) rtNodesChange(done chan int) {
+	const NodeLimit = 100
+	currentNodes := 0
+	present := make([]bool, NodeLimit)
+	for notDone(done) {
+		action := rand.Intn(2)
+		if (action == 0 || currentNodes < 10) && currentNodes < NodeLimit {
+			id := selectId(present)
+			currentNodes++
+			writeLocked(g, g.addNode, strconv.Itoa(id))
+			continue
+		}
+		if action == 1 && currentNodes > 0 {
+			currentNodes--
+			id := selectExistingId(present)
+			writeLocked(g, g.removeNode, strconv.Itoa(id))
+		}
+		time.Sleep(100 * time.Millisecond)
+
 	}
 }
 
