@@ -60,26 +60,37 @@ func remove(edges []Edge, node Node) []Edge {
 	return edges
 }
 
-func (g *Graph) addEdge(from string, to string, weight int) {
+func (g *Graph) addEdge(fromNode *Node, toNode *Node, weight int) {
+	var fromEdges = g.nodesMap[*fromNode]
+	var toEdges = g.nodesMap[*toNode]
+
+	fromEdges = append(fromEdges, Edge{toNode, weight})
+	toEdges = append(toEdges, Edge{fromNode, weight})
+	g.nodesMap[*fromNode] = fromEdges
+	g.nodesMap[*toNode] = toEdges
+
+}
+
+func (g *Graph) addRandomEdge(weight int) {
 	var fromNode *Node
-	var fromEdges *[]Edge
 	var toNode *Node
-	var toEdges *[]Edge
-	for node, edges := range g.nodesMap {
-		if node.id == from {
-			fromNode = &node
-			fromEdges = &edges
+
+	if len(g.nodesMap) < 2 {
+		return
+	}
+	iter := 0
+	for key := range g.nodesMap {
+		if iter == 0 {
+			iter++
+			fromNode = &key
+			continue
 		}
-		if node.id == to {
-			toNode = &node
-			toEdges = &edges
+		if iter == 1 {
+			toNode = &key
+			break
 		}
 	}
-
-	*fromEdges = append(*fromEdges, Edge{toNode, weight})
-	*toEdges = append(*toEdges, Edge{fromNode, weight})
-	g.nodesMap[*fromNode] = *fromEdges
-	g.nodesMap[*toNode] = *toEdges
+	g.addEdge(fromNode, toNode, weight)
 
 }
 
@@ -237,6 +248,14 @@ func notDone(done chan int) bool {
 }
 
 func (g *Graph) rtPriceChange(done chan int) {
+	for notDone(done) {
+		weight := 1 + rand.Intn(100)
+		writeLocked(g, g.changeRandomWeight, weight)
+		time.Sleep(100 * time.Millisecond)
+	}
+}
+
+func (g *Graph) rtEdgesChange(done chan int) {
 	for notDone(done) {
 		weight := 1 + rand.Intn(100)
 		writeLocked(g, g.changeRandomWeight, weight)
