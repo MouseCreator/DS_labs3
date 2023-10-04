@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	"math/rand"
 	"strconv"
 	"sync"
 )
@@ -91,6 +92,36 @@ func (g *Graph) print() {
 	}
 	fmt.Println(str)
 
+}
+
+func (g *Graph) changeRandomWeight(weight int) {
+	var randomNode Node
+	var randomEdges []Edge
+	for key, edges := range g.nodesMap {
+		randomNode = key
+		randomEdges = edges
+		break
+	}
+	randomIndex := rand.Intn(len(randomEdges))
+	edge := randomEdges[randomIndex]
+	changeWeight(&edge, weight)
+	inc := edge.to
+	incEdge := g.findEdge(*inc, randomNode)
+	changeWeight(incEdge, weight)
+}
+
+func (g *Graph) findEdge(from Node, to Node) *Edge {
+	edgesFrom := g.nodesMap[from]
+	for _, edge := range edgesFrom {
+		if edge.to == &to {
+			return &edge
+		}
+	}
+	return nil
+}
+
+func changeWeight(edge *Edge, newWeight int) {
+	edge.weight = newWeight
 }
 
 func main() {
