@@ -164,8 +164,20 @@ func changeWeight(edge *Edge, newWeight int) {
 	edge.weight = newWeight
 }
 
-func rtPriceChange() {
+func notDone(done chan int) bool {
+	select {
+	case d := <-done:
+		done <- d
+		return false
+	default:
+		return true
+	}
+}
 
+func rtPriceChange(done chan int) {
+	for notDone(done) {
+
+	}
 }
 
 func main() {
