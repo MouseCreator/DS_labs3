@@ -6,16 +6,32 @@ public class DataGeneratorImpl implements DataGenerator {
     private final Random random = new Random();
     @Override
     public String generatePhone() {
-        return "+38 " + random.nextInt(1000) + " " + random.nextInt(1000) +
-                " " + random.nextInt(100) + " " + random.nextInt(100);
+        return "+38 " + generateDigits(1000) + " " + generateDigits(1000) +
+                " " + generateDigits(100) + " " + generateDigits(100);
+    }
+
+    private String generateDigits(int bound) {
+        StringBuilder s = new StringBuilder(random.nextInt(bound));
+        while (bound / 10 > 0) {
+            bound /= 10;
+            s.insert(0, "0");
+        }
+        return s.toString();
     }
 
     @Override
     public String generateName() {
-        return generatePart() + " " + generatePart() + " " + generatePart();
+        return capitalize(generatePart()) + " " + capitalize(generatePart()) + " " + capitalize(generatePart());
     }
 
-    public String generatePart() {
+   private static String capitalize(String input) {
+        if (input == null || input.isEmpty()) {
+            return input;
+        }
+        return input.substring(0, 1).toUpperCase() + input.substring(1).toLowerCase();
+    }
+
+    private String generatePart() {
         int length = random.nextInt(3, 6);
         StringBuilder builder = new StringBuilder();
         for (int i = 0; i < length; i++) {
