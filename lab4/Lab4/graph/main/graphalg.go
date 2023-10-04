@@ -55,6 +55,29 @@ func remove(edges []Edge, node Node) []Edge {
 	return edges
 }
 
+func (g *Graph) addEdge(from string, to string, weight int) {
+	var fromNode *Node
+	var fromEdges *[]Edge
+	var toNode *Node
+	var toEdges *[]Edge
+	for node, edges := range g.nodesMap {
+		if node.id == from {
+			fromNode = &node
+			fromEdges = &edges
+		}
+		if node.id == to {
+			toNode = &node
+			toEdges = &edges
+		}
+	}
+
+	*fromEdges = append(*fromEdges, Edge{toNode, weight})
+	*toEdges = append(*toEdges, Edge{fromNode, weight})
+	g.nodesMap[*fromNode] = *fromEdges
+	g.nodesMap[*toNode] = *toEdges
+
+}
+
 func main() {
 	fmt.Println("Hello!")
 }
