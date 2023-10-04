@@ -138,6 +138,61 @@ class CustomReadWriteLockImplTest {
 
     }
 
+    @Test
+    void testWriterPriority() {
+        CustomReadWriteLock lock = new CustomReadWriteLockImpl();
+        CountDownLatch latch = new CountDownLatch(1);
+        CInteger cInteger = new CInteger();
+        int N = 100000;
+
+        Runnable writerRunnable = () -> {
+            try {
+                lock.writeLock().lock();
+                latch.countDown();
+                for (int i = 0; i < N; i++) {
+                    cInteger.increment();
+                }
+            } catch (InterruptedException e) {
+                throw new RuntimeException(e);
+            } finally {
+                lock.writeLock().unlock();
+            }
+        };
+        AtomicInteger v = new AtomicInteger();
+        Runnable readerRunnable = () -> {
+            try {
+                latch.await();
+                lock.readLock().lock();
+                v.compareAndSet(0, cInteger.get());
+            } catch (InterruptedException e) {
+                throw new RuntimeException(e);
+            } finally {
+                lock.readLock().unlock();
+            }
+        };
+
+        Thread writer = new Thread(writerRunnable);
+        writer.start();
+        Thread reader1 = new Thread(readerRunnable);
+        reader1.start();
+        Thread writer2 = new Thread(writerRunnable);
+        writer2.start();
+
+
+
+        try {
+            writer.join();
+            writer2.join();
+            reader1.join();
+
+            Assertions.assertEquals(2 * N, v.get());
+        } catch (InterruptedException e) {
+            throw new RuntimeException(e);
+        }
+
+
+    }
+
     private int estimateSum(int n) {
         return n * (n+1) / 2;
     }

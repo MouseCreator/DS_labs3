@@ -27,9 +27,8 @@ public class CustomReadWriteLockImpl implements CustomReadWriteLock {
                 ++readEntered;
             }
             synchronized (writeSync) {
-                while (writeLocked && writeEntered > 0)
+                while (writeLocked || writeEntered > 0)
                     writeSync.wait();
-                writeLocked = true;
             }
         }
 
@@ -37,12 +36,14 @@ public class CustomReadWriteLockImpl implements CustomReadWriteLock {
         public void unlock() {
             synchronized (readSync) {
                 readEntered--;
+                if (readEntered != 0) {
+                    return;
+                }
                 synchronized (writeSync) {
-                    if (readEntered == 0) {
-                        writeSync.notifyAll();
-                    }
+                    writeSync.notifyAll();
                 }
             }
+
         }
     }
 
