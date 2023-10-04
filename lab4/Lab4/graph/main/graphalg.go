@@ -181,8 +181,7 @@ func rtPriceChange(done chan int) {
 }
 
 func main() {
-	graph := Graph{sync.RWMutex{}, make(map[Node][]Edge)}
+	//graph := Graph{sync.RWMutex{}, make(map[Node][]Edge)}
 
-	readLocked(&graph, graph.findEdge(1, 2))
 	fmt.Println("Hello!")
 }
