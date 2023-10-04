@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	"math"
 	"math/rand"
 	"reflect"
 	"strconv"
@@ -161,6 +162,66 @@ func writeLocked(g *Graph, fn interface{}, params ...interface{}) {
 	f.Call(inputs)
 }
 
+func (g *Graph) dijkstra(from Node, to Node) {
+	visited := make(map[Node]bool)
+	distances := make(map[Node]int)
+	for node := range g.nodesMap {
+		distances[node] = math.MaxInt32
+	}
+	distances[from] = 0
+	for len(visited) < len(g.nodesMap) {
+		node := minDistNode(distances, visited)
+		if node == nil {
+			break
+		}
+		visited[*node] = true
+
+		for _, edge := range g.nodesMap[*node] {
+			if distances[*node]+edge.weight < distances[*edge.to] {
+				distances[*edge.to] = distances[*node] + edge.weight
+			}
+		}
+		if *node == to {
+			fmt.Println("Distance between " + from.id + " and " + to.id + " is " + strconv.Itoa(distances[*node]))
+			return
+		}
+	}
+	fmt.Println("No route between " + from.id + " and " + to.id)
+}
+
+func minDistNode(distances map[Node]int, visited map[Node]bool) *Node {
+	minV := math.MaxInt32
+	var minNode *Node
+	for node, distance := range distances {
+		if !visited[node] && distance < minV {
+			minV = distance
+			minNode = &node
+		}
+	}
+	return minNode
+}
+
+func (g *Graph) findRandomPath() {
+	var iter int
+	var findFrom Node
+	var findTo Node
+	if len(g.nodesMap) < 2 {
+		return
+	}
+	for key := range g.nodesMap {
+		if iter == 0 {
+			iter++
+			findFrom = key
+			continue
+		}
+		if iter == 1 {
+			findTo = key
+			break
+		}
+	}
+	g.dijkstra(findFrom, findTo)
+}
+
 func changeWeight(edge *Edge, newWeight int) {
 	edge.weight = newWeight
 }
@@ -178,7 +239,7 @@ func notDone(done chan int) bool {
 func (g *Graph) rtPriceChange(done chan int) {
 	for notDone(done) {
 		weight := 1 + rand.Intn(100)
-		readLocked(g, g.changeRandomWeight, weight)
+		writeLocked(g, g.changeRandomWeight, weight)
 		time.Sleep(100 * time.Millisecond)
 	}
 }
