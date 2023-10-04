@@ -11,9 +11,9 @@ public class DataGeneratorImpl implements DataGenerator {
     }
 
     private String generateDigits(int bound) {
-        StringBuilder s = new StringBuilder(random.nextInt(bound));
-        while (bound / 10 > 0) {
-            bound /= 10;
+        StringBuilder s = new StringBuilder(String.valueOf(random.nextInt(bound)));
+        int len = String.valueOf(bound).length() - s.length();
+        for (int i = 1; i < len; i++) {
             s.insert(0, "0");
         }
         return s.toString();
