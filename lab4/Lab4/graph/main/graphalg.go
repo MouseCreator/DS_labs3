@@ -14,6 +14,11 @@ type Edge struct {
 	weight int
 }
 
+type Graph struct {
+	mutex    sync.RWMutex
+	nodesMap map[Node][]Edge
+}
+
 func (g *Graph) addNode(id string) {
 	node := Node{id}
 	edges := make([]Edge, 0)
@@ -28,7 +33,6 @@ func (g *Graph) removeNode(id string) {
 				edges2 := g.nodesMap[*inc]
 				edges2 = remove(edges2, node)
 				g.nodesMap[*inc] = edges
-				return
 			}
 			delete(g.nodesMap, node)
 			return
@@ -49,11 +53,6 @@ func remove(edges []Edge, node Node) []Edge {
 		}
 	}
 	return edges
-}
-
-type Graph struct {
-	mutex    sync.RWMutex
-	nodesMap map[Node][]Edge
 }
 
 func main() {
