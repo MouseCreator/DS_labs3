@@ -5,4 +5,5 @@ public interface Barrier {
     int getSize();
 
     void awaitDone() throws InterruptedException;
+    void begin();
 }

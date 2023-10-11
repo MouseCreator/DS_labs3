@@ -1,17 +1,18 @@
 package org.example.soldier.barrier;
 
 public class BarrierAutoRestart implements Barrier {
-    private int tasksToComplete = 0;
+    private int tasksToComplete;
     private int size;
     private final Object sync = new Object();
     private final Object restart = new Object();
     private int tasksToRestart = 0;
     public BarrierAutoRestart(int size) {
         this.size = size;
+        tasksToComplete = size;
     }
     public BarrierAutoRestart() {
         this.size = 1;
-        tasksToComplete = size;
+        tasksToComplete = 1;
     }
 
     @Override
@@ -29,6 +30,10 @@ public class BarrierAutoRestart implements Barrier {
     public void awaitDone() throws InterruptedException {
         done();
         await();
+    }
+
+    @Override
+    public void begin() {
         restart();
     }
 
