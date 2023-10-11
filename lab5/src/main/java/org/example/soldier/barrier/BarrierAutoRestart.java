@@ -28,6 +28,13 @@ public class BarrierAutoRestart implements Barrier {
     public void awaitDone() throws InterruptedException {
         done();
         await();
+        restart();
+    }
+
+    private void restart() {
+        synchronized (sync) {
+            tasksToComplete++;
+        }
     }
 
 

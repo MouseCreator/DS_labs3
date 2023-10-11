@@ -90,6 +90,7 @@ public class SoldierLine {
                     barrier.awaitDone();
                     rotateAll(rotateList);
                     rotateList.clear();
+                    barrier.awaitDone();
                 } catch (InterruptedException e) {
                     throw new RuntimeException(e);
                 }
@@ -135,6 +136,7 @@ public class SoldierLine {
                         System.out.println(builder);
                         current = 0;
                     }
+                    barrier.awaitDone();
                     barrier.awaitDone();
                 } catch (InterruptedException e) {
                     throw new RuntimeException(e);
