@@ -1,3 +1,3 @@
-module arr
+module main
 
 go 1.21
