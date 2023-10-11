@@ -4,8 +4,6 @@ public class BarrierAutoRestart implements Barrier {
     private int tasksToComplete;
     private int size;
     private final Object sync = new Object();
-    private final Object restart = new Object();
-    private int tasksToRestart = 0;
     public BarrierAutoRestart(int size) {
         this.size = size;
         tasksToComplete = size;
@@ -32,28 +30,8 @@ public class BarrierAutoRestart implements Barrier {
         await();
     }
 
-    @Override
-    public void begin() {
-        restart();
-    }
 
-    private void restart() {
-        synchronized (restart) {
-            tasksToRestart++;
-            if (tasksToRestart == size) {
-                tasksToComplete = size;
-                tasksToRestart = 0;
-                restart.notifyAll();
-            }
-        }
-    }
-
-    private void done() throws InterruptedException {
-        synchronized (restart) {
-            while (tasksToRestart != 0) {
-                restart.wait();
-            }
-        }
+    private void done() {
         synchronized (sync) {
             if (tasksToComplete < 1) {
                 throw new IllegalStateException("Task is done, but tasks to complete is zero");

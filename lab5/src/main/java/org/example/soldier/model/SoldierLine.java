@@ -62,14 +62,27 @@ public class SoldierLine {
         }
     }
 
-    private record LineFraction(int begin, int end, Direction[] line, Barrier barrier, int N) implements Runnable {
+    private static final class LineFraction implements Runnable {
+        private final int begin;
+        private final int end;
+        private final Direction[] line;
+        private final Barrier barrier;
+        private final int N;
+
+        private LineFraction(int begin, int end, Direction[] line, Barrier barrier, int N) {
+            this.begin = begin;
+            this.end = end;
+            this.line = line;
+            this.barrier = barrier;
+            this.N = N;
+        }
+
         @Override
         public void run() {
             List<Integer> rotateList = new ArrayList<>();
             while (true) {
                 checkIfRotate(rotateList, begin);
                 checkIfRotate(rotateList, end - 1);
-                barrier.begin();
                 for (int i = begin + 1; i < end - 1; i++) {
                     checkIfRotate(rotateList, i);
                 }
@@ -102,6 +115,7 @@ public class SoldierLine {
         private Direction rotate(Direction direction) {
             return direction == Direction.LEFT ? Direction.RIGHT : Direction.LEFT;
         }
+
     }
 
     private record PrintRunnable(Direction[] line, Barrier barrier) implements Runnable {
@@ -112,7 +126,6 @@ public class SoldierLine {
             while (true) {
                 current++;
                 try {
-                    barrier.begin();
                     StringBuilder builder = new StringBuilder();
                     for (Direction direction : line) {
                         String s = direction == Direction.LEFT ? "<" : ">";
