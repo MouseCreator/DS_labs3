@@ -9,7 +9,7 @@ public class StringChanger implements Runnable {
     private final Random random = new Random();
     private String string;
 
-    private int id;
+    private final int id;
     private final StringAdvance stringAdvance;
 
     public StringChanger(CyclicBarrier barrier, String initalString, int id, StringAdvance stringAdvance) {
