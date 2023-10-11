@@ -26,13 +26,17 @@ public class StringChanger implements Runnable {
             int bCount = countChar(string, 'B');
             int total = aCount+bCount;
             stringAdvance.put(id, total);
+            System.out.println("STRING" + id + ": " + string);
             try {
+                barrier.await();
+                if (stringAdvance.stopAdvance()) {
+                    System.out.println("FINISH" + id + ": " + string);
+                    return;
+                }
                 barrier.await();
             } catch (InterruptedException | BrokenBarrierException e) {
                 throw new RuntimeException(e);
             }
-            if (stringAdvance.stopAdvance())
-                return;
         }
     }
 
@@ -47,17 +51,20 @@ public class StringChanger implements Runnable {
     }
 
     private String changeString(String string) {
+        boolean change = random.nextBoolean();
+        if (!change)
+            return string;
         int charId = random.nextInt(string.length());
         char[] chars = string.toCharArray();
         char at = chars[charId];
         if (at == 'A') {
-            chars[charId] = 'B';
-        } else if (at == 'B') {
-            chars[charId] = 'A';
-        } else if (at == 'C') {
             chars[charId] = 'C';
-        } else if (at == 'D') {
+        } else if (at == 'B') {
             chars[charId] = 'D';
+        } else if (at == 'C') {
+            chars[charId] = 'A';
+        } else if (at == 'D') {
+            chars[charId] = 'B';
         }
         return new String(chars);
     }

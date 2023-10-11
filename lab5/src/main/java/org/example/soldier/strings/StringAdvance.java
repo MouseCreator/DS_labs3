@@ -1,5 +1,7 @@
 package org.example.soldier.strings;
 
+import java.util.Arrays;
+
 public class StringAdvance {
     private final int[] stringTotals;
 
@@ -11,6 +13,12 @@ public class StringAdvance {
         stringTotals[id] = num;
     }
     public boolean stopAdvance() {
+        boolean done = isDone();
+        System.out.println(Arrays.toString(stringTotals) + " " + done);
+        return done;
+    }
+
+    public boolean isDone() {
         int n = stringTotals.length;
         assert n > 1;
         if (stringTotals[0] == stringTotals[1]) {
