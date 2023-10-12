@@ -8,20 +8,42 @@ import (
 )
 
 type Barrier struct {
-	group   *sync.WaitGroup
 	tasks   int
-	waiting int
+	current int
+	enter   chan int
+	leave   chan int
+	mutex   sync.Mutex
 }
 
-func (b *Barrier) set(tasks int) {
-	b.group.Add(tasks)
-	b.tasks = tasks
+func makeBarrier(tasks int) *Barrier {
+	return &Barrier{
+		tasks:   tasks,
+		current: tasks,
+		enter:   make(chan int, tasks),
+		leave:   make(chan int, tasks),
+		mutex:   sync.Mutex{},
+	}
 }
 
 func (b *Barrier) await() {
-	b.group.Done()
-	b.group.Wait()
-	b.group.Add(1)//FIX!
+	b.mutex.Lock()
+	b.current--
+	if b.current == 0 {
+		for {
+			select {
+			case temp := <-b.enter:
+				b.leave <- temp
+			default:
+				b.current = b.tasks
+				b.mutex.Unlock()
+				return
+			}
+		}
+	} else {
+		b.mutex.Unlock()
+		b.enter <- 1
+		<-b.leave
+	}
 }
 
 type ArrayComp struct {
@@ -55,7 +77,7 @@ func (comp *ArrayComp) changeRandom() {
 		return
 	case 1:
 		index := rand.Intn(len(comp.arr))
-		if comp.arr[index] < 100 {
+		if comp.arr[index] < 10 {
 			comp.arr[index]++
 		}
 		return
@@ -108,7 +130,7 @@ func randomArray(elements int) []int {
 	var result []int
 
 	for i := 0; i < elements; i++ {
-		randomNumber := rand.Intn(100)
+		randomNumber := rand.Intn(10)
 		result = append(result, randomNumber)
 	}
 
@@ -116,14 +138,13 @@ func randomArray(elements int) []int {
 }
 func main() {
 	N := 3
-	elements := 30
+	elements := 10
 	monitor := SumMonitor{make([]int, N)}
-	barrier := Barrier{&sync.WaitGroup{}, N, 0}
-	barrier.set(N)
+	barrier := makeBarrier(N)
 	group := sync.WaitGroup{}
 	group.Add(N)
 	for i := 0; i < N; i++ {
-		arrayComp := ArrayComp{&barrier, &monitor, randomArray(elements), i, &group}
+		arrayComp := ArrayComp{barrier, &monitor, randomArray(elements), i, &group}
 		go arrayComp.doSumComparison()
 	}
 	group.Wait()
