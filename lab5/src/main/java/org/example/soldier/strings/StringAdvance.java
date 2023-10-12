@@ -34,7 +34,6 @@ public class StringAdvance {
                     if (stringTotals[i] != stringTotals[0])
                         return false;
                 }
-                System.out.println("A");
                 return true;
             }
             if (stringTotals[1] == stringTotals[2]) {
