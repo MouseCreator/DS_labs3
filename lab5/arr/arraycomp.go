@@ -21,7 +21,7 @@ func (b *Barrier) set(tasks int) {
 func (b *Barrier) await() {
 	b.group.Done()
 	b.group.Wait()
-	b.group.Add(1)
+	b.group.Add(1)//FIX!
 }
 
 type ArrayComp struct {
