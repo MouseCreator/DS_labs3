@@ -21,7 +21,7 @@ public class SoldierLine {
     public SoldierLine(int n, int threads) {
         N = n;
         THREADS = threads;
-        rotationCounter = new RotationCounter(N);
+        rotationCounter = new RotationCounter(THREADS);
     }
 
     public void start() {
