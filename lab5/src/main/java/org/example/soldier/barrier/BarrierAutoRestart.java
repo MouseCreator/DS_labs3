@@ -2,8 +2,10 @@ package org.example.soldier.barrier;
 
 public class BarrierAutoRestart implements Barrier {
     private int tasksToComplete;
+    private int tasksToRestart;
     private int size;
     private final Object sync = new Object();
+    private final Object restartSync = new Object();
     public BarrierAutoRestart(int size) {
         this.size = size;
         tasksToComplete = size;
@@ -32,19 +34,29 @@ public class BarrierAutoRestart implements Barrier {
     }
 
     private void restart() {
-        synchronized (sync) {
-            tasksToComplete++;
+        synchronized (restartSync) {
+            tasksToRestart--;
+            if (tasksToRestart == 0) {
+                tasksToComplete = size;
+                restartSync.notifyAll();
+            }
         }
     }
 
 
-    private void done() {
+    private void done() throws InterruptedException {
+        synchronized (restartSync) {
+            while (tasksToRestart > 0) {
+                restartSync.wait();
+            }
+        }
         synchronized (sync) {
             if (tasksToComplete < 1) {
                 throw new IllegalStateException("Task is done, but tasks to complete is zero");
             }
             tasksToComplete--;
             if (tasksToComplete == 0) {
+                tasksToRestart = size;
                 sync.notifyAll();
             }
         }

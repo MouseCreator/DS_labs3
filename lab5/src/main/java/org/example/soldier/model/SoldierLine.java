@@ -15,10 +15,13 @@ public class SoldierLine {
     }
     private Direction[] line;
     private final int N;
+
+    private final RotationCounter rotationCounter;
     private final int THREADS;
     public SoldierLine(int n, int threads) {
         N = n;
         THREADS = threads;
+        rotationCounter = new RotationCounter(N);
     }
 
     public void start() {
@@ -38,13 +41,11 @@ public class SoldierLine {
     private void simulate() {
         int perThread = N / THREADS;
         Barrier barrier = new BarrierAutoRestart(THREADS+1);
-        Thread[] threads = new Thread[N];
+        Thread[] threads = new Thread[THREADS];
         for (int i = 0; i < THREADS; i++) {
             int begin = i * perThread;
             int end = (i == THREADS - 1) ? N : (i+1) * perThread;
-            System.out.println(begin);
-            System.out.println(end);
-            LineFraction lineFraction = new LineFraction(begin, end, line, barrier, N);
+            LineFraction lineFraction = new LineFraction(begin, end, barrier, i);
             Thread thread = new Thread(lineFraction);
             threads[i] = thread;
             thread.start();
@@ -62,40 +63,50 @@ public class SoldierLine {
         }
     }
 
-    private static final class LineFraction implements Runnable {
+    private final class LineFraction implements Runnable {
         private final int begin;
         private final int end;
-        private final Direction[] line;
         private final Barrier barrier;
-        private final int N;
+        private final int id;
 
-        private LineFraction(int begin, int end, Direction[] line, Barrier barrier, int N) {
+        private LineFraction(int begin, int end, Barrier barrier, int id) {
             this.begin = begin;
             this.end = end;
-            this.line = line;
             this.barrier = barrier;
-            this.N = N;
+            this.id = id;
         }
 
         @Override
         public void run() {
             List<Integer> rotateList = new ArrayList<>();
             while (true) {
-                checkIfRotate(rotateList, begin);
-                checkIfRotate(rotateList, end - 1);
-                for (int i = begin + 1; i < end - 1; i++) {
-                    checkIfRotate(rotateList, i);
-                }
+                prepareRotations(rotateList);
                 try {
                     barrier.awaitDone();
-                    rotateAll(rotateList);
-                    rotateList.clear();
+                    int rotations = rotateList.size();
+                    rotationCounter.put(id, rotations);
+                    rotate(rotateList);
                     barrier.awaitDone();
+                    if (rotationCounter.finished())
+                        return;
                 } catch (InterruptedException e) {
                     throw new RuntimeException(e);
                 }
 
             }
+        }
+
+        private void prepareRotations(List<Integer> rotateList) {
+            checkIfRotate(rotateList, begin);
+            checkIfRotate(rotateList, end - 1);
+            for (int i = begin + 1; i < end - 1; i++) {
+                checkIfRotate(rotateList, i);
+            }
+        }
+
+        private void rotate(List<Integer> rotateList) {
+            rotateAll(rotateList);
+            rotateList.clear();
         }
 
         private void checkIfRotate(List<Integer> rotateList, int i) {
@@ -119,29 +130,40 @@ public class SoldierLine {
 
     }
 
-    private record PrintRunnable(Direction[] line, Barrier barrier) implements Runnable {
+    private final class PrintRunnable implements Runnable {
         private static final int PRINT_FREQUENCY = 1;
+        private final Direction[] line;
+        private final Barrier barrier;
+
+        private PrintRunnable(Direction[] line, Barrier barrier) {
+            this.line = line;
+            this.barrier = barrier;
+        }
+
         @Override
-        public void run() {
-            int current = 0;
-            while (true) {
-                current++;
-                try {
-                    StringBuilder builder = new StringBuilder();
-                    for (Direction direction : line) {
-                        String s = direction == Direction.LEFT ? "<" : ">";
-                        builder.append(s);
+            public void run() {
+                int current = 0;
+                while (true) {
+                    current++;
+                    try {
+                        StringBuilder builder = new StringBuilder();
+                        for (Direction direction : line) {
+                            String s = direction == Direction.LEFT ? "<" : ">";
+                            builder.append(s);
+                        }
+                        if (current == PRINT_FREQUENCY) {
+                            System.out.println(builder);
+                            current = 0;
+                        }
+                        barrier.awaitDone();
+                        barrier.awaitDone();
+                        if (rotationCounter.finished())
+                            return;
+                    } catch (InterruptedException e) {
+                        throw new RuntimeException(e);
                     }
-                    if (current == PRINT_FREQUENCY) {
-                        System.out.println(builder);
-                        current = 0;
-                    }
-                    barrier.awaitDone();
-                    barrier.awaitDone();
-                } catch (InterruptedException e) {
-                    throw new RuntimeException(e);
                 }
             }
+
         }
-    }
 }
