@@ -31,7 +31,6 @@ class BarrierImplTest {
         public void run() {
             for (int i = 0; i < N; i++) {
                 try {
-                    barrier.begin();
                     synchronized (sync) {
                         integerList.add(i);
                     }
