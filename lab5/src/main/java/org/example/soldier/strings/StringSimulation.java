@@ -9,7 +9,6 @@ public class StringSimulation {
         CyclicBarrier barrier = new CyclicBarrier(nThreads);
         StringGenerator generator = new StringGenerator();
         StringAdvance stringAdvance = new StringAdvance(nThreads);
-
         List<Thread> threadList = new ArrayList<>();
         for (int i = 0; i < nThreads; i++) {
             String generatedString = generator.generate(20);

@@ -26,14 +26,16 @@ public class StringChanger implements Runnable {
             int bCount = countChar(string, 'B');
             int total = aCount+bCount;
             stringAdvance.put(id, total);
-            System.out.println("STRING" + id + ": " + string);
             try {
                 barrier.await();
+                System.out.println("STRING" + id + ": " + string + ": " + total);
                 if (stringAdvance.stopAdvance()) {
-                    System.out.println("FINISH" + id + ": " + string);
                     return;
                 }
                 barrier.await();
+                if (id==0) {
+                    System.out.println();
+                }
             } catch (InterruptedException | BrokenBarrierException e) {
                 throw new RuntimeException(e);
             }

@@ -33,17 +33,6 @@ public class BarrierAutoRestart implements Barrier {
         restart();
     }
 
-    private void restart() {
-        synchronized (restartSync) {
-            tasksToRestart--;
-            if (tasksToRestart == 0) {
-                tasksToComplete = size;
-                restartSync.notifyAll();
-            }
-        }
-    }
-
-
     private void done() throws InterruptedException {
         synchronized (restartSync) {
             while (tasksToRestart > 0) {
@@ -66,6 +55,16 @@ public class BarrierAutoRestart implements Barrier {
         synchronized (sync) {
             while (tasksToComplete > 0) {
                 sync.wait();
+            }
+        }
+    }
+
+    private void restart() {
+        synchronized (restartSync) {
+            tasksToRestart--;
+            if (tasksToRestart == 0) {
+                tasksToComplete = size;
+                restartSync.notifyAll();
             }
         }
     }
