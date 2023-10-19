@@ -1,12 +1,1 @@
-﻿fox.obj : error LNK2019: unresolved external symbol MPI_Sendrecv_replace referenced in function "void __cdecl communicateBBlock(double *,int)" (?communicateBBlock@@YAXPEANH@Z)
-fox.obj : error LNK2019: unresolved external symbol MPI_Bcast referenced in function "void __cdecl communicateABlock(int,double *,double *,int)" (?communicateABlock@@YAXHPEAN0H@Z)
-fox.obj : error LNK2019: unresolved external symbol MPI_Gather referenced in function "void __cdecl collectResult(double *,double *,int,int)" (?collectResult@@YAXPEAN0HH@Z)
-fox.obj : error LNK2019: unresolved external symbol MPI_Scatter referenced in function "void __cdecl sendMatrixBlock(double *,double *,int,int)" (?sendMatrixBlock@@YAXPEAN0HH@Z)
-fox.obj : error LNK2019: unresolved external symbol MPI_Comm_size referenced in function "bool __cdecl startProcess(int,char * * const)" (?startProcess@@YA_NHQEAPEAD@Z)
-fox.obj : error LNK2019: unresolved external symbol MPI_Comm_rank referenced in function "bool __cdecl startProcess(int,char * * const)" (?startProcess@@YA_NHQEAPEAD@Z)
-fox.obj : error LNK2019: unresolved external symbol MPI_Cart_create referenced in function "void __cdecl createGridCommunications(void)" (?createGridCommunications@@YAXXZ)
-fox.obj : error LNK2019: unresolved external symbol MPI_Cart_coords referenced in function "void __cdecl createGridCommunications(void)" (?createGridCommunications@@YAXXZ)
-fox.obj : error LNK2019: unresolved external symbol MPI_Cart_sub referenced in function "void __cdecl createGridCommunications(void)" (?createGridCommunications@@YAXXZ)
-fox.obj : error LNK2019: unresolved external symbol MPI_Init referenced in function "bool __cdecl startProcess(int,char * * const)" (?startProcess@@YA_NHQEAPEAD@Z)
-fox.obj : error LNK2019: unresolved external symbol MPI_Finalize referenced in function "void __cdecl terminateProcess(double *,double *,double *,double *,double *,double *,double *,int &,int &)" (?terminateProcess@@YAXPEAN000000AEAH1@Z)
-D:\tempRepo\sem5\DS\DS_labs3\lab6_cpp\Lab6\x64\Debug\Lab6.exe : fatal error LNK1120: 11 unresolved externals
+﻿  Lab6.vcxproj -> D:\tempRepo\sem5\DS\DS_labs3\lab6_cpp\Lab6\x64\Debug\Lab6.exe

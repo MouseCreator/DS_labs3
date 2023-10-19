@@ -1,5 +1,5 @@
 #include <iostream>
-#include "mpi.h"
+#include <mpi.h>
 //Fox algorithm of matrix multiplication
 
 int processNum = 0;
