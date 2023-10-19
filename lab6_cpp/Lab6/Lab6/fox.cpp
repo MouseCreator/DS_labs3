@@ -1,0 +1,219 @@
+#include <iostream>
+#include "mpi.h"
+//Fox algorithm of matrix multiplication
+
+int processNum = 0;
+int processRank = 0;
+int gridSize = 0;
+int cords[2];
+
+MPI_Comm gridComm;
+MPI_Comm colComm;
+MPI_Comm rowComm;
+
+bool startProcess(int argc, char* argv[]);
+void createGridCommunications();
+void generateRandomMatrices(double* aMatrix, double* bMatrix, int size);
+void initializeProcess(double* AMatrix, double* BMatrix, double* CMatrix, double* ABlock, double* BBlock, double* CBlock, double* tempBlock, int& size, int& blockSize);
+void communicateABlock(int iter, double* aBlock, double* matrixBlock, int blockSize);
+void communicateBBlock(double* bBlock, int blockSize);
+void multiplyBlocks(double* aBlock, double* bBlock, double* cBlock, int blockSize);
+void calculate(double* aBlock, double* bBlock, double* matrixBlock, double* cBlock, int blockSize);
+void terminateProcess(double* AMatrix, double* BMatrix, double* CMatrix, double* ABlock, double* BBlock, double* CBlock, double* tempBlock, int& size, int& blockSize);
+void sendMatrixBlock(double* matrix, double* block, int size, int blockSize);
+void distributeData(double* AMatrix, double* BMatrix, double* ABlock, double* bBlock, int size, int blockSize);
+void collectResult(double* cMatrix, double* cBlock, int size, int blockSize);
+void testResult(double* cMatrix, int size);
+
+int main(int argc, char* argv[]) {
+	double* AMatrix = nullptr;
+	double* BMatrix = nullptr;
+	double* CMatrix = nullptr;
+	int size = 16;
+	int blockSize;
+	double* aBlock = nullptr;
+	double* bBlock = nullptr;
+	double* cBlock = nullptr;
+	double* pMatrixABlock = nullptr;
+	double start, finish, duration;
+	if (startProcess(argc, argv)) {
+		return 1;
+	}
+	createGridCommunications();
+	initializeProcess(AMatrix, BMatrix, CMatrix, aBlock, bBlock, cBlock, pMatrixABlock, size, blockSize);
+	distributeData(AMatrix, BMatrix, pMatrixABlock, bBlock, size, blockSize);
+	calculate(aBlock, bBlock, pMatrixABlock, cBlock, blockSize);
+	collectResult(CMatrix, cBlock, size, blockSize);
+	testResult(CMatrix, size);
+	terminateProcess(AMatrix, BMatrix, CMatrix, aBlock, bBlock, cBlock, pMatrixABlock, size, blockSize);
+	
+}
+
+bool startProcess(int argc, char* argv[]) {
+
+	setvbuf(stdout, 0, _IONBF, 0);
+
+	MPI_Init(&argc, &argv);
+
+	MPI_Comm_size(MPI_COMM_WORLD, &processNum);
+	MPI_Comm_rank(MPI_COMM_WORLD, &processRank);
+
+	gridSize = sqrt((double)processNum);
+	if (processRank != gridSize * gridSize) {
+		if (processRank == 0) {
+			std::cout << "Number of processes must be a perfect square!" << std::endl;
+			return true;
+		}
+	}
+	return false;
+}
+
+void createGridCommunications() {
+	int dimSize[2];
+	int periodic[2];
+	int subdims[2];
+	dimSize[0] = gridSize;
+	dimSize[1] = gridSize;
+	periodic[0] = 0;
+	periodic[1] = 0;
+	MPI_Cart_create(MPI_COMM_WORLD, 2, dimSize, periodic, 1, &gridComm);
+	MPI_Cart_coords(gridComm, processRank, 2, cords);
+	subdims[0] = 1;
+	subdims[1] = 0;
+	MPI_Cart_sub(gridComm, subdims, &colComm);
+}
+
+
+void generateRandomMatrices(double* aMatrix, double* bMatrix, int size) {
+	int sizeSq = size * size;
+	for (int i = 0; i < sizeSq; ++i) {
+		aMatrix[i] = i * i;
+		bMatrix[i] = i;
+	}
+}
+
+void initializeProcess(double* AMatrix, double* BMatrix, double* CMatrix, double *ABlock, double* BBlock, double *CBlock, double* tempBlock, int &size, int &blockSize) {
+	MPI_Bcast(&size, 1, MPI_INT, 0, MPI_COMM_WORLD);
+	
+	blockSize = size / gridSize;
+
+	int sizeSq = size * size;
+	int bsizeSq = blockSize * blockSize;
+
+	ABlock = new double[bsizeSq];
+	BBlock = new double[bsizeSq];
+	CBlock = new double[bsizeSq];
+	tempBlock = new double[bsizeSq];
+
+	if (processRank == 0) {
+		AMatrix = new double[sizeSq];
+		BMatrix = new double[sizeSq];
+		CMatrix = new double[sizeSq];
+		generateRandomMatrices(AMatrix, BMatrix, size);
+	}
+	
+}
+
+void communicateABlock(int iter, double* aBlock, double* matrixBlock, int blockSize) {
+	int pivot = (cords[0] + iter) % gridSize;
+	int s = blockSize * blockSize;
+	if (cords[1] == pivot) {
+		
+		for (int i = 0; i < s; ++i) {
+			aBlock[i] = matrixBlock[i];
+		}
+	}
+
+	MPI_Bcast(aBlock, s, MPI_DOUBLE, pivot, rowComm);
+}
+
+void communicateBBlock(double* bBlock, int blockSize) {
+	MPI_Status status;
+	int nextProcess = cords[0] + 1;
+	if (cords[0] == gridSize - 1) {
+		nextProcess = 0;
+	}
+	int prevProcess = cords[0] - 1;
+	if (cords[0] == 0) {
+		prevProcess = gridSize - 1;
+	}
+	MPI_Sendrecv_replace(bBlock, blockSize * blockSize, MPI_DOUBLE, nextProcess, 0, prevProcess, 0, colComm, &status);
+}
+
+void multiplyBlocks(double* aBlock, double* bBlock, double* cBlock, int blockSize) {
+	for (int i = 0; i < blockSize; ++i) {
+		for (int j = 0; j < blockSize; ++j) {
+			int res = 0;
+			for (int k = 0; j < blockSize; ++k) {
+				res += aBlock[i * blockSize + k] + aBlock[k * blockSize + j];
+			}
+			cBlock[i * blockSize + j] = res;
+		}
+	}
+}
+
+void calculate(double* aBlock, double* bBlock, double* matrixBlock, double* cBlock, int blockSize) {
+	for (int i = 0; i < gridSize; ++i) {
+		communicateABlock(i, aBlock, matrixBlock, blockSize);
+		multiplyBlocks(aBlock, bBlock, cBlock, blockSize);
+		communicateBBlock(bBlock, blockSize);
+	}
+}
+
+void terminateProcess(double* AMatrix, double* BMatrix, double* CMatrix, double* ABlock, double* BBlock, double* CBlock, double* tempBlock, int& size, int& blockSize) {
+
+	delete[] ABlock;
+	delete[] BBlock;
+	delete[] CBlock;
+	delete[] tempBlock;
+	if (processRank == 0) {
+		delete[] AMatrix;
+		delete[] BMatrix;
+	}
+
+	MPI_Finalize();
+}
+
+void sendMatrixBlock(double* matrix, double* block, int size, int blockSize) {
+	int rowLength = blockSize * size;
+	double* matrixRow = new double[rowLength];
+	if (cords[1] == 0) {
+		MPI_Scatter(matrix, rowLength, MPI_DOUBLE, matrixRow, rowLength, MPI_DOUBLE, 0, colComm);
+	}
+
+	for (int i = 0; i < blockSize; ++i) {
+		MPI_Scatter(&matrixRow[i * size], blockSize, MPI_DOUBLE, &block[i * blockSize], blockSize, MPI_DOUBLE, 0, rowComm);
+	}
+	delete[] matrixRow;
+}
+
+void distributeData(double* AMatrix, double* BMatrix, double* ABlock, double* bBlock, int size, int blockSize) {
+	sendMatrixBlock(AMatrix, ABlock, size, blockSize);
+	sendMatrixBlock(BMatrix, bBlock, size, blockSize);
+}
+
+void collectResult(double* cMatrix, double* cBlock, int size, int blockSize) {
+	int rowLength = blockSize * size;
+	double* resultRow = new double[rowLength];
+	for (int i = 0; i < blockSize; ++i) {
+		MPI_Gather(&cBlock[i * blockSize], blockSize, MPI_DOUBLE, &resultRow[i * size], blockSize, MPI_DOUBLE, 0, rowComm);
+	}
+
+	if (cords[1] == 0) {
+		MPI_Gather(resultRow, rowLength, MPI_DOUBLE, cMatrix, rowLength, MPI_DOUBLE, 0, colComm);
+	}
+
+	delete[] resultRow;
+}
+
+void testResult(double* cMatrix, int size) {
+	int sizeSq = size * size;
+	int j = 0;
+	for (int i = 0; i < sizeSq; ++i, ++j) {
+		if (j == size) {
+			j = 0;
+			std::cout << std::endl;
+		}
+		std::cout << cMatrix[i] << " ";
+	}
+}
