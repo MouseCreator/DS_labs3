@@ -132,6 +132,7 @@
   <ItemGroup>
     <ClCompile Include="fox.cpp" />
     <ClCompile Include="main.cpp" />
+    <ClCompile Include="tape.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
