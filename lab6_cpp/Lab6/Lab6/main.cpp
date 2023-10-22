@@ -77,7 +77,7 @@ void main(int argc, char* argv[]) {
 			std::cout << "Dimensions: ";
 			std::cin >> dim;
 		}
-		MPI_Bcast(&dim, 1, MPI_CHAR, 0, MPI_COMM_WORLD);
+		MPI_Bcast(&dim, 1, MPI_INT, 0, MPI_COMM_WORLD);
 		calculate(command, argc, argv, dim);
 	}
 	else if (command == 'M') {

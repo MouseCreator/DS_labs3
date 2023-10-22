@@ -14,7 +14,14 @@ namespace Cannon {
 					pCMatrix[i * Size + j] += pAMatrix[i * Size + k] * pBMatrix[k * Size + j];
 		}
 	}
-
+	void print(double* pMatrix, int size) {
+		int i, j;
+		for (i = 0; i < size; i++) {
+			for (j = 0; j < size; j++)
+				printf("%7.4f ", pMatrix[i * size + j]);
+			printf("\n");
+		}
+	}
 	void shiftA(double* ABlock, int Size, int BlockSize) {
 		MPI_Status Status;
 		int NextProc = GridCoords[1] + 1;
@@ -34,8 +41,7 @@ namespace Cannon {
 			NextProc, 0, PrevProc, 0, ColComm, &Status);
 	}
 
-	void collectResult(double* pCMatrix, double* pCblock, int Size,
-		int BlockSize) {
+	void collectResult(double* pCMatrix, double* pCblock, int Size, int BlockSize) {
 		double* pResultRow = new double[Size * BlockSize];
 		for (int i = 0; i < BlockSize; i++) {
 			MPI_Gather(&pCblock[i * BlockSize], BlockSize, MPI_DOUBLE,
@@ -46,6 +52,7 @@ namespace Cannon {
 				BlockSize * Size, MPI_DOUBLE, 0, ColComm);
 		}
 		delete[] pResultRow;
+		
 	}
 	void calculate(double* ABlock, double* BBlock, double* CBlock, int Size, int BlockSize) {
 		for (int i = 0; i < GridSize; ++i) {
@@ -55,12 +62,13 @@ namespace Cannon {
 		}
 	}
 
-	void receiveBlock(double* Matrix, double* Block, int Xcord, int Ycord, int Size, int BlockSize, MPI_Comm comm) {
+	void receiveBlock(double* Matrix, double* Block, int Xcord, int Ycord, int Size, int BlockSize) {
 		int InitialPosition = Ycord * BlockSize * Size + Xcord * BlockSize;
 		int CurrentPosition = InitialPosition;
-		for (int i = 0; i < BlockSize; ++i, CurrentPosition += Size - BlockSize) {
+		for (int i = 0; i < BlockSize; ++i, CurrentPosition += Size) {
 			MPI_Scatter(&Matrix[CurrentPosition], BlockSize, MPI_DOUBLE,
-				&(Block[i * BlockSize]), BlockSize, MPI_DOUBLE, 0, comm);
+				&(Block[i * BlockSize]), BlockSize, MPI_DOUBLE, 0, GridComm);
+			
 		}
 	}
 
@@ -68,8 +76,8 @@ namespace Cannon {
 		double* MatrixRow = new double[BlockSize * Size];
 		int N = GridCoords[0];
 		int M = GridCoords[1];
-		receiveBlock(pAMatrix, pABlock, N, (N + M) % GridSize, Size, BlockSize, RowComm);
-		receiveBlock(pAMatrix, pABlock, (N + M) % GridSize, M, Size, BlockSize, ColComm);
+		receiveBlock(pAMatrix, pABlock, N, (N + M) % GridSize, Size, BlockSize);
+		receiveBlock(pBMatrix, pBBlock, (N + M) % GridSize, M, Size, BlockSize);
 	}
 
 	void CreateGridCommunicators() {
@@ -104,16 +112,17 @@ namespace Cannon {
 	void ones(double* A, double* B, int Size) {
 		int sq = Size * Size;
 		for (int i = 0; i < sq; ++i) {
-			A[i] = B[i] = 1;
+			A[i] = 1;
+			B[i] = 1;
 		}
 	}
 	void initialize(double*& pAMatrix, double*& pBMatrix,
 		double*& pCMatrix, double*& pAblock, double*& pBblock, double*& pCblock, int& Size, int& BlockSize) {
-
 		BlockSize = Size / GridSize;
 		pAblock = new double[BlockSize * BlockSize];
 		pBblock = new double[BlockSize * BlockSize];
 		pCblock = new double[BlockSize * BlockSize];
+
 		for (int i = 0; i < BlockSize * BlockSize; i++) {
 			pCblock[i] = 0;
 		}
@@ -124,14 +133,7 @@ namespace Cannon {
 			ones(pAMatrix, pBMatrix, Size);
 		}
 	}
-	void print(double* pMatrix, int size) {
-		int i, j;
-		for (i = 0; i < size; i++) {
-			for (j = 0; j < size; j++)
-				printf("%7.4f ", pMatrix[i * size + j]);
-			printf("\n");
-		}
-	}
+
 
 	void runCannonMultiplication(int argc, char* argv[], int dim) {
 		double* pAMatrix;
@@ -157,7 +159,6 @@ namespace Cannon {
 		distribute(pAMatrix, pAblock, pBMatrix, pBblock, Size, BlockSize);
 		calculate(pAblock, pBblock, pCblock, Size, BlockSize);
 		collectResult(pCMatrix, pCblock, Size, BlockSize);
-		print(pCMatrix, Size);
 		terminate(pAMatrix, pBMatrix, pCMatrix, pAblock, pBblock,
 			pCblock);
 		
