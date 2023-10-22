@@ -16,6 +16,7 @@ namespace Cannon {
 			}
 		}
 	}
+
 	void receiveBlock(double* Matrix, double* Block, int Xcord, int Ycord, int Size, int BlockSize, MPI_Comm comm) {
 		int InitialPosition = Ycord * BlockSize * Size + Xcord * BlockSize;
 		int CurrentPosition = InitialPosition;
@@ -24,12 +25,20 @@ namespace Cannon {
 				&(Block[i * BlockSize]), BlockSize, MPI_DOUBLE, 0, comm);
 		}
 	}
+
 	void distribute(double* pAMatrix, double* pABlock, double* pBMatrix, double* pBBlock, int Size, int BlockSize) {
 		double* MatrixRow = new double[BlockSize * Size];
 		int N = GridCoords[0];
 		int M = GridCoords[1];
 		receiveBlock(pAMatrix, pABlock, N, (N + M) % GridSize, Size, BlockSize, RowComm);
 		receiveBlock(pAMatrix, pABlock, (N + M) % GridSize, M, Size, BlockSize, ColComm);
+	}
+
+	void shiftA() {
+
+	}
+	void shiftB() {
+
 	}
 
 	void CreateGridCommunicators() {

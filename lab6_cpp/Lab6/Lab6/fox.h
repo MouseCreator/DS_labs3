@@ -77,16 +77,7 @@ namespace Fox {
 	void ProcessInitialization(double*& pAMatrix, double*& pBMatrix,
 		double*& pCMatrix, double*& pAblock, double*& pBblock, double*& pCblock,
 		double*& pTemporaryAblock, int& Size, int& BlockSize) {
-		if (ProcRank == 0) {
-			do {
-				printf("\nEnter the size of matrices: ");
-				std::cin >> Size;
-				if (Size % GridSize != 0) {
-					printf("Size of matrices must be divisible by the grid size!\n");
-				}
-			} while (Size % GridSize != 0);
-		}
-		MPI_Bcast(&Size, 1, MPI_INT, 0, MPI_COMM_WORLD);
+		
 		BlockSize = Size / GridSize;
 		pAblock = new double[BlockSize * BlockSize];
 		pBblock = new double[BlockSize * BlockSize];
@@ -226,7 +217,7 @@ namespace Fox {
 		delete[] pMatrixAblock;
 	}
 
-	void runFoxMultiplication(int argc, char* argv[]) {
+	void runFoxMultiplication(int argc, char* argv[], int dim) {
 		double* pAMatrix; // First argument of matrix multiplication
 		double* pBMatrix; // Second argument of matrix multiplication
 		double* pCMatrix; // Result matrix
@@ -237,8 +228,6 @@ namespace Fox {
 		double* pCblock; // Block of result matrix C
 		double* pMatrixAblock;
 		double Start, Finish, Duration;
-		setvbuf(stdout, 0, _IONBF, 0);
-		MPI_Init(&argc, &argv);
 		MPI_Comm_size(MPI_COMM_WORLD, &ProcNum);
 		MPI_Comm_rank(MPI_COMM_WORLD, &ProcRank);
 		GridSize = sqrt((double)ProcNum);
@@ -246,7 +235,6 @@ namespace Fox {
 			if (ProcRank == 0) {
 				printf("Number of processes must be a perfect square \n");
 			}
-			MPI_Finalize();
 			return;
 		}
 		if (ProcRank == 0)
@@ -263,10 +251,9 @@ namespace Fox {
 			pCblock, BlockSize);
 		// Gathering the result matrix
 		ResultCollection(pCMatrix, pCblock, Size, BlockSize);
-		TestResult(pAMatrix, pBMatrix, pCMatrix, Size);
+		//TestResult(pAMatrix, pBMatrix, pCMatrix, Size);
 		// Process Termination
 		ProcessTermination(pAMatrix, pBMatrix, pCMatrix, pAblock, pBblock,
 			pCblock, pMatrixAblock);
-		MPI_Finalize();
 	}
 }

@@ -71,15 +71,6 @@ namespace Tape {
 	void initProcess(double*& pAMatrix, double*& pBMatrix,
 		double*& pCMatrix, double*& matrixATape, double*& matrixBTape, double*& matrixCTape,
 		int& Size, int& tapeLen) {
-		if (ProcRank == 0) {
-			do {
-				printf("\nEnter the size of matrices: ");
-				std::cin >> Size;
-				if (Size % ProcNum != 0) {
-					printf("Size of matrices must be divisible by the grid size!\n");
-				}
-			} while (Size % ProcNum != 0);
-		}
 		MPI_Bcast(&Size, 1, MPI_INT, 0, MPI_COMM_WORLD);
 		tapeLen = Size / ProcNum;
 
@@ -150,7 +141,7 @@ namespace Tape {
 		delete[] cTape;
 	}
 
-	void runTapeMultiplication(int argc, char* argv[]) {
+	void runTapeMultiplication(int argc, char* argv[], int dim) {
 		double* pAMatrix;
 		double* pBMatrix;
 		double* pCMatrix;
@@ -166,12 +157,10 @@ namespace Tape {
 		MPI_Comm_rank(MPI_COMM_WORLD, &ProcRank);
 		Coordninate = ProcRank;
 		if (ProcRank == 0)
-			printf("Tape algorithm matrix multiplication program\n");
+			Size = dim;
 		initProcess(pAMatrix, pBMatrix, pCMatrix, pATape, pBTape, pCTape, Size, TapeLen);
 		createTapeCommunicators(TapeLen);
 		unifyAndDistribute(pAMatrix, pBMatrix, pATape, pBTape, Size, TapeLen);
-		if (ProcRank == 0)
-			printf("Data distributed\n");
 		calculateTape(pATape, pBTape, pCTape, TapeLen, Size);
 		collectResult(pCMatrix, pCTape, TapeLen, Size);
 		terminate(pAMatrix, pBMatrix, pCMatrix, pATape, pBTape, pCTape);
