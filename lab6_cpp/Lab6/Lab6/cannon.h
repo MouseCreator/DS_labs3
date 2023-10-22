@@ -143,8 +143,7 @@ namespace Cannon {
 		double* pBblock; 
 		double* pCblock; 
 		double Start, Finish, Duration;
-		MPI_Comm_size(MPI_COMM_WORLD, &ProcNum);
-		MPI_Comm_rank(MPI_COMM_WORLD, &ProcRank);
+		Size = dim;
 		GridSize = sqrt((double)ProcNum);
 		if (ProcNum != GridSize * GridSize) {
 			if (ProcRank == 0) {
@@ -152,8 +151,6 @@ namespace Cannon {
 			}
 			return;
 		}
-		if (ProcRank == 0)
-			printf("Fox algorithm matrix multiplication program\n");
 		CreateGridCommunicators();
 		initialize(pAMatrix, pBMatrix, pCMatrix, pAblock, pBblock,
 			pCblock, Size, BlockSize);
