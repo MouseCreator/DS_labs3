@@ -14,6 +14,26 @@ namespace Cannon {
 					pCMatrix[i * Size + j] += pAMatrix[i * Size + k] * pBMatrix[k * Size + j];
 		}
 	}
+
+	void shiftA(double* ABlock, int Size, int BlockSize) {
+		MPI_Status Status;
+		int NextProc = GridCoords[1] + 1;
+		if (GridCoords[1] == GridSize - 1) NextProc = 0;
+		int PrevProc = GridCoords[1] - 1;
+		if (GridCoords[1] == 0) PrevProc = GridSize - 1;
+		MPI_Sendrecv_replace(ABlock, BlockSize * BlockSize, MPI_DOUBLE,
+			NextProc, 0, PrevProc, 0, RowComm, &Status);
+	}
+	void shiftB(double* BBlock, int Size, int BlockSize) {
+		MPI_Status Status;
+		int NextProc = GridCoords[0] + 1;
+		if (GridCoords[0] == GridSize - 1) NextProc = 0;
+		int PrevProc = GridCoords[0] - 1;
+		if (GridCoords[0] == 0) PrevProc = GridSize - 1;
+		MPI_Sendrecv_replace(BBlock, BlockSize * BlockSize, MPI_DOUBLE,
+			NextProc, 0, PrevProc, 0, ColComm, &Status);
+	}
+
 	void collectResult(double* pCMatrix, double* pCblock, int Size,
 		int BlockSize) {
 		double* pResultRow = new double[Size * BlockSize];
@@ -50,25 +70,6 @@ namespace Cannon {
 		int M = GridCoords[1];
 		receiveBlock(pAMatrix, pABlock, N, (N + M) % GridSize, Size, BlockSize, RowComm);
 		receiveBlock(pAMatrix, pABlock, (N + M) % GridSize, M, Size, BlockSize, ColComm);
-	}
-
-	void shiftA(double* ABlock, int Size, int BlockSize) {
-		MPI_Status Status;
-		int NextProc = GridCoords[1] + 1;
-		if (GridCoords[1] == GridSize - 1) NextProc = 0;
-		int PrevProc = GridCoords[1] - 1;
-		if (GridCoords[1] == 0) PrevProc = GridSize - 1;
-		MPI_Sendrecv_replace(ABlock, BlockSize * BlockSize, MPI_DOUBLE,
-			NextProc, 0, PrevProc, 0, RowComm, &Status);
-	}
-	void shiftB(double* BBlock, int Size, int BlockSize) {
-		MPI_Status Status;
-		int NextProc = GridCoords[0] + 1;
-		if (GridCoords[0] == GridSize - 1) NextProc = 0;
-		int PrevProc = GridCoords[0] - 1;
-		if (GridCoords[0] == 0) PrevProc = GridSize - 1;
-		MPI_Sendrecv_replace(BBlock, BlockSize * BlockSize, MPI_DOUBLE,
-			NextProc, 0, PrevProc, 0, ColComm, &Status);
 	}
 
 	void CreateGridCommunicators() {

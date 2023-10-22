@@ -71,7 +71,6 @@ namespace Tape {
 	void initProcess(double*& pAMatrix, double*& pBMatrix,
 		double*& pCMatrix, double*& matrixATape, double*& matrixBTape, double*& matrixCTape,
 		int& Size, int& tapeLen) {
-		MPI_Bcast(&Size, 1, MPI_INT, 0, MPI_COMM_WORLD);
 		tapeLen = Size / ProcNum;
 
 		int tapeSize = tapeLen * Size;
@@ -151,13 +150,8 @@ namespace Tape {
 		double* pBTape;
 		double* pCTape;
 		double Start, Finish, Duration;
-		setvbuf(stdout, 0, _IONBF, 0);
-		MPI_Init(&argc, &argv);
-		MPI_Comm_size(MPI_COMM_WORLD, &ProcNum);
-		MPI_Comm_rank(MPI_COMM_WORLD, &ProcRank);
 		Coordninate = ProcRank;
-		if (ProcRank == 0)
-			Size = dim;
+		Size = dim;
 		initProcess(pAMatrix, pBMatrix, pCMatrix, pATape, pBTape, pCTape, Size, TapeLen);
 		createTapeCommunicators(TapeLen);
 		unifyAndDistribute(pAMatrix, pBMatrix, pATape, pBTape, Size, TapeLen);

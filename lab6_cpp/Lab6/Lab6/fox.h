@@ -228,8 +228,6 @@ namespace Fox {
 		double* pCblock; // Block of result matrix C
 		double* pMatrixAblock;
 		double Start, Finish, Duration;
-		MPI_Comm_size(MPI_COMM_WORLD, &ProcNum);
-		MPI_Comm_rank(MPI_COMM_WORLD, &ProcRank);
 		GridSize = sqrt((double)ProcNum);
 		if (ProcNum != GridSize * GridSize) {
 			if (ProcRank == 0) {

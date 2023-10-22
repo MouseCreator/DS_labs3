@@ -1,2 +1,17 @@
-﻿  fox.cpp
+﻿  cannon.cpp
+  main.cpp
+D:\tempRepo\sem5\DS\DS_labs3\lab6_cpp\Lab6\Lab6\fox.h(233,18): warning C4244: '=': conversion from 'double' to 'int', possible loss of data
+D:\tempRepo\sem5\DS\DS_labs3\lab6_cpp\Lab6\Lab6\fox.h(230,10): warning C4101: 'Start': unreferenced local variable
+D:\tempRepo\sem5\DS\DS_labs3\lab6_cpp\Lab6\Lab6\fox.h(230,17): warning C4101: 'Finish': unreferenced local variable
+D:\tempRepo\sem5\DS\DS_labs3\lab6_cpp\Lab6\Lab6\fox.h(230,25): warning C4101: 'Duration': unreferenced local variable
+D:\tempRepo\sem5\DS\DS_labs3\lab6_cpp\Lab6\Lab6\tape.h(100,51): warning C4244: '=': conversion from 'double' to 'int', possible loss of data
+D:\tempRepo\sem5\DS\DS_labs3\lab6_cpp\Lab6\Lab6\tape.h(152,10): warning C4101: 'Start': unreferenced local variable
+D:\tempRepo\sem5\DS\DS_labs3\lab6_cpp\Lab6\Lab6\tape.h(152,17): warning C4101: 'Finish': unreferenced local variable
+D:\tempRepo\sem5\DS\DS_labs3\lab6_cpp\Lab6\Lab6\tape.h(152,25): warning C4101: 'Duration': unreferenced local variable
+D:\tempRepo\sem5\DS\DS_labs3\lab6_cpp\Lab6\Lab6\cannon.h(148,18): warning C4244: '=': conversion from 'double' to 'int', possible loss of data
+D:\tempRepo\sem5\DS\DS_labs3\lab6_cpp\Lab6\Lab6\cannon.h(145,10): warning C4101: 'Start': unreferenced local variable
+D:\tempRepo\sem5\DS\DS_labs3\lab6_cpp\Lab6\Lab6\cannon.h(145,17): warning C4101: 'Finish': unreferenced local variable
+D:\tempRepo\sem5\DS\DS_labs3\lab6_cpp\Lab6\Lab6\cannon.h(145,25): warning C4101: 'Duration': unreferenced local variable
+D:\tempRepo\sem5\DS\DS_labs3\lab6_cpp\Lab6\Lab6\main.cpp(56,35): warning C4326: return type of 'main' should be 'int' instead of 'void'
+  Generating Code...
   Lab6.vcxproj -> D:\tempRepo\sem5\DS\DS_labs3\lab6_cpp\Lab6\x64\Debug\Lab6.exe

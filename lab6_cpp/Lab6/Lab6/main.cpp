@@ -6,6 +6,8 @@
 void initMPI(int argc, char* argv[]) {
 	setvbuf(stdout, 0, _IONBF, 0);
 	MPI_Init(&argc, &argv);
+	MPI_Comm_size(MPI_COMM_WORLD, &ProcNum);
+	MPI_Comm_rank(MPI_COMM_WORLD, &ProcRank);
 }
 
 
@@ -79,7 +81,9 @@ void main(int argc, char* argv[]) {
 		calculate(command, argc, argv, dim);
 	}
 	else if (command == 'M') {
-		
+		if (ProcRank == 0) {
+			std::cout << "Measure";
+		}
 	}
 	else {
 		if (ProcRank == 0) {
