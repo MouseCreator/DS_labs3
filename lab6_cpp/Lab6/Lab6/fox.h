@@ -108,9 +108,6 @@ namespace Fox {
 		int Size, int BlockSize) {
 		double* MatrixRow = new double[BlockSize * Size];
 		if (GridCoords[1] == 0) {
-			if (ProcRank == 2) {
-				std::cout << &pMatrix << std::endl;
-			}
 			MPI_Scatter(pMatrix, BlockSize * Size, MPI_DOUBLE, MatrixRow,
 				BlockSize * Size, MPI_DOUBLE, 0, ColComm);
 		}
