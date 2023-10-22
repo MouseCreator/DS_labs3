@@ -130,10 +130,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="cannon.cpp" />
-    <ClCompile Include="fox.cpp" />
     <ClCompile Include="main.cpp" />
-    <ClCompile Include="tape.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="cannon.h" />
