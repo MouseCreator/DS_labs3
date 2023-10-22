@@ -114,13 +114,10 @@ void measure(char AlgId, int argc, char* argv[]) {
 void finalizeMPI() {
 	MPI_Finalize();
 }
-
-void main(int argc, char* argv[]) {
-
+void reveiceAndExecure(int argc, char* argv[]) {
 	int dim;
 	char command;
 	char algorithm;
-	initMPI(argc, argv);
 	if (ProcRank == 0) {
 		printf("Enter command. C - calculate, M - measure.\nCommand: ");
 		std::cin >> command;
@@ -142,7 +139,7 @@ void main(int argc, char* argv[]) {
 	}
 	else if (command == 'M') {
 		if (ProcRank == 0) {
-			std::cout << "Measure";
+			std::cout << "Measure\n";
 		}
 		measure(algorithm, argc, argv);
 	}
@@ -151,6 +148,13 @@ void main(int argc, char* argv[]) {
 			std::cout << "Unknown command!";
 		}
 	}
+}
+void main(int argc, char* argv[]) {
+
+
+	initMPI(argc, argv);
+	
+	reveiceAndExecure(argc, argv);
 
 	finalizeMPI();
 	
