@@ -161,6 +161,7 @@ namespace Tape {
 		collectResult(pCMatrix, pCTape, TapeLen, Size);
 		terminate(pAMatrix, pBMatrix, pCMatrix, pATape, pBTape, pCTape);
 		Duration = Finish - Start;
+		if (ProcRank == 0)
 		printf("Tape Algorithm[%dx%d]: %7.4fs", Size, Size, Duration);
 		return Duration;
 	}

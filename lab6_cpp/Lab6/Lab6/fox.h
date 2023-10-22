@@ -233,7 +233,7 @@ namespace Fox {
 			if (ProcRank == 0) {
 				printf("Number of processes must be a perfect square \n");
 			}
-			return;
+			return 1;
 		}
 		Size = dim;
 		// Creating the cartesian grid, row and column communcators
@@ -256,7 +256,8 @@ namespace Fox {
 			pCblock, pMatrixAblock);
 
 		Duration = Finish - Start;
-		printf("Fox Algorithm[%dx%d]: %7.4fs`", Size, Size, Duration);
+		if (ProcRank == 0)
+			printf("Fox Algorithm[%dx%d]: %7.4fs`", Size, Size, Duration);
 		return Duration;
 	}
 }

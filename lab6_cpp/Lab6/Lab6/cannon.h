@@ -151,7 +151,7 @@ namespace Cannon {
 			if (ProcRank == 0) {
 				printf("Number of processes must be a perfect square \n");
 			}
-			return;
+			return 1;
 		}
 		CreateGridCommunicators();
 		initialize(pAMatrix, pBMatrix, pCMatrix, pAblock, pBblock,
@@ -167,7 +167,8 @@ namespace Cannon {
 			pCblock);
 
 		Duration = Finish - Start;
-		printf("Cannon Algorithm[%dx%d]: %7.4fs`", Size, Size, Duration);
+		if (ProcRank == 0)
+			printf("Cannon Algorithm[%dx%d]: %7.4fs`", Size, Size, Duration);
 		return Duration;
 	}
 }
