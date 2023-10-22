@@ -21,7 +21,8 @@ double calculateSerial(int size) {
 	double* pAMatrix = new double[size * size];
 	double* pBMatrix = new double[size * size];
 	double* pCMatrix = new double[size * size];
-	Cannon::ones(pAMatrix, pBMatrix, size);
+	Matrices::ones(pAMatrix, size);
+	Matrices::ones(pBMatrix, size);
 	double begin = MPI_Wtime();
 	serialCalculator(pAMatrix, pBMatrix, pCMatrix, size);
 	double end = MPI_Wtime();

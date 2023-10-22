@@ -5,7 +5,7 @@
 #include <math.h>
 #include <mpi.h>
 #include <iostream>
-
+#include "matrices.h"
 static int TapeSize;
 static int ProcNum = 0;
 static int ProcRank = 0;

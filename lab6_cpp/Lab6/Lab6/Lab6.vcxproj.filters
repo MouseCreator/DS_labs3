@@ -32,5 +32,8 @@
     <ClInclude Include="cannon.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="matrices.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

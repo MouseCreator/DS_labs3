@@ -19,12 +19,8 @@ namespace Fox {
 	void RandomDataInitialization(double* pAMatrix, double* pBMatrix,
 		int Size) {
 		int i, j; // Loop variables
-		srand(unsigned(clock()));
-		for (i = 0; i < Size; i++)
-			for (j = 0; j < Size; j++) {
-				pAMatrix[i * Size + j] = rand() / double(1000);
-				pBMatrix[i * Size + j] = rand() / double(1000);
-			}
+		Matrices::random(pAMatrix, Size);
+		Matrices::random(pBMatrix, Size);
 	}
 	// Function for formatted matrix output
 	void PrintMatrix(double* pMatrix, int RowCount, int ColCount) {
@@ -90,8 +86,8 @@ namespace Fox {
 			pAMatrix = new double[Size * Size];
 			pBMatrix = new double[Size * Size];
 			pCMatrix = new double[Size * Size];
-			DummyDataInitialization(pAMatrix, pBMatrix, Size);
-			//RandomDataInitialization(pAMatrix, pBMatrix, Size);
+			//DummyDataInitialization(pAMatrix, pBMatrix, Size);
+			RandomDataInitialization(pAMatrix, pBMatrix, Size);
 		}
 	}
 	// Function for checkerboard matrix decomposition
