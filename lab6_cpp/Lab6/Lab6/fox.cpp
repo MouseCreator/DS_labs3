@@ -1,16 +1,9 @@
-#include <stdio.h>
-#include <stdlib.h>
-#include <time.h>
-#include <math.h>
-#include <mpi.h>
-#include <iostream>
-int ProcNum = 0; // Number of available processes
-int ProcRank = 0; // Rank of current process
+#include "common.h"
+
 int GridSize;
-int GridCoords[2]; // Coordinates of current processor in grid
-MPI_Comm GridComm; // Grid communicator
-MPI_Comm ColComm; // Column communicator
-MPI_Comm RowComm; // Row communicator
+int GridCoords[2];
+MPI_Comm GridComm;
+
 /// Function for simple initialization of matrix elements
 void DummyDataInitialization(double* pAMatrix, double* pBMatrix, int Size) {
 	int i, j; // Loop variables
@@ -233,7 +226,8 @@ void ProcessTermination(double* pAMatrix, double* pBMatrix,
 	delete[] pCblock;
 	delete[] pMatrixAblock;
 }
-void main(int argc, char* argv[]) {
+
+void runFoxMultiplication(int argc, char* argv[]) {
 	double* pAMatrix; // First argument of matrix multiplication
 	double* pBMatrix; // Second argument of matrix multiplication
 	double* pCMatrix; // Result matrix
@@ -257,7 +251,7 @@ void main(int argc, char* argv[]) {
 		return;
 	}
 	if (ProcRank == 0)
-		printf("Parallel matrix multiplication program\n");
+		printf("Fox algorithm matrix multiplication program\n");
 	// Creating the cartesian grid, row and column communcators
 	CreateGridCommunicators();
 	// Memory allocation and initialization of matrix elements
