@@ -1,7 +1,2 @@
-﻿  tape.cpp
-D:\tempRepo\sem5\DS\DS_labs3\lab6_cpp\Lab6\Lab6\tape.cpp(106,50): warning C4244: '=': conversion from 'double' to 'int', possible loss of data
-D:\tempRepo\sem5\DS\DS_labs3\lab6_cpp\Lab6\Lab6\tape.cpp(158,9): warning C4101: 'Start': unreferenced local variable
-D:\tempRepo\sem5\DS\DS_labs3\lab6_cpp\Lab6\Lab6\tape.cpp(158,16): warning C4101: 'Finish': unreferenced local variable
-D:\tempRepo\sem5\DS\DS_labs3\lab6_cpp\Lab6\Lab6\tape.cpp(158,24): warning C4101: 'Duration': unreferenced local variable
-D:\tempRepo\sem5\DS\DS_labs3\lab6_cpp\Lab6\Lab6\tape.cpp(178,35): warning C4326: return type of 'main' should be 'int' instead of 'void'
+﻿  fox.cpp
   Lab6.vcxproj -> D:\tempRepo\sem5\DS\DS_labs3\lab6_cpp\Lab6\x64\Debug\Lab6.exe

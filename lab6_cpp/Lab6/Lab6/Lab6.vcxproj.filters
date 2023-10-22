@@ -24,9 +24,18 @@
     <ClCompile Include="tape.cpp">
       <Filter>Resource Files</Filter>
     </ClCompile>
+    <ClCompile Include="cannon.cpp">
+      <Filter>Resource Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="common.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="fox.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="tape.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
