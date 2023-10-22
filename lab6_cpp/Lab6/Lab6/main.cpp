@@ -78,9 +78,9 @@ void measure(char AlgId, int argc, char* argv[]) {
 			int d = dims[i];
 			double mult = Fox::runFoxMultiplication(argc, argv, d);
 			double one = calculateSerial(d);
-			double speedup = mult / one;
+			double speedup = one / mult;
 			if (ProcRank == 0)
-				printf("Seial Time: %7.4f\n Speedup: %7.4f\n", one, speedup);
+				printf("Seial Time: %7.4f\nSpeedup: %7.4f\n", one, speedup);
 		}
 		break;
 	case 'T':
@@ -88,9 +88,9 @@ void measure(char AlgId, int argc, char* argv[]) {
 			int d = dims[i];
 			double mult = Tape::runTapeMultiplication(argc, argv, d);
 			double one = calculateSerial(d);
-			double speedup = mult / one;
+			double speedup = one / mult;
 			if (ProcRank == 0)
-				printf("Seial Time: %7.4f\n Speedup: %7.4f\n", one, speedup);
+				printf("Seial Time: %7.4f\nSpeedup: %7.4f\n", one, speedup);
 		}
 		break;
 	case 'C':
@@ -100,7 +100,7 @@ void measure(char AlgId, int argc, char* argv[]) {
 			double one = calculateSerial(d);
 			double speedup = one / mult;
 			if (ProcRank == 0)
-				printf("Seial Time: %7.4f\n Speedup: %7.4f\n", one, speedup);
+				printf("Seial Time: %7.4f\nSpeedup: %7.4f\n", one, speedup);
 		}
 		break;
 	default:
