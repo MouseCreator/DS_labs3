@@ -80,7 +80,7 @@ void measure(char AlgId, int argc, char* argv[]) {
 			double one = calculateSerial(d);
 			double speedup = mult / one;
 			if (ProcRank == 0)
-				printf("Speedup: %7.4f\n", speedup);
+				printf("Seial Time: %7.4f\n Speedup: %7.4f\n", one, speedup);
 		}
 		break;
 	case 'T':
@@ -90,7 +90,7 @@ void measure(char AlgId, int argc, char* argv[]) {
 			double one = calculateSerial(d);
 			double speedup = mult / one;
 			if (ProcRank == 0)
-				printf("Speedup: %7.4f\n", speedup);
+				printf("Seial Time: %7.4f\n Speedup: %7.4f\n", one, speedup);
 		}
 		break;
 	case 'C':
@@ -100,7 +100,7 @@ void measure(char AlgId, int argc, char* argv[]) {
 			double one = calculateSerial(d);
 			double speedup = one / mult;
 			if (ProcRank == 0)
-				printf("Speedup: %7.4f\n", speedup);
+				printf("Seial Time: %7.4f\n Speedup: %7.4f\n", one, speedup);
 		}
 		break;
 	default:
@@ -122,12 +122,12 @@ void main(int argc, char* argv[]) {
 	char algorithm;
 	initMPI(argc, argv);
 	if (ProcRank == 0) {
-		std::cout << "Command: ";
+		printf("Enter command. C - calculate, M - measure.\nCommand: ");
 		std::cin >> command;
 	}
 	MPI_Bcast(&command, 1, MPI_CHAR, 0, MPI_COMM_WORLD);
 	if (ProcRank == 0) {
-		std::cout << "Algorithm: ";
+		printf("Enter algorithm. F - Fox, C - Cannon, T - Tape.\nCommand: ");
 		std::cin >> algorithm;
 	}
 	MPI_Bcast(&algorithm, 1, MPI_CHAR, 0, MPI_COMM_WORLD);
