@@ -19,6 +19,7 @@ void calculate(char AlgId, int argc, char* argv[], int dim) {
 		Tape::runTapeMultiplication(argc, argv, dim);
 		break;
 	case 'C':
+		Cannon::runCannonMultiplication(argc, argv, dim);
 		break;
 	default:
 		std::cout << "Unknown algorithm" << std::endl;
@@ -26,14 +27,11 @@ void calculate(char AlgId, int argc, char* argv[], int dim) {
 	}
 }
 void measure(char AlgId, int argc, char* argv[]) {
-	int n;
 	switch (AlgId)
 	{
 	case 'F':
-		Fox::runFoxMultiplication(argc, argv, dim);
 		break;
 	case 'T':
-		Tape::runTapeMultiplication(argc, argv, dim);
 		break;
 	case 'C':
 		break;
