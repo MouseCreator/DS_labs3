@@ -1,7 +1,6 @@
 #include "fox.h"
 #include "tape.h"
 #include "cannon.h"
-//https://github.com/microsoft/Microsoft-MPI/blob/master/src/include/mpi.h
 
 void initMPI(int argc, char* argv[]) {
 	setvbuf(stdout, 0, _IONBF, 0);
@@ -153,10 +152,7 @@ void main(int argc, char* argv[]) {
 
 
 	initMPI(argc, argv);
-	
 	reveiceAndExecure(argc, argv);
-
 	finalizeMPI();
-	
 }
 

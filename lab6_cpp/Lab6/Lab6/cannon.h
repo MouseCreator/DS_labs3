@@ -168,7 +168,7 @@ namespace Cannon {
 
 		Duration = Finish - Start;
 		if (ProcRank == 0)
-			printf("Cannon Algorithm[%dx%d]: %7.4fs\n", Size, Size, Duration);
+			printf("Cannon Algorithm[%dx%d]: %7.4f\n", Size, Size, Duration);
 		return Duration;
 	}
 }
