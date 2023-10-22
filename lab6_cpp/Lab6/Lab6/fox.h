@@ -217,7 +217,7 @@ namespace Fox {
 		delete[] pMatrixAblock;
 	}
 
-	void runFoxMultiplication(int argc, char* argv[], int dim) {
+	double runFoxMultiplication(int argc, char* argv[], int dim) {
 		double* pAMatrix; // First argument of matrix multiplication
 		double* pBMatrix; // Second argument of matrix multiplication
 		double* pCMatrix; // Result matrix
@@ -235,8 +235,7 @@ namespace Fox {
 			}
 			return;
 		}
-		if (ProcRank == 0)
-			printf("Fox algorithm matrix multiplication program\n");
+		Size = dim;
 		// Creating the cartesian grid, row and column communcators
 		CreateGridCommunicators();
 		// Memory allocation and initialization of matrix elements
@@ -244,14 +243,20 @@ namespace Fox {
 			pCblock, pMatrixAblock, Size, BlockSize);
 		DataDistribution(pAMatrix, pBMatrix, pMatrixAblock, pBblock, Size,
 			BlockSize);
+		Start = MPI_Wtime();
 		// Execution of the Fox method
 		ParallelResultCalculation(pAblock, pMatrixAblock, pBblock,
 			pCblock, BlockSize);
+		Finish = MPI_Wtime();
 		// Gathering the result matrix
 		ResultCollection(pCMatrix, pCblock, Size, BlockSize);
-		//TestResult(pAMatrix, pBMatrix, pCMatrix, Size);
+		// TestResult(pAMatrix, pBMatrix, pCMatrix, Size); //
 		// Process Termination
 		ProcessTermination(pAMatrix, pBMatrix, pCMatrix, pAblock, pBblock,
 			pCblock, pMatrixAblock);
+
+		Duration = Finish - Start;
+		printf("Fox Algorithm[%dx%d]: %7.4fs`", Size, Size, Duration);
+		return Duration;
 	}
 }

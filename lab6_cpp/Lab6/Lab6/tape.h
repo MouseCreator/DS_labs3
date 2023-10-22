@@ -140,7 +140,7 @@ namespace Tape {
 		delete[] cTape;
 	}
 
-	void runTapeMultiplication(int argc, char* argv[], int dim) {
+	double runTapeMultiplication(int argc, char* argv[], int dim) {
 		double* pAMatrix;
 		double* pBMatrix;
 		double* pCMatrix;
@@ -155,10 +155,14 @@ namespace Tape {
 		initProcess(pAMatrix, pBMatrix, pCMatrix, pATape, pBTape, pCTape, Size, TapeLen);
 		createTapeCommunicators(TapeLen);
 		unifyAndDistribute(pAMatrix, pBMatrix, pATape, pBTape, Size, TapeLen);
+		Start = MPI_Wtime();
 		calculateTape(pATape, pBTape, pCTape, TapeLen, Size);
+		Finish = MPI_Wtime();
 		collectResult(pCMatrix, pCTape, TapeLen, Size);
 		terminate(pAMatrix, pBMatrix, pCMatrix, pATape, pBTape, pCTape);
-		MPI_Finalize();
+		Duration = Finish - Start;
+		printf("Tape Algorithm[%dx%d]: %7.4fs", Size, Size, Duration);
+		return Duration;
 	}
 }
 

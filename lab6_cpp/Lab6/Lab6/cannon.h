@@ -135,7 +135,7 @@ namespace Cannon {
 	}
 
 
-	void runCannonMultiplication(int argc, char* argv[], int dim) {
+	double runCannonMultiplication(int argc, char* argv[], int dim) {
 		double* pAMatrix;
 		double* pBMatrix; 
 		double* pCMatrix;
@@ -157,10 +157,17 @@ namespace Cannon {
 		initialize(pAMatrix, pBMatrix, pCMatrix, pAblock, pBblock,
 			pCblock, Size, BlockSize);
 		distribute(pAMatrix, pAblock, pBMatrix, pBblock, Size, BlockSize);
+
+		Start = MPI_Wtime();
 		calculate(pAblock, pBblock, pCblock, Size, BlockSize);
+		Finish = MPI_Wtime();
+
 		collectResult(pCMatrix, pCblock, Size, BlockSize);
 		terminate(pAMatrix, pBMatrix, pCMatrix, pAblock, pBblock,
 			pCblock);
-		
+
+		Duration = Finish - Start;
+		printf("Cannon Algorithm[%dx%d]: %7.4fs`", Size, Size, Duration);
+		return Duration;
 	}
 }
