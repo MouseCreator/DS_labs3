@@ -257,7 +257,7 @@ namespace Fox {
 
 		Duration = Finish - Start;
 		if (ProcRank == 0)
-			printf("Fox Algorithm[%dx%d]: %7.4fs`", Size, Size, Duration);
+			printf("Fox Algorithm[%dx%d]: %7.4fs\n", Size, Size, Duration);
 		return Duration;
 	}
 }

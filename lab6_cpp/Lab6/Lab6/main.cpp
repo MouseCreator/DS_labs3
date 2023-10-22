@@ -80,7 +80,7 @@ void measure(char AlgId, int argc, char* argv[]) {
 			double one = calculateSerial(d);
 			double speedup = mult / one;
 			if (ProcRank == 0)
-				printf("Speedup: %7.4fs", speedup);
+				printf("Speedup: %7.4f\n", speedup);
 		}
 		break;
 	case 'T':
@@ -90,7 +90,7 @@ void measure(char AlgId, int argc, char* argv[]) {
 			double one = calculateSerial(d);
 			double speedup = mult / one;
 			if (ProcRank == 0)
-				printf("Speedup: %7.4fs", speedup);
+				printf("Speedup: %7.4f\n", speedup);
 		}
 		break;
 	case 'C':
@@ -98,9 +98,9 @@ void measure(char AlgId, int argc, char* argv[]) {
 			int d = dims[i];
 			double mult = Cannon::runCannonMultiplication(argc, argv, d);
 			double one = calculateSerial(d);
-			double speedup = mult / one;
+			double speedup = one / mult;
 			if (ProcRank == 0)
-				printf("Speedup: %7.4fs", speedup);
+				printf("Speedup: %7.4f\n", speedup);
 		}
 		break;
 	default:
