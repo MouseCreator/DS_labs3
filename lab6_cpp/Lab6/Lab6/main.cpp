@@ -11,9 +11,9 @@ void initMPI(int argc, char* argv[]) {
 void serialCalculator(double* pAMatrix, double* pBMatrix,
 	double* pCMatrix, int Size) {
 	int i, j, k;
-	for (i = 0; i < Size; i++) {
-		for (j = 0; j < Size; j++)
-			for (k = 0; k < Size; k++)
+	for (i = 0; i < Size; ++i) {
+		for (j = 0; j < Size; ++j)
+			for (k = 0; k < Size; ++k)
 				pCMatrix[i * Size + j] += pAMatrix[i * Size + k] * pBMatrix[k * Size + j];
 	}
 }
@@ -21,8 +21,8 @@ double calculateSerial(int size) {
 	double* pAMatrix = new double[size * size];
 	double* pBMatrix = new double[size * size];
 	double* pCMatrix = new double[size * size];
-	Matrices::ones(pAMatrix, size);
-	Matrices::ones(pBMatrix, size);
+	Matrices::random(pAMatrix, size);
+	Matrices::random(pBMatrix, size);
 	double begin = MPI_Wtime();
 	serialCalculator(pAMatrix, pBMatrix, pCMatrix, size);
 	double end = MPI_Wtime();
@@ -77,30 +77,36 @@ void measure(char AlgId, int argc, char* argv[]) {
 		for (int i = 0; i < 5; i++) {
 			int d = dims[i];
 			double mult = Fox::runFoxMultiplication(argc, argv, d);
-			double one = calculateSerial(d);
-			double speedup = one / mult;
-			if (ProcRank == 0)
+			if (ProcRank == 0) {
+				double one = calculateSerial(d);
+				double speedup = one / mult;
 				printf("Seial Time: %7.4f\nSpeedup: %7.4f\n", one, speedup);
+			}
+			MPI_Barrier(MPI_COMM_WORLD);
 		}
 		break;
 	case 'T':
 		for (int i = 0; i < 5; i++) {
 			int d = dims[i];
 			double mult = Tape::runTapeMultiplication(argc, argv, d);
-			double one = calculateSerial(d);
-			double speedup = one / mult;
-			if (ProcRank == 0)
+			if (ProcRank == 0) {
+				double one = calculateSerial(d);
+				double speedup = one / mult;
 				printf("Seial Time: %7.4f\nSpeedup: %7.4f\n", one, speedup);
+			}
+			MPI_Barrier(MPI_COMM_WORLD);
 		}
 		break;
 	case 'C':
 		for (int i = 0; i < 5; i++) {
 			int d = dims[i];
 			double mult = Cannon::runCannonMultiplication(argc, argv, d);
-			double one = calculateSerial(d);
-			double speedup = one / mult;
-			if (ProcRank == 0)
+			if (ProcRank == 0) {
+				double one = calculateSerial(d);
+				double speedup = one / mult;
 				printf("Seial Time: %7.4f\nSpeedup: %7.4f\n", one, speedup);
+			}
+			MPI_Barrier(MPI_COMM_WORLD);
 		}
 		break;
 	default:
@@ -124,7 +130,7 @@ void reveiceAndExecure(int argc, char* argv[]) {
 	}
 	MPI_Bcast(&command, 1, MPI_CHAR, 0, MPI_COMM_WORLD);
 	if (ProcRank == 0) {
-		printf("Enter algorithm. F - Fox, C - Cannon, T - Tape.\nCommand: ");
+		printf("Enter algorithm. F - Fox, C - Cannon, T - Tape.\nAlgorithm: ");
 		std::cin >> algorithm;
 	}
 	MPI_Bcast(&algorithm, 1, MPI_CHAR, 0, MPI_COMM_WORLD);
@@ -135,7 +141,7 @@ void reveiceAndExecure(int argc, char* argv[]) {
 			std::cin >> dim;
 		}
 		MPI_Bcast(&dim, 1, MPI_INT, 0, MPI_COMM_WORLD);
-		calculate(command, argc, argv, dim);
+		calculate(algorithm, argc, argv, dim);
 	}
 	else if (command == 'M') {
 		if (ProcRank == 0) {
@@ -150,8 +156,6 @@ void reveiceAndExecure(int argc, char* argv[]) {
 	}
 }
 void main(int argc, char* argv[]) {
-
-
 	initMPI(argc, argv);
 	reveiceAndExecure(argc, argv);
 	finalizeMPI();

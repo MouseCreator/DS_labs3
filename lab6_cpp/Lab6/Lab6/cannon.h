@@ -109,13 +109,6 @@ namespace Cannon {
 		delete[] pBblock;
 		delete[] pCblock;
 	}
-	void ones(double* A, double* B, int Size) {
-		int sq = Size * Size;
-		for (int i = 0; i < sq; ++i) {
-			A[i] = 1;
-			B[i] = 1;
-		}
-	}
 	void initialize(double*& pAMatrix, double*& pBMatrix,
 		double*& pCMatrix, double*& pAblock, double*& pBblock, double*& pCblock, int& Size, int& BlockSize) {
 		BlockSize = Size / GridSize;
@@ -130,7 +123,8 @@ namespace Cannon {
 			pAMatrix = new double[Size * Size];
 			pBMatrix = new double[Size * Size];
 			pCMatrix = new double[Size * Size];
-			ones(pAMatrix, pBMatrix, Size);
+			Matrices::random(pAMatrix, Size);
+			Matrices::random(pBMatrix, Size);
 		}
 	}
 
