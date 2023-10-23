@@ -1,20 +1,20 @@
 package org.example.parking;
 
+import org.example.util.Modelling;
+
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.atomic.AtomicInteger;
 
-public class ParkingModel {
+public class ParkingModel implements Modelling {
 
     public void start() {
         int slots = 3;
         Parking parking = new Parking(slots);
-        AtomicInteger carsLeave = new AtomicInteger();
 
         List<Thread> threadList = new ArrayList<>();
         for (int i = 0; i <= slots; i++) {
             Car car = new Car(String.format("AA 012%d BB", i));
-            CarThread carThread = new CarThread(car, parking, carsLeave);
+            CarThread carThread = new CarThread(car, parking);
             carThread.start();
             threadList.add(carThread);
         }
@@ -35,7 +35,7 @@ public class ParkingModel {
     private static class CarThread extends Thread{
         private final Car car;
         private final Parking parking;
-        private CarThread(Car car, Parking parking, AtomicInteger carsLeave) {
+        private CarThread(Car car, Parking parking) {
             this.car = car;
             this.parking = parking;
         }
