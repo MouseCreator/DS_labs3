@@ -7,6 +7,7 @@ import java.util.concurrent.Semaphore;
 public class Parking {
     private final Semaphore semaphore;
     private final List<Car> cars;
+    private int carsMissed = 0;
     public Parking(int slots) {
         this.semaphore = new Semaphore(slots);
         cars = new ArrayList<>(slots);
@@ -18,6 +19,7 @@ public class Parking {
             }
             return true;
         }
+        carsMissed++;
         return false;
     }
 
@@ -34,5 +36,13 @@ public class Parking {
 
     public int getFleeSlots() {
         return semaphore.availablePermits();
+    }
+
+    public int getCarsParked() {
+        return cars.size();
+    }
+
+    public int getCarsMissed() {
+        return carsMissed;
     }
 }
