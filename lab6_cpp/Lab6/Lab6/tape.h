@@ -94,8 +94,8 @@ namespace Tape {
 			pAMatrix = new double[Size * Size];
 			pBMatrix = new double[Size * Size];
 			pCMatrix = new double[Size * Size];
-			Matrices::ones(pAMatrix, Size);
-			Matrices::ones(pBMatrix, Size);
+			Matrices::random(pAMatrix, Size);
+			Matrices::random(pBMatrix, Size);
 			Matrices::zeros(pCMatrix, Size);
 		}
 
@@ -147,11 +147,15 @@ namespace Tape {
 		double Start, Finish, Duration;
 		Coordninate = ProcRank;
 		Size = dim;
+		if (dim % ProcNum != 0) {
+			if (ProcRank == 0) printf("Dimensions Error!");
+			return 1;
+		}
 		initProcess(pAMatrix, pBMatrix, pCMatrix, pATape, pBTape, pCTape, Size, TapeLen);
 		createTapeCommunicators(TapeLen);
-		unifyAndDistribute(pAMatrix, pBMatrix, pATape, pBTape, Size, TapeLen);
 
 		Start = MPI_Wtime();
+		unifyAndDistribute(pAMatrix, pBMatrix, pATape, pBTape, Size, TapeLen);
 		calculateTape(pATape, pBTape, pCTape, TapeLen, Size);
 		Finish = MPI_Wtime();
 		collectResult(pCMatrix, pCTape, TapeLen, Size);

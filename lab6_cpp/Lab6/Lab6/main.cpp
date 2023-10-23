@@ -12,9 +12,12 @@ void serialCalculator(double* pAMatrix, double* pBMatrix,
 	double* pCMatrix, int Size) {
 	int i, j, k;
 	for (i = 0; i < Size; ++i) {
-		for (j = 0; j < Size; ++j)
+		int p = i * Size;
+		for (j = 0; j < Size; ++j) {
+			int v = p + j;
 			for (k = 0; k < Size; ++k)
-				pCMatrix[i * Size + j] += pAMatrix[i * Size + k] * pBMatrix[k * Size + j];
+				pCMatrix[v] += pAMatrix[p + k] * pBMatrix[k * Size + j];
+		}
 	}
 }
 double calculateSerial(int size) {
@@ -60,10 +63,10 @@ void measure(char AlgId, int argc, char* argv[]) {
 	}
 	else if (ProcNum == 9) {
 		dims[0] = 99;
-		dims[1] = 300;
-		dims[2] = 600;
+		dims[1] = 306;
+		dims[2] = 603;
 		dims[3] = 900;
-		dims[4] = 1500;
+		dims[4] = 1503;
 	}
 	else {
 		if (ProcRank == 0)

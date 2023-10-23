@@ -4,5 +4,5 @@ D:\tempRepo\sem5\DS\DS_labs3\lab6_cpp\Lab6\Lab6\fox.h(21,7): warning C4101: 'i':
 D:\tempRepo\sem5\DS\DS_labs3\lab6_cpp\Lab6\Lab6\fox.h(227,18): warning C4244: '=': conversion from 'double' to 'int', possible loss of data
 D:\tempRepo\sem5\DS\DS_labs3\lab6_cpp\Lab6\Lab6\tape.h(107,15): warning C4244: 'initializing': conversion from 'double' to 'float', possible loss of data
 D:\tempRepo\sem5\DS\DS_labs3\lab6_cpp\Lab6\Lab6\cannon.h(143,18): warning C4244: '=': conversion from 'double' to 'int', possible loss of data
-D:\tempRepo\sem5\DS\DS_labs3\lab6_cpp\Lab6\Lab6\main.cpp(158,35): warning C4326: return type of 'main' should be 'int' instead of 'void'
+D:\tempRepo\sem5\DS\DS_labs3\lab6_cpp\Lab6\Lab6\main.cpp(161,35): warning C4326: return type of 'main' should be 'int' instead of 'void'
   Lab6.vcxproj -> D:\tempRepo\sem5\DS\DS_labs3\lab6_cpp\Lab6\x64\Debug\Lab6.exe
