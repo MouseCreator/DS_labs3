@@ -124,9 +124,9 @@ void finalizeMPI() {
 	MPI_Finalize();
 }
 void reveiceAndExecure(int argc, char* argv[]) {
-	int dim;
-	char command;
-	char algorithm;
+	int dim = 18;
+	char command = 'C';
+	char algorithm = 'C';
 	if (ProcRank == 0) {
 		printf("Enter command. C - calculate, M - measure.\nCommand: ");
 		std::cin >> command;
