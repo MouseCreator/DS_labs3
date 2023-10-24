@@ -9,7 +9,6 @@ public class Parking {
         private ParkingSlots(int spacesLeft) {
             this.spacesLeft = spacesLeft;
         }
-
         public int getSpacesLeft() {
             return spacesLeft;
         }
@@ -32,25 +31,29 @@ public class Parking {
         public void acquire(ParkingSlots parking, long waitMillis, long acquireMillis) throws InterruptedException {
             synchronized (sync) {
                  if (parking.getSpacesLeft() > 0) {
-                     parking.acquire();
-                     System.out.printf("Car %d acquired parking spot\n", id);
-                     sync.wait(acquireMillis);
+                     acquire(parking);
                  } else {
                     long endTime = System.currentTimeMillis() + waitMillis;
                     sync.wait(waitMillis);
                     if (System.currentTimeMillis() < endTime) {
-                        parking.acquire();
+                        acquire(parking);
                     } else {
                         System.out.printf("Car %d didn't acquire parking spot\n", id);
                         return;
                     }
                  }
             }
-
+            Thread.sleep(acquireMillis);
             synchronized (sync) {
                 parking.release();
+                sync.notifyAll();
                 System.out.printf("Car %d released parking spot\n", id);
             }
+        }
+
+        private void acquire(ParkingSlots parking) {
+            parking.acquire();
+            System.out.printf("Car %d acquired parking spot\n", id);
         }
     }
 
@@ -78,11 +81,16 @@ public class Parking {
     public static void main(String[] args) {
         List<Thread> threadList = new ArrayList<>();
         ParkingSlots parkingSlots = new ParkingSlots(5);
-        for (int i = 0; i < 10; i++) {
+        for (int i = 0; i < 13; i++) {
             Car car = new Car(i+1);
-            Thread thread = new CarThread(car, 3000, 5000, parkingSlots);
+            Thread thread = new CarThread(car, 3000, 7000, parkingSlots);
             threadList.add(thread);
             thread.start();
+            try {
+                Thread.sleep(500);
+            } catch (InterruptedException e) {
+                throw new RuntimeException(e);
+            }
         }
         for (Thread thread : threadList) {
             try {
