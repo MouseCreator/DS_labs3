@@ -1,32 +1,55 @@
 package org.example.cashbox;
 
 import java.util.Deque;
-import java.util.NoSuchElementException;
 import java.util.Optional;
 import java.util.concurrent.LinkedBlockingDeque;
+import java.util.concurrent.locks.ReadWriteLock;
+import java.util.concurrent.locks.ReentrantReadWriteLock;
 
 public class CashRegister {
-    public Deque<Customer> registerQueue = new LinkedBlockingDeque<>();
+    private final long workTime;
+    private final Deque<Customer> registerQueue = new LinkedBlockingDeque<>();
+    private final ReadWriteLock readWriteLock = new ReentrantReadWriteLock();
     private final int id;
-    public CashRegister(int id) {
+    public CashRegister(int id, long workTime) {
         this.id = id;
+        this.workTime = workTime;
     }
 
     public void serveCustomer() {
-        registerQueue.pollFirst();
+        readWriteLock.readLock().lock();
+        try {
+            Customer customer = registerQueue.peek();
+            if (customer == null)
+                return;
+            serve(customer);
+            registerQueue.pollFirst();
+        } finally {
+            readWriteLock.readLock().unlock();
+        }
     }
+
+    private void serve(Customer customer) {
+        try {
+            System.out.println("Register "  + id +  " serving " + customer.id());
+            Thread.sleep(workTime);
+        } catch (InterruptedException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
     public void enqueue(Customer customer) {
-        registerQueue.addLast(customer);
+        readWriteLock.writeLock().lock();
+        try {
+            registerQueue.addLast(customer);
+        } finally {
+            readWriteLock.writeLock().unlock();
+        }
     }
 
     public int length() {
         return registerQueue.size();
     }
-
-    public Optional<Customer> peek() {
-        return Optional.ofNullable(registerQueue.peek());
-    }
-
     @Override
     public String toString() {
         return "CashRegister{" +
@@ -35,16 +58,27 @@ public class CashRegister {
                 '}';
     }
 
-    public int position(Customer customer) {
-        int i = 0;
-        for (Customer c : registerQueue) {
-            if (c.equals(customer))
-                return i;
-        }
-        throw new NoSuchElementException(customer + " is not in queue");
+    public int id() {
+        return id;
     }
 
-    public void remove(Customer customer) {
-        registerQueue.remove(customer);
+    public Optional<Customer> pollEnd() {
+        readWriteLock.writeLock().lock();
+        try {
+            return Optional.ofNullable(registerQueue.pollLast());
+        } finally {
+            readWriteLock.writeLock().unlock();
+        }
     }
+
+    public boolean working() {
+        readWriteLock.readLock().lock();
+        try {
+            return !registerQueue.isEmpty();
+        } finally {
+            readWriteLock.readLock().unlock();
+        }
+    }
+
+
 }

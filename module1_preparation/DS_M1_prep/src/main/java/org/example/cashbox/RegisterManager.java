@@ -4,6 +4,7 @@ import java.util.*;
 
 public class RegisterManager {
     private final List<CashRegister> cashRegisters;
+    private final List<Thread> workerThreads = new ArrayList<>();
     public RegisterManager(int size) {
         cashRegisters = new ArrayList<>(size);
         addRegisters(size);
@@ -11,7 +12,7 @@ public class RegisterManager {
 
     private void addRegisters(int size) {
         for (int i = 0; i < size; i++) {
-            cashRegisters.add(new CashRegister(i));
+            cashRegisters.add(new CashRegister(i, i * 500L + 500L));
         }
     }
     private CashRegister getMinLengthRegister() {
@@ -21,55 +22,60 @@ public class RegisterManager {
         }
         return min.get();
     }
-    public CashRegister addCustomer(Customer customer) {
+    public void addCustomer(Customer customer) {
         CashRegister register = getMinLengthRegister();
         register.enqueue(customer);
-        return register;
     }
 
-    public boolean isServing(Customer customer) {
-        for (CashRegister cashRegister : cashRegisters) {
-            Optional<Customer> peek = cashRegister.peek();
-            if (peek.isEmpty())
-                continue;
-            if (peek.get().equals(customer))
-                return true;
-        }
-        return false;
-    }
-
-    public void complete(Customer customer) {
-        for (CashRegister cashRegister : cashRegisters) {
-            Optional<Customer> peek = cashRegister.peek();
-            if (peek.isEmpty())
-                continue;
-            if (peek.get().equals(customer)) {
-                cashRegister.serveCustomer();
-                return;
+    private void trySwap(CashRegister cashRegister) {
+        boolean swapped = true;
+        while (swapped) {
+            swapped = false;
+            for (CashRegister register : cashRegisters) {
+                if (register.length() > cashRegister.length()) {
+                    moveFromTo(register, cashRegister);
+                }
             }
         }
-        throw new IllegalStateException("Completed not serving customer");
     }
 
-    public void serve(Customer customer) {
-        System.out.println("Serving " + customer);
-        try {
-            Thread.sleep(1000);
-        } catch (InterruptedException e) {
-            throw new RuntimeException(e);
+    private void moveFromTo(CashRegister register1, CashRegister register2) {
+        Optional<Customer> c = register1.pollEnd();
+        if (c.isEmpty()) {
+            return;
+        }
+        System.out.printf("Moved customer %d from %d to %d\n", c.get().id(), register1.id(), register2.id());
+        register2.enqueue(c.get());
+    }
+    public void run() {
+        for (CashRegister cashRegister : cashRegisters) {
+            RegisterThread registerThread = new RegisterThread(cashRegister, this);
+            workerThreads.add(registerThread);
+            registerThread.start();
         }
     }
 
-    public CashRegister trySwap(CashRegister cashRegister, Customer customer) {
-        CashRegister minRegister = getMinLengthRegister();
-        if (minRegister == cashRegister)
-            return cashRegister;
-        int customerPos = cashRegister.position(customer);
-        if (minRegister.length() < customerPos) {
-            cashRegister.remove(customer);
-            minRegister.enqueue(customer);
-            return minRegister;
+    public void await() throws InterruptedException {
+        for (Thread thread : workerThreads) {
+            thread.join();
         }
-        return cashRegister;
+    }
+
+    private static class RegisterThread extends Thread {
+        private final CashRegister register;
+        private final RegisterManager manager;
+        private RegisterThread(CashRegister register, RegisterManager manager) {
+            this.register = register;
+            this.manager = manager;
+        }
+        @Override
+        public void run() {
+            System.out.println("Register " + register.id() + " started");
+            while (register.working()) {
+                register.serveCustomer();
+                manager.trySwap(register);
+            }
+            System.out.println("Register " + register.id() + " finished");
+        }
     }
 }

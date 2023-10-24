@@ -21,4 +21,8 @@ public class Customer {
     public int hashCode() {
         return Objects.hash(id);
     }
+
+    public int id() {
+        return id;
+    }
 }
