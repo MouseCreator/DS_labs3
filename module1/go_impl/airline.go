@@ -49,15 +49,15 @@ func (c *Communication) communicate(semaphore *Semaphore) {
 }
 
 type Semaphore struct {
-	ch chan struct{}
+	ch chan int
 }
 
 func NewSemaphore(capacity int) *Semaphore {
-	return &Semaphore{ch: make(chan struct{}, capacity)}
+	return &Semaphore{ch: make(chan int, capacity)}
 }
 
 func (s *Semaphore) acquire() {
-	s.ch <- struct{}{}
+	s.ch <- 0
 }
 
 func (s *Semaphore) release() {
