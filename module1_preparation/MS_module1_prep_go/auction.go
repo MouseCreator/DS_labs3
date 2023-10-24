@@ -1,6 +1,8 @@
 package main
 
 import (
+	"fmt"
+	"strconv"
 	"sync"
 	"time"
 )
@@ -8,15 +10,15 @@ import (
 type Participant struct {
 	lastBuy        time.Time
 	canParticipate bool
-	currentBet     int
 	thingsBought   int
+	uprise         int
+	name           string
 }
 
 type Seller struct {
 	maxThings         int
 	currentThingCount int
 	currentThing      *Purchase
-	suspension        int
 	barrier           *Barrier
 }
 
@@ -24,6 +26,13 @@ type Purchase struct {
 	mutex        sync.Mutex
 	currentValue int
 	baseValue    int
+}
+
+func (pr *Purchase) changePriceBy(delta int) int {
+	defer pr.mutex.Unlock()
+	pr.mutex.Lock()
+	pr.currentValue = pr.currentValue + delta
+	return pr.currentValue
 }
 
 func (s *Seller) next() {
@@ -38,12 +47,17 @@ func (s *Seller) provide() *Purchase {
 	return s.currentThing
 }
 
-func (p *Participant) buy(s *Seller) {
-	waitChan := make(chan int, 0)
+func (s *Seller) finishBets() {
+	s.barrier.await()
+}
+
+func (p *Participant) buy(s *Seller, group *sync.WaitGroup) {
+	waitChan := make(chan int)
 	for {
+		s.next() //FIX
 		pr := s.provide()
 		if pr == nil {
-			return
+			break
 		}
 		if p.canParticipate {
 			currentTime := time.Now()
@@ -54,6 +68,17 @@ func (p *Participant) buy(s *Seller) {
 				waitChan <- 0
 				waitChan <- 1
 				waitChan <- 2
+				continue
+			}
+			myBet := 0
+			for i := 0; i < p.uprise; i++ {
+				myBet = pr.changePriceBy(10)
+				time.Sleep(time.Second / 2)
+			}
+			s.finishBets()
+			if pr.currentValue == myBet {
+				p.thingsBought++
+				fmt.Println(p.name + " bought a thing for " + strconv.Itoa(myBet))
 			}
 		} else {
 			select {
@@ -61,10 +86,24 @@ func (p *Participant) buy(s *Seller) {
 			default:
 				p.canParticipate = true
 			}
+			s.finishBets()
 		}
 	}
+	group.Done()
 }
 
-func auction() {
+func main() {
+	wg := sync.WaitGroup{}
+	wg.Add(3)
+	seller := Seller{13, 0, nil, makeBarrier(3)}
+	p1 := Participant{time.Now(), true, 0, 0, "P0"}
+	p2 := Participant{time.Now(), true, 0, 1, "P1"}
+	p3 := Participant{time.Now(), true, 0, 2, "P2"}
+
+	go p1.buy(&seller, &wg)
+	go p2.buy(&seller, &wg)
+	go p3.buy(&seller, &wg)
+
+	wg.Wait()
 
 }
