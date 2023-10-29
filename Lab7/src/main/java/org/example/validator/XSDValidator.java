@@ -10,7 +10,7 @@ import javax.xml.validation.Validator;
 import java.io.File;
 import java.io.IOException;
 
-public class XSDValidator {
+public class XSDValidator implements org.example.validator.Validator {
     public boolean isValid(String xsd, String xml) {
         try {
             validate(xsd, xml);
