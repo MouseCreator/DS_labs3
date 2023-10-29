@@ -41,6 +41,7 @@ public class DepartmentStaxParser implements Parser<Departments> {
                         case "HumanResourceDepartment" -> {
                             HRDepartments = new Departments();
                             HRDepartments.setDepartmentList(new ArrayList<>());
+                            HRDepartments.setEmployeeList(new ArrayList<>());
                         }
                         case "Department" -> {
                             department = new Department();
@@ -70,9 +71,10 @@ public class DepartmentStaxParser implements Parser<Departments> {
                             HRDepartments.getDepartmentList().add(department);
                         }
                         case "Employee" -> {
-                            if (employee == null || department == null)
+                            if (employee == null || department == null || HRDepartments == null)
                                 throw new XMLStreamException();
                             employee.setDepartmentId(department.getId());
+                            HRDepartments.getEmployeeList().add(employee);
                         }
                     }
                 }
