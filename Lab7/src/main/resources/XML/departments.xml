@@ -4,7 +4,7 @@
         <Employee id="1" name="Ivanov" age="20" role="Copywriter" experience="2"/>
         <Employee id="2" name="Petrov" age="22" role="Copywriter" experience="1"/>
         <Employee id="3" name="Lemon" age="40" role="PR Manager" experience="12"/>
-        <Employee id="4" name="Ivanov" age="35" role="Copywriter" experience="5"/>
+        <Employee id="4" name="Iron" age="35" role="Copywriter" experience="5"/>
     </Department>
 
     <Department id="2" name="Marketing">
