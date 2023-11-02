@@ -29,11 +29,13 @@ public class DepartmentsWriter implements Writer<Departments> {
             Element rootElement = doc.createElement("HumanResourceDepartment");
             doc.appendChild(rootElement);
             HashMap<Department, List<Employee>> departmentsMap = toMap(instance);
-            for (Department department : departmentsMap.keySet()) {
+            List<Department> dListSorted = departmentsMap.keySet().stream().sorted(Comparator.comparingLong(Department::getId)).toList();
+            for (Department department : dListSorted) {
                 Element departmentElement =createDepartment(doc, department);
                 for (Employee employee : departmentsMap.get(department)) {
                     departmentElement.appendChild(createEmployee(doc, employee));
                 }
+                rootElement.appendChild(departmentElement);
             }
 
             // Write the XML document to a file
@@ -55,8 +57,11 @@ public class DepartmentsWriter implements Writer<Departments> {
         for (Department department : departments.getDepartmentList()) {
             departmentEmployeeMap.put(department, new ArrayList<>());
         }
-
-        for (Employee employee : departments.getEmployeeList()) {
+        List<Employee> dEmployeeSorted = departments.getEmployeeList()
+                .stream()
+                .sorted(Comparator.comparingLong(Employee::getId))
+                .toList();
+        for (Employee employee : dEmployeeSorted) {
             Long departmentId = employee.getDepartmentId();
             Optional<Department> department = departments.getDepartmentList()
                     .stream()
