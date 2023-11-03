@@ -7,12 +7,11 @@ import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
 
-public class CRUDDao<T> {
+public class DBDepartmentsDAO<T> {
     private final String tableName;
-
     private ConnectionPool connectionPool;
 
-    public CRUDDao(String tableName) {
+    public DBDepartmentsDAO(String tableName) {
         this.tableName = tableName;
     }
 

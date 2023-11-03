@@ -6,12 +6,11 @@ import org.example.model.Departments;
 import java.util.List;
 import java.util.Objects;
 
-public class XMLDepartmentsService implements DepartmentsService{
+public class DepartmentsServiceImpl implements DepartmentsService{
     private final Departments departments;
-    public XMLDepartmentsService(Departments departments) {
+    public DepartmentsServiceImpl(Departments departments) {
         this.departments = departments;
     }
-
     @Override
     public void create(Department department) {
         departments.getDepartmentList().add(department);
