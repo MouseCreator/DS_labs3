@@ -14,8 +14,7 @@ public abstract class AbstractCrudDao<T> implements GenericCrudDao<T> {
         return null;
     }
     @Override
-    public T update(T object) {
-        return null;
+    public void update(T object) {
     }
     @Override
     public void delete(T object) {

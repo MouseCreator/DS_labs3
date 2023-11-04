@@ -70,8 +70,8 @@ public abstract class AbstractXMLDao<C, T extends IdIterable> implements Generic
     }
 
     @Override
-    public T update(T object) {
-        return withReadWrite(parsed -> {
+    public void update(T object) {
+        withReadWrite(parsed -> {
             List<T> objectList = toCollection(parsed);
             Long targetId = object.getId();
             if (targetId==null){
@@ -79,7 +79,6 @@ public abstract class AbstractXMLDao<C, T extends IdIterable> implements Generic
             }
             deleteById(objectList, targetId);
             objectList.add(object);
-            return object;
         });
     }
 

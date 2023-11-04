@@ -15,8 +15,10 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import java.util.List;
+import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class AbstractCrudDaoTest {
     private static final String TEST_XML = Paths.TEST_DEPARTMENTS_TEMP;
@@ -84,6 +86,12 @@ class AbstractCrudDaoTest {
 
     @Test
     void update() {
+        Department updated = newDepartment();
+        updated.setId(1L);
+        departmentsDAO.update(updated);
+        Optional<Department> department = departmentsDAO.find(1L);
+        assertTrue(department.isPresent());
+        assertEquals(updated, department.get());
     }
 
     @Test
