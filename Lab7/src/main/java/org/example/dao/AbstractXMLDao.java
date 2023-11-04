@@ -7,6 +7,11 @@ import java.util.*;
 import java.util.function.Consumer;
 import java.util.function.Function;
 
+/**
+ *
+ * @param <C> - container, that contains list of target objects
+ * @param <T> - target object generic
+ */
 public abstract class AbstractXMLDao<C, T extends IdIterable> implements GenericCrudDao<T>{
     private final String inputFileXML;
     private final Parser<C> parser;
