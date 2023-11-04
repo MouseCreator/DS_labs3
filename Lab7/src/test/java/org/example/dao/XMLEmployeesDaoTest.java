@@ -1,7 +1,9 @@
 package org.example.dao;
 
 import org.example.extra.TestDataGenerator;
+import org.example.extra.TestHelper;
 import org.example.manager.FileManagerImpl;
+import org.example.model.Department;
 import org.example.model.Departments;
 import org.example.model.Employee;
 import org.example.parser.DepartmentStaxParser;
@@ -12,6 +14,8 @@ import org.junit.jupiter.api.Test;
 import java.util.List;
 
 class XMLEmployeesDaoTest extends AbstractCrudDaoTest<Departments, Employee> {
+
+    private EmployeesDao crudDao;
     private XMLEmployeesDao createEmployeesDao() {
         if (writer==null) {
             throw new IllegalStateException("Writer is not initialized");
@@ -78,5 +82,29 @@ class XMLEmployeesDaoTest extends AbstractCrudDaoTest<Departments, Employee> {
     @Test
     void find() {
         super.find();
+    }
+    @Test
+    void findAllEmployeesOfDepartment() {
+        TestDataGenerator testDataGenerator = new TestDataGenerator();
+        List<Department> departmentList = testDataGenerator.allDepartments().getDepartmentList();
+        List<Employee> employeeList = testDataGenerator.allDepartments().getEmployeeList();
+        int j = 0;
+        for (long i = 1L; i <= 3L; i++) {
+            final Long s = i;
+            List<Employee> expected = employeeList.stream().filter(e -> e.getDepartmentId().equals(s)).toList();
+            List<Employee> allEmployeesOfDepartment = crudDao.findAllEmployeesOfDepartment(departmentList.get(j++));
+            TestHelper.compareList(expected, allEmployeesOfDepartment);
+        }
+    }
+    @Test
+    void findAllEmployeesOfDepartmentId() {
+        TestDataGenerator testDataGenerator = new TestDataGenerator();
+        List<Employee> employeeList = testDataGenerator.allDepartments().getEmployeeList();
+        for (long i = 1L; i <= 3L; i++) {
+            final Long s = i;
+            List<Employee> expected = employeeList.stream().filter(e -> e.getDepartmentId().equals(s)).toList();
+            List<Employee> allEmployeesOfDepartment = crudDao.findAllEmployeesOfDepartment(i);
+            TestHelper.compareList(expected, allEmployeesOfDepartment);
+        }
     }
 }

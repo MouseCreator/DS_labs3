@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <HumanResourceDepartment>
     <Department id="1" name="Info">
+        <Employee age="20" experience="2" id="1" name="Ivanov" role="Copywriter"/>
         <Employee age="22" experience="1" id="2" name="Petrov" role="Copywriter"/>
         <Employee age="40" experience="12" id="3" name="Lemon" role="PR Manager"/>
         <Employee age="35" experience="5" id="4" name="Ivanov" role="Copywriter"/>
