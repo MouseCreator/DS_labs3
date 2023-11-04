@@ -50,4 +50,11 @@ public class DepartmentsServiceImpl implements DepartmentsService{
             department.setId(prevId);
         }
     }
+
+    @Override
+    public boolean containsId(Long id) {
+        if (id == null)
+            return false;
+        return departmentsDAO.find(id).isPresent();
+    }
 }

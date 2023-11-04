@@ -10,4 +10,5 @@ public interface DepartmentsService {
     void delete(Long id);
     void update(Department department);
     boolean containsIgnoreId(Department department);
+    boolean containsId(Long id);
 }
