@@ -13,9 +13,9 @@ import java.util.function.Function;
  * @param <T> - target object generic
  */
 public abstract class AbstractXMLDao<C, T extends IdIterable> implements GenericCrudDao<T>{
-    private final String inputFileXML;
-    private final Parser<C> parser;
-    private final Writer<C> writer;
+    protected final String inputFileXML;
+    protected final Parser<C> parser;
+    protected final Writer<C> writer;
     public AbstractXMLDao(String inputFileXML, Parser<C> parser, Writer<C> writer) {
         this.inputFileXML = inputFileXML;
         this.parser = parser;
@@ -31,7 +31,7 @@ public abstract class AbstractXMLDao<C, T extends IdIterable> implements Generic
 
     protected abstract List<T> toCollection(C container);
 
-    private <V> V withReadWrite(Function<C, V> function) {
+    protected  <V> V withReadWrite(Function<C, V> function) {
         C container = readFile();
         V result =  function.apply(container);
         writeFile(container);

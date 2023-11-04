@@ -7,7 +7,7 @@ import org.example.writer.Writer;
 
 import java.util.*;
 
-public class XMLDepartmentsDao extends AbstractXMLDao<Departments, Department> {
+public class XMLDepartmentsDao extends AbstractXMLDao<Departments, Department> implements DepartmentsDAO {
 
     public XMLDepartmentsDao(String inputFileXML, Parser<Departments> parser, Writer<Departments> writer) {
         super(inputFileXML, parser, writer);
