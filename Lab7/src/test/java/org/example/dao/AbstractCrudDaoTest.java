@@ -1,18 +1,11 @@
 package org.example.dao;
 
-import org.example.extra.TestDataGenerator;
 import org.example.extra.TestHelper;
 import org.example.manager.FileManager;
-import org.example.manager.FileManagerImpl;
-import org.example.model.Department;
-import org.example.model.Departments;
-import org.example.parser.DepartmentStaxParser;
 import org.example.parser.Parser;
 import org.example.extra.Paths;
-import org.example.writer.DepartmentsWriter;
 import org.example.writer.Writer;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
+
 
 import java.util.List;
 import java.util.NoSuchElementException;
@@ -20,115 +13,88 @@ import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-class AbstractCrudDaoTest {
-    private static final String TEST_XML = Paths.TEST_DEPARTMENTS_TEMP;
-    private static final String ORIGIN_XML = Paths.TEST_DEPARTMENTS_XML;
-    private Parser<Departments> parser;
-    private Writer<Departments> writer;
-    private FileManager fileManager;
-    private DepartmentsDAO departmentsDAO;
+abstract class AbstractCrudDaoTest<C, T extends IdIterable> {
+    protected static final String TEST_XML = Paths.TEST_DEPARTMENTS_TEMP;
+    protected static final String ORIGIN_XML = Paths.TEST_DEPARTMENTS_XML;
+    protected Parser<C> parser;
+    protected Writer<C> writer;
+    protected FileManager fileManager;
+    protected GenericCrudDao<T> crudDao;
 
-    private void refresh() {
+    protected void refresh() {
         fileManager.copyXML(ORIGIN_XML, TEST_XML);
     }
-
-    @BeforeEach
-    void setUp() {
-        parser = new DepartmentStaxParser();
-        writer = new DepartmentsWriter();
-        fileManager = new FileManagerImpl();
+    protected void initialize(Parser<C> parser, Writer<C> writer, FileManager fileManager, GenericCrudDao<T> dao) {
+        this.parser = parser;
+        this.writer = writer;
+        this.fileManager = fileManager;
+        this.crudDao = dao;
+    }
+    protected void initializeAndRefresh(Parser<C> parser, Writer<C> writer, FileManager fileManager, GenericCrudDao<T> dao) {
+        initialize(parser, writer, fileManager, dao);
         refresh();
-        departmentsDAO = createDepartmentsDao();
     }
-    private XMLDepartmentsDao createDepartmentsDao() {
-        if (writer==null) {
-            throw new IllegalStateException("Writer is not initialized");
-        }
-        if (parser==null){
-            throw new IllegalStateException("Parser is not initialized");
-        }
-        return new XMLDepartmentsDao(TEST_XML, parser, writer);
-    }
-
-    @Test
+    protected abstract T newInstance();
+    protected abstract List<T> expectedData();
     void findAll() {
-        TestDataGenerator testDataGenerator = new TestDataGenerator();
-        Departments departments = testDataGenerator.allDepartments();
-        List<Department> expectedList = departments.getDepartmentList();
-        List<Department> actualList = departmentsDAO.findAll();
+        List<T> expectedList = expectedData();
+        List<T> actualList = crudDao.findAll();
         TestHelper.compareList(expectedList, actualList);
     }
 
-    @Test
     void create() {
-        TestDataGenerator testDataGenerator = new TestDataGenerator();
-        Departments departments = testDataGenerator.allDepartments();
-        List<Department> expectedList = departments.getDepartmentList();
-
-        expectedList.add(newDepartmentWithId());
-        Department updatedDepartment = departmentsDAO.create(newDepartment());
-        assertEquals(4L, updatedDepartment.getId());
-
-        List<Department> updatedList = departmentsDAO.findAll();
+        List<T> expectedList = expectedData();
+        long next = expectedList.size()+1;
+        expectedList.add(newInstance());
+        T noIdInstance = newInstance();
+        noIdInstance.setId(null);
+        T updatedDepartment = crudDao.create(noIdInstance);
+        assertEquals(next, updatedDepartment.getId());
+        List<T> updatedList = crudDao.findAll();
         TestHelper.compareList(expectedList, updatedList);
     }
 
-    private Department newDepartment() {
-        Department department = new Department();
-        department.setName("Fashion");
-        return department;
-    }
-    private Department newDepartmentWithId() {
-        Department department = new Department();
-        department.setName("Fashion");
-        return department;
-    }
 
-    @Test
     void update() {
-        Department updated = newDepartment();
+        T updated = newInstance();
         updated.setId(1L);
-        departmentsDAO.update(updated);
-        Optional<Department> department = departmentsDAO.find(1L);
-        assertTrue(department.isPresent());
-        assertEquals(updated, department.get());
+        crudDao.update(updated);
+        Optional<T> optionalT = crudDao.find(1L);
+        assertTrue(optionalT.isPresent());
+        assertEquals(updated, optionalT.get());
     }
 
-    @Test
     void delete() {
-        Optional<Department> departmentOptional = departmentsDAO.find(1L);
-        int initialSize = departmentsDAO.findAll().size();
+        Optional<T> departmentOptional = crudDao.find(1L);
+        int initialSize = crudDao.findAll().size();
         assertTrue(departmentOptional.isPresent());
-        Department department = departmentOptional.get();
-        departmentsDAO.delete(department);
-        assertThrows(NoSuchElementException.class, () -> departmentsDAO.delete(department));
-        assertTrue(departmentsDAO.find(1L).isEmpty());
-        int finalSize = departmentsDAO.findAll().size();
+        T obj = departmentOptional.get();
+        crudDao.delete(obj);
+        assertThrows(NoSuchElementException.class, () -> crudDao.delete(obj));
+        assertTrue(crudDao.find(1L).isEmpty());
+        int finalSize = crudDao.findAll().size();
         assertEquals(initialSize-1, finalSize);
     }
 
-    @Test
     void testDelete() {
-        Optional<Department> departmentOptional = departmentsDAO.find(1L);
-        int initialSize = departmentsDAO.findAll().size();
-        assertTrue(departmentOptional.isPresent());
-        assertTrue(departmentsDAO.delete(1L));
-        assertFalse(() -> departmentsDAO.delete(1L));
-        assertTrue(departmentsDAO.find(1L).isEmpty());
-        int finalSize = departmentsDAO.findAll().size();
+        Optional<T> optionalT = crudDao.find(1L);
+        int initialSize = crudDao.findAll().size();
+        assertTrue(optionalT.isPresent());
+        assertTrue(crudDao.delete(1L));
+        assertFalse(() -> crudDao.delete(1L));
+        assertTrue(crudDao.find(1L).isEmpty());
+        int finalSize = crudDao.findAll().size();
         assertEquals(initialSize-1, finalSize);
     }
 
-    @Test
     void find() {
-        TestDataGenerator testDataGenerator = new TestDataGenerator();
-        List<Department> departmentList = testDataGenerator.allDepartments().getDepartmentList();
+        List<T> departmentList = expectedData();
         long size = departmentList.size();
         for (int i = 1; i <= size; i++) {
-            Optional<Department> departmentOptional = departmentsDAO.find((long) i);
+            Optional<T> departmentOptional = crudDao.find((long) i);
             assertTrue(departmentOptional.isPresent());
             assertEquals(departmentOptional.get(), departmentList.get(i-1));
         }
-        assertTrue(departmentsDAO.find(size+1).isEmpty());
+        assertTrue(crudDao.find(size+1).isEmpty());
     }
 }

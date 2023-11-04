@@ -45,7 +45,9 @@ public abstract class AbstractXMLDao<C, T extends IdIterable> implements Generic
     }
     @Override
     public List<T> findAll() {
-        return toCollection(readFile());
+        List<T> list = toCollection(readFile());
+        list.sort((o1, o2) ->(int) (o1.getId() - o2.getId()));
+        return list;
     }
 
     @Override
