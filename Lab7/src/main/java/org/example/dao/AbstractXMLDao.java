@@ -84,14 +84,16 @@ public abstract class AbstractXMLDao<C, T extends IdIterable> implements Generic
 
     private void deleteById(List<T> objectList, Long targetId) {
         if(!objectList.removeIf(d-> Objects.equals(d.getId(), targetId))){
-            throw new NoSuchElementException("Called to update not existing department");
+            throw new NoSuchElementException("Called to remove not existing department");
         }
     }
 
     @Override
     public void delete(T object) {
         withReadWrite(container -> {
-            deleteById(toCollection(container), object.getId());
+            if (!toCollection(container).remove(object)) {
+                throw new NoSuchElementException("Called to not existing department");
+            }
         });
 
     }

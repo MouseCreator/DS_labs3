@@ -15,10 +15,10 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import java.util.List;
+import java.util.NoSuchElementException;
 import java.util.Optional;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
 
 class AbstractCrudDaoTest {
     private static final String TEST_XML = Paths.TEST_DEPARTMENTS_TEMP;
@@ -96,13 +96,39 @@ class AbstractCrudDaoTest {
 
     @Test
     void delete() {
+        Optional<Department> departmentOptional = departmentsDAO.find(1L);
+        int initialSize = departmentsDAO.findAll().size();
+        assertTrue(departmentOptional.isPresent());
+        Department department = departmentOptional.get();
+        departmentsDAO.delete(department);
+        assertThrows(NoSuchElementException.class, () -> departmentsDAO.delete(department));
+        assertTrue(departmentsDAO.find(1L).isEmpty());
+        int finalSize = departmentsDAO.findAll().size();
+        assertEquals(initialSize-1, finalSize);
     }
 
     @Test
     void testDelete() {
+        Optional<Department> departmentOptional = departmentsDAO.find(1L);
+        int initialSize = departmentsDAO.findAll().size();
+        assertTrue(departmentOptional.isPresent());
+        assertTrue(departmentsDAO.delete(1L));
+        assertFalse(() -> departmentsDAO.delete(1L));
+        assertTrue(departmentsDAO.find(1L).isEmpty());
+        int finalSize = departmentsDAO.findAll().size();
+        assertEquals(initialSize-1, finalSize);
     }
 
     @Test
     void find() {
+        TestDataGenerator testDataGenerator = new TestDataGenerator();
+        List<Department> departmentList = testDataGenerator.allDepartments().getDepartmentList();
+        long size = departmentList.size();
+        for (int i = 1; i <= size; i++) {
+            Optional<Department> departmentOptional = departmentsDAO.find((long) i);
+            assertTrue(departmentOptional.isPresent());
+            assertEquals(departmentOptional.get(), departmentList.get(i-1));
+        }
+        assertTrue(departmentsDAO.find(size+1).isEmpty());
     }
 }
