@@ -6,14 +6,18 @@ import java.util.Scanner;
 
 public class CommonController {
 
-    private final Scanner scanner;
+    private Scanner scanner;
     private final PrintStream outputStream;
     public static CommonController consoleController() {
         return new CommonController(System.in, System.out);
     }
     public CommonController(InputStream in, PrintStream out) {
-        this.scanner = new Scanner(in);
+        setInputStream(in);
         this.outputStream = out;
+    }
+
+    private void setInputStream(InputStream in) {
+        this.scanner = new Scanner(in);
     }
 
     private void startRequest(String request) {
@@ -22,12 +26,24 @@ public class CommonController {
     }
     public boolean askBoolean(String request) {
         startRequest(request);
-        String input = scanner.nextLine().trim().toLowerCase();
-        while (!input.equals("true") && !input.equals("false")) {
-            startRequest("Boolean value (true/false) is expected!");
-            input = scanner.nextLine().trim().toLowerCase();
+        Boolean result = null;
+        while (result == null){
+            String input = scanner.nextLine();
+            result = toBoolean(input);
         }
-        return Boolean.parseBoolean(input);
+        return result;
+    }
+
+    private String formatInput(String input) {
+        return input.trim().toLowerCase();
+    }
+    private Boolean toBoolean(String s) {
+        String b = formatInput(s);
+        return switch (b) {
+            case "y", "yes", "true", "t" -> true;
+            case "n", "no", "false", "f" -> false;
+            default -> null;
+        };
     }
 
     public int askInteger(String request) {
