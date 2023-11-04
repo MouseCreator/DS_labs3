@@ -3,7 +3,7 @@ package org.example.writer;
 import org.example.model.Departments;
 import org.example.parser.DepartmentStaxParser;
 import org.example.parser.Parser;
-import org.example.paths.Paths;
+import org.example.extra.Paths;
 import org.example.validator.Validator;
 import org.example.validator.XSDValidator;
 import org.junit.jupiter.api.BeforeEach;

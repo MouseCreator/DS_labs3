@@ -10,13 +10,13 @@
     <Department id="2" name="Marketing">
         <Employee id="5" name="Smith" age="28" role="Marketing Manager" experience="7"/>
         <Employee id="6" name="Johnson" age="25" role="Marketing Specialist" experience="3"/>
-        <Employee id="6" name="Brock" age="25" role="Marketing Specialist" experience="3"/>
-        <Employee id="7" name="Lit" age="60" role="Marketing Specialist" experience="40"/>
+        <Employee id="7" name="Brock" age="25" role="Marketing Specialist" experience="3"/>
+        <Employee id="8" name="Lit" age="60" role="Marketing Specialist" experience="40"/>
     </Department>
 
     <Department id="3" name="Sales">
-        <Employee id="8" name="Brown" age="30" role="Sales Manager" experience="8"/>
-        <Employee id="9" name="Davis" age="26" role="Sales Representative" experience="4"/>
-        <Employee id="10" name="Stevenson" age="44" role="Sales Manager" experience="11"/>
+        <Employee id="9" name="Brown" age="30" role="Sales Manager" experience="8"/>
+        <Employee id="10" name="Davis" age="26" role="Sales Representative" experience="4"/>
+        <Employee id="11" name="Stevenson" age="44" role="Sales Manager" experience="11"/>
     </Department>
 </HumanResourceDepartment>

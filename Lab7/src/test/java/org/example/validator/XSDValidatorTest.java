@@ -1,6 +1,6 @@
 package org.example.validator;
 
-import org.example.paths.Paths;
+import org.example.extra.Paths;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.xml.sax.SAXParseException;

@@ -1,4 +1,4 @@
-package org.example.paths;
+package org.example.extra;
 
 public abstract class Paths {
     public static final String TEST_DEPARTMENTS_XML = "src/test/resources/test-departments.xml";
