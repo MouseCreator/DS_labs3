@@ -9,4 +9,5 @@ public interface DepartmentsService {
     List<Department> findAll();
     void delete(Long id);
     void update(Department department);
+    boolean containsIgnoreId(Department department);
 }

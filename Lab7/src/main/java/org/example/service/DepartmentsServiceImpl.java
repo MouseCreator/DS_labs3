@@ -1,38 +1,53 @@
 package org.example.service;
 
+import org.example.dao.DepartmentsDAO;
 import org.example.model.Department;
-import org.example.model.Departments;
 
 import java.util.List;
-import java.util.Objects;
 
 public class DepartmentsServiceImpl implements DepartmentsService{
-    private final Departments departments;
-    public DepartmentsServiceImpl(Departments departments) {
-        this.departments = departments;
+    private DepartmentsDAO departmentsDAO;
+    public DepartmentsServiceImpl(DepartmentsDAO departmentsDAO) {
+        this.departmentsDAO = departmentsDAO;
+    }
+
+    public void changeSource(DepartmentsDAO dao) {
+        this.departmentsDAO = dao;
     }
     @Override
     public void create(Department department) {
-        departments.getDepartmentList().add(department);
+        departmentsDAO.create(department);
     }
 
     @Override
     public List<Department> findAll() {
-        return departments.getDepartmentList();
+        return departmentsDAO.findAll();
     }
 
     @Override
     public void delete(Long id) {
-        departments.getDepartmentList().removeIf(d -> Objects.equals(d.getId(), id));
+        departmentsDAO.delete(id);
     }
 
     @Override
     public void update(Department department) {
-        for (int i = 0; i < departments.getDepartmentList().size(); i++) {
-            if (departments.getDepartmentList().get(i).getId().equals(department.getId())) {
-                departments.getDepartmentList().set(i, department);
-                return;
+        departmentsDAO.update(department);
+    }
+
+    @Override
+    public boolean containsIgnoreId(Department department) {
+        List<Department> departments = departmentsDAO.findAll();
+        Long prevId = department.getId();
+        try {
+            for (Department current : departments) {
+                department.setId(current.getId());
+                if (department.equals(current)) {
+                    return true;
+                }
             }
+            return false;
+        } finally {
+            department.setId(prevId);
         }
     }
 }
