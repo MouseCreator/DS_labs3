@@ -62,8 +62,6 @@ class XMLEmployeesDaoTest extends AbstractCrudDaoTest<Departments, Employee> {
     void create() {
         super.create();
     }
-
-
     @Test
     void update() {
         super.update();
@@ -98,8 +96,7 @@ class XMLEmployeesDaoTest extends AbstractCrudDaoTest<Departments, Employee> {
     }
     @Test
     void findAllEmployeesOfDepartmentId() {
-        TestDataGenerator testDataGenerator = new TestDataGenerator();
-        List<Employee> employeeList = testDataGenerator.allDepartments().getEmployeeList();
+        List<Employee> employeeList = expectedData();
         for (long i = 1L; i <= 3L; i++) {
             final Long s = i;
             List<Employee> expected = employeeList.stream().filter(e -> e.getDepartmentId().equals(s)).toList();
