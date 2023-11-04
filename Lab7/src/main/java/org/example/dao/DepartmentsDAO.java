@@ -1,5 +1,7 @@
 package org.example.dao;
 
-public interface DepartmentsDAO {
+import org.example.model.Department;
 
+
+public interface DepartmentsDAO extends GenericCrudDao<Department> {
 }
