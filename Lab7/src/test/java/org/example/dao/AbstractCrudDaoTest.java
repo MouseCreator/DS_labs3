@@ -5,6 +5,7 @@ import org.example.manager.FileManagerImpl;
 import org.example.model.Departments;
 import org.example.parser.DepartmentStaxParser;
 import org.example.parser.Parser;
+import org.example.paths.Paths;
 import org.example.writer.DepartmentsWriter;
 import org.example.writer.Writer;
 import org.junit.jupiter.api.BeforeEach;
@@ -13,8 +14,8 @@ import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.*;
 
 class AbstractCrudDaoTest {
-    private static final String TEST_XML = "src/test/resources/test-departments.xml";
-    private static final String ORIGIN_XML = "src/test/resources/test-departments.xml";
+    private static final String TEST_XML = Paths.TEST_DEPARTMENTS_TEMP;
+    private static final String ORIGIN_XML = Paths.TEST_DEPARTMENTS_XML;
     private Parser<Departments> parser;
     private Writer<Departments> writer;
 

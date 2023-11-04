@@ -1,5 +1,6 @@
 package org.example.validator;
 
+import org.example.paths.Paths;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.xml.sax.SAXParseException;
@@ -8,9 +9,9 @@ import static org.junit.jupiter.api.Assertions.*;
 
 class XSDValidatorTest {
     private Validator validator;
-    private static final String XSD = "src/test/resources/test-departments.xsd";
-    private static final String XML_CORRECT = "src/test/resources/test-departments.xml";
-    private static final String XML_WRONG = "src/test/resources/test-invalid-departments.xml";
+    private static final String XSD = Paths.TEST_DEPARTMENTS_XSD;
+    private static final String XML_CORRECT = Paths.TEST_DEPARTMENTS_XML;
+    private static final String XML_WRONG = Paths.TEST_DEPARTMENTS_INVALID;
 
     @BeforeEach
     void setUp() {

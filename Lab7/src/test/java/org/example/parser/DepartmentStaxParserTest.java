@@ -3,6 +3,7 @@ package org.example.parser;
 import org.example.model.Department;
 import org.example.model.Departments;
 import org.example.model.Employee;
+import org.example.paths.Paths;
 import org.junit.jupiter.api.Test;
 
 import java.util.ArrayList;
@@ -11,7 +12,7 @@ import java.util.List;
 import static org.junit.jupiter.api.Assertions.*;
 
 class DepartmentStaxParserTest {
-    private static final String TEST_XML = "src/test/resources/test-departments.xml";
+    private static final String TEST_XML = Paths.TEST_DEPARTMENTS_XML;
 
     private Department generateTestDepartment() {
         Department department1 = new Department();

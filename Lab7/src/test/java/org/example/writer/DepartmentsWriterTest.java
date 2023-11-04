@@ -3,6 +3,7 @@ package org.example.writer;
 import org.example.model.Departments;
 import org.example.parser.DepartmentStaxParser;
 import org.example.parser.Parser;
+import org.example.paths.Paths;
 import org.example.validator.Validator;
 import org.example.validator.XSDValidator;
 import org.junit.jupiter.api.BeforeEach;
@@ -17,9 +18,9 @@ class DepartmentsWriterTest {
     private Validator validator;
     private Writer<Departments> writer;
     private Parser<Departments> parser;
-    private static final String XSD = "src/test/resources/test-departments.xsd";
-    private static final String XML_OUTPUT = "src/test/resources/test-departments-output.xml";
-    private static final String XML_INPUT = "src/test/resources/test-departments.xml";
+    private static final String XSD = Paths.TEST_DEPARTMENTS_XSD;
+    private static final String XML_OUTPUT = Paths.TEST_DEPARTMENTS_OUTPUT;
+    private static final String XML_INPUT = Paths.TEST_DEPARTMENTS_XML;
     @BeforeEach
     void setUp() {
         writer = new DepartmentsWriter();
