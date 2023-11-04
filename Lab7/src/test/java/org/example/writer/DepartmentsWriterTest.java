@@ -1,5 +1,6 @@
 package org.example.writer;
 
+import org.example.extra.TestHelper;
 import org.example.model.Departments;
 import org.example.parser.DepartmentStaxParser;
 import org.example.parser.Parser;
@@ -8,8 +9,6 @@ import org.example.validator.Validator;
 import org.example.validator.XSDValidator;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-
-import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -34,15 +33,9 @@ class DepartmentsWriterTest {
         assertTrue(validator.isValid(XSD, XML_OUTPUT));
 
         Departments departmentsOutput = parser.parse(XML_OUTPUT);
-        compareList(departmentsInput.getDepartmentList(), departmentsOutput.getDepartmentList());
-        compareList(departmentsInput.getEmployeeList(), departmentsOutput.getEmployeeList());
+        TestHelper.compareList(departmentsInput.getDepartmentList(), departmentsOutput.getDepartmentList());
+        TestHelper.compareList(departmentsInput.getEmployeeList(), departmentsOutput.getEmployeeList());
     }
 
-    <T> void compareList(List<T> list1, List<T> list2) {
-        assertEquals(list1.size(), list2.size());
-        int size = list1.size();
-        for (int i = 0; i < size; i++) {
-            assertEquals(list1.get(i), list2.get(i));
-        }
-    }
+
 }
