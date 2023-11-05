@@ -1,9 +1,6 @@
 package org.example.filter;
 
 public class SQLParser {
-
-
-
     private interface ConditionNode {
         String stringExpr();
     }
