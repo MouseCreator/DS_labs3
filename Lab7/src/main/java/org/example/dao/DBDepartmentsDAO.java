@@ -58,18 +58,39 @@ public class DBDepartmentsDAO implements DepartmentsDAO {
     }
 
     @Override
-    public void update(Department object) {
-
+    public void update(Department department) {
+        String sql = query("UPDATE %s SET name = ? WHERE id = ?");
+        try (ConnectionWrapper wrapper = connectionPool.getConnection()) {
+            try (PreparedStatement statement = wrapper.get().prepareStatement(sql)) {
+                statement.setString(1, department.getName());
+                statement.setLong(2, department.getId());
+                int affectedRows = statement.executeUpdate();
+                if (affectedRows < 1) {
+                    throw new RuntimeException("No department with the specified ID found for update.");
+                }
+            }
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     @Override
-    public void delete(Department object) {
-
+    public void delete(Department department) {
+        delete(department.getId());
     }
 
     @Override
     public boolean delete(Long id) {
-        return false;
+        String sql = query("DELETE FROM %s WHERE id = ?");
+        try (ConnectionWrapper wrapper = connectionPool.getConnection()) {
+            try (PreparedStatement statement = wrapper.get().prepareStatement(sql)) {
+                statement.setLong(1, id);
+                int affectedRows = statement.executeUpdate();
+                return affectedRows > 0;
+            }
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     @Override
