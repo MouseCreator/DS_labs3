@@ -58,7 +58,7 @@ public class SQLParser {
 
     public String toSql(String s) {
         s = removeSpaces(s);
-        return parse(s).stringExpr();
+        return parse(s).stringExpr() + ";";
     }
     public String toSqlWithTable(String v, String tName) {
         return "SELECT * FROM " + tName + " WHERE " + toSql(v);
