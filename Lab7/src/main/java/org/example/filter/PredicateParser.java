@@ -2,12 +2,11 @@ package org.example.filter;
 
 import java.util.function.Predicate;
 
-public abstract class PredicateParser<T> {
+public abstract class PredicateParser<T> extends AbstractParser<Predicate<T>>{
     private interface ConditionNode<T> {
         Predicate<T> toPredicate();
     }
 
-    protected abstract Predicate<T> toPredicate(String statement);
     private static class PredicateNode<T> implements ConditionNode<T> {
         private final ConditionNode<T> left;
         private final String operation;
@@ -41,97 +40,94 @@ public abstract class PredicateParser<T> {
     }
 
     private static class InvertConditionNode<T> implements ConditionNode<T> {
-        private final Predicate<T> predicate;
-        public InvertConditionNode(Predicate<T> predicate) {
-            this.predicate =  predicate;
+        private final ConditionNode<T> conditionNode;
+        public InvertConditionNode(ConditionNode<T> predicate) {
+            this.conditionNode =  predicate;
         }
         @Override
         public Predicate<T> toPredicate() {
-            return predicate.negate();
+            return conditionNode.toPredicate().negate();
         }
     }
-    public static String removeSpaces(String input) {
-        StringBuilder result = new StringBuilder();
-        boolean insideQuotes = false;
-
-        for (char c : input.toCharArray()) {
-            if (c == '\'') {
-                insideQuotes = !insideQuotes;
-            }
-
-            if (!insideQuotes && c == ' ') {
-                continue;
-            }
-
-            result.append(c);
-        }
-
-        return result.toString();
-    }
 
 
-    public String toSql(String s) {
-       return removeSpaces(s);
-    }
-    public String toSqlWithTable(String v, String tName) {
-        return "SELECT * FROM " + tName + " WHERE " + toSql(v);
-    }
-    private ConditionNode<T> parse(String s) {
+    private ConditionNode<T> parseToNode(String s) {
         s = removeExtraBrackets(s);
-        return new SimpleConditionNode<>(e -> false);
-    }
-
-    private int operationIndex(String s) {
-        if (s.contains("<")) {
-            return s.indexOf("<");
+        s = removeExtraBrackets(s);
+        if (s.startsWith("!")) {
+            return new InvertConditionNode<>(parseToNode(s.substring(1)));
         }
-        if (s.contains(">")) {
-            return s.indexOf(">");
+        int index = findTopOperation(s);
+        if (index==-1) {
+            return createSimple(s);
+        } else {
+           return createComplex(s, index);
         }
-        if (s.contains("=")) {
-            return s.indexOf("=");
-        }
-        throw new IllegalArgumentException("Cannot resolve any operation in expression: " + s);
     }
 
-    private String removeExtraBrackets(String s) {
-        while (s.startsWith("(") && s.endsWith(")"))
-            s = s.substring(1, s.length()-1);
-        return s;
+    private ConditionNode<T> createSimple(String s) {
+        OperationTemp operationTemp = operationIndex(s);
+        String field = s.substring(0, operationTemp.index());
+        String operation = operationTemp.operation();
+        String val = s.substring(operationTemp.next());
+        return new SimpleConditionNode<>(toPredicate(field, operation, val));
+    }
+    private ConditionNode<T> createComplex(String s, int index) {
+        ConditionNode<T> left = parseToNode(s.substring(0, index));
+        String operation = toOperation(s.charAt(index));
+        ConditionNode<T> right = parseToNode(s.substring(index+1));
+        return new PredicateNode<>(left, operation, right);
+    }
+    @Override
+    public Predicate<T> parse(String s) {
+        return parseToNode(s).toPredicate();
     }
 
-    private String toOperation(char charAt) {
-        return switch (charAt) {
-            case '&' -> " AND ";
-            case '|' ->  " OR ";
-            default -> throw new IllegalArgumentException("Invalid bool operator: " + charAt);
-        };
-    }
+    protected abstract Object getExpectedValue(T object, String field);
 
-    private int findTopOperation(String sub) {
-        int bracketLevel = 0;
-        int i = 0;
-        int result = -1;
-        boolean ignore = false;
-        for (char ch : sub.toCharArray()) {
-            if (ch=='\''){
-                ignore = !ignore;
+    protected Predicate<T> toPredicate(String field, String operation, String value) {
+        return d -> {
+            Object expectedValue = getExpectedValue(d, field);
+            Object actualValue;
+            if (value.matches("^-?\\d+$")) {
+                actualValue = Long.parseLong(value);
+            } else if (value.matches("^-?\\d+\\.\\d+$")) {
+                actualValue = Double.parseDouble(value);
+            } else if (value.startsWith("'") && value.endsWith("'")) {
+                actualValue = value.substring(1, value.length() - 1);
+            } else {
+                throw new RuntimeException("Unable to parse! Invalid input: " + value);
             }
-            else if (ch=='(') {
-                bracketLevel++;
-            }
-            else if (ch==')') {
-                bracketLevel--;
-            }
-            else if (bracketLevel == 0) {
-                if (ch=='|') {
-                    result = i;
-                } else if (ch=='&') {
-                    return i;
+
+            switch (operation) {
+                case "=" -> {
+                    return expectedValue.equals(actualValue);
+                }
+                case "<>", "!=" -> {
+                    return !expectedValue.equals(actualValue);
                 }
             }
-            i++;
-        }
-        return result;
+            try {
+                long expLong = (long) expectedValue;
+                long actLong = (long) actualValue;
+                switch (operation) {
+                    case "<" -> {
+                        return expLong < actLong;
+                    }
+                    case "<=" -> {
+                        return expLong <= actLong;
+                    }
+                    case ">=" -> {
+                        return expLong >= actLong;
+                    }
+                    case ">" -> {
+                        return expLong > actLong;
+                    }
+                }
+            } catch (ClassCastException e) {
+                throw new RuntimeException(e);
+            }
+            throw new IllegalArgumentException(String.format("Unable to handle: %s %s %s", field, operation, value));
+        };
     }
 }
