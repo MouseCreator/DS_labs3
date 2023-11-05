@@ -52,7 +52,7 @@ public abstract class PredicateParser<T> extends AbstractParser<Predicate<T>>{
 
 
     private ConditionNode<T> parseToNode(String s) {
-        s = removeExtraBrackets(s);
+        s = removeSpaces(s);
         s = removeExtraBrackets(s);
         if (s.startsWith("!")) {
             return new InvertConditionNode<>(parseToNode(s.substring(1)));
@@ -107,21 +107,25 @@ public abstract class PredicateParser<T> extends AbstractParser<Predicate<T>>{
                     return !expectedValue.equals(actualValue);
                 }
             }
+            if (actualValue instanceof String) {
+                throw new IllegalArgumentException("Cannot compare Strings with math operations");
+            }
             try {
-                long expLong = (long) expectedValue;
-                long actLong = (long) actualValue;
+                Number expLong = (Number) expectedValue;
+                Number actLong = (Number) actualValue;
+                int res = compareNumbers(expLong, actLong);
                 switch (operation) {
                     case "<" -> {
-                        return expLong < actLong;
+                        return res < 0;
                     }
                     case "<=" -> {
-                        return expLong <= actLong;
+                        return res <= 0;
                     }
                     case ">=" -> {
-                        return expLong >= actLong;
+                        return res >= 0;
                     }
                     case ">" -> {
-                        return expLong > actLong;
+                        return res > 0;
                     }
                 }
             } catch (ClassCastException e) {
@@ -129,5 +133,8 @@ public abstract class PredicateParser<T> extends AbstractParser<Predicate<T>>{
             }
             throw new IllegalArgumentException(String.format("Unable to handle: %s %s %s", field, operation, value));
         };
+    }
+    private int compareNumbers(Number num1, Number num2) {
+        return Double.compare(num1.doubleValue(), num2.doubleValue());
     }
 }

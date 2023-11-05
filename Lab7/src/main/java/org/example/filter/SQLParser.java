@@ -51,6 +51,15 @@ public class SQLParser extends AbstractParser<String> {
         }
     }
 
+    @Override
+    protected String toOperation(char charAt) {
+        return switch (charAt) {
+            case '&' -> " AND ";
+            case '|' ->  " OR ";
+            default -> throw new IllegalArgumentException("Invalid bool operator: " + charAt);
+        };
+    }
+
     private static class BooleanConditionNode implements ConditionNode{
         private final String field;
         private final boolean value;

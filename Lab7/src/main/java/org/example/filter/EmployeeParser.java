@@ -12,7 +12,7 @@ public class EmployeeParser extends PredicateParser<Employee> {
             case "experience" -> object.getExperienceYears();
             case "role" -> object.getRole();
             case "department" -> object.getDepartmentId();
-            default -> throw new IllegalArgumentException("Unknown filed for employee: " + field);
+            default -> throw new IllegalArgumentException("Unknown field for employee: " + field);
 
         };
     }

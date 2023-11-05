@@ -64,8 +64,8 @@ public abstract class AbstractParser<T> {
 
     protected String toOperation(char charAt) {
         return switch (charAt) {
-            case '&' -> " AND ";
-            case '|' ->  " OR ";
+            case '&' -> "&";
+            case '|' ->  "|";
             default -> throw new IllegalArgumentException("Invalid bool operator: " + charAt);
         };
     }
