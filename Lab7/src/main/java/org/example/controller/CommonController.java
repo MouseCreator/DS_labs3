@@ -1,12 +1,10 @@
 package org.example.controller;
 
-import java.io.InputStream;
-import java.io.PrintStream;
-import java.util.Scanner;
+import java.io.*;
 
 public class CommonController {
 
-    private Scanner scanner;
+    private BufferedReader reader;
     private final PrintStream outputStream;
     public static CommonController consoleController() {
         return new CommonController(System.in, System.out);
@@ -17,7 +15,7 @@ public class CommonController {
     }
 
     private void setInputStream(InputStream in) {
-        this.scanner = new Scanner(in);
+        this.reader = new BufferedReader(new InputStreamReader(in));
     }
 
     private void startRequest(String request) {
@@ -25,13 +23,22 @@ public class CommonController {
         outputStream.print("> ");
     }
     public boolean askBoolean(String request) {
-        startRequest(request);
-        Boolean result = null;
+        Boolean result = getBoolean(request);
         while (result == null){
-            String input = scanner.nextLine();
-            result = toBoolean(input);
+            result = getBoolean("Boolean value is expected!");
         }
         return result;
+    }
+
+    private Boolean getBoolean(String request) {
+        startRequest(request);
+        String input;
+        try {
+            input = reader.readLine();
+        } catch (IOException e) {
+            return null;
+        }
+        return toBoolean(input);
     }
 
     private String formatInput(String input) {
@@ -50,8 +57,8 @@ public class CommonController {
         startRequest(request);
         while (true) {
             try {
-                return Integer.parseInt(scanner.nextLine().trim());
-            } catch (NumberFormatException e) {
+                return Integer.parseInt(reader.readLine().trim());
+            } catch (NumberFormatException | IOException e) {
                 startRequest("Integer is expected!");
             }
         }
@@ -61,8 +68,8 @@ public class CommonController {
         startRequest(request);
         while (true) {
             try {
-                return Long.parseLong(scanner.nextLine().trim());
-            } catch (NumberFormatException e) {
+                return Long.parseLong(reader.readLine().trim());
+            } catch (NumberFormatException | IOException e) {
                 startRequest("Long integer is expected!");
             }
         }
@@ -70,10 +77,22 @@ public class CommonController {
 
     public String askString(String request) {
         startRequest(request);
-        return scanner.nextLine().trim();
+        String s = "";
+        while (s.isEmpty()) {
+            try {
+                s = reader.readLine().trim();
+            } catch (IOException e) {
+                s = "";
+            }
+        }
+        return s;
     }
 
     public void print(String s) {
         outputStream.println(s);
+    }
+
+    protected void supplyInput(BufferedReader reader) {
+        this.reader = reader;
     }
 }
