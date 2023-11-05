@@ -2,11 +2,15 @@ package org.example.util;
 
 import java.sql.Connection;
 
+/**
+ * Provides Connection to Data Bases
+ * Returns connection to Connection Provider on release
+ */
 public class ConnectionWrapper implements AutoCloseable {
-    private final ConnectionProvider pool;
+    private final ConnectionProvider provider;
     private final Connection connection;
     public ConnectionWrapper(ConnectionProvider pool, Connection connection) {
-        this.pool = pool;
+        this.provider = pool;
         this.connection = connection;
     }
     public Connection get() {
@@ -14,6 +18,6 @@ public class ConnectionWrapper implements AutoCloseable {
     }
     @Override
     public void close() {
-        pool.release(connection);
+        provider.release(connection);
     }
 }
