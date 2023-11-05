@@ -1,4 +1,5 @@
 package org.example.filter;
 
-public interface Filter {
+public interface Filter<T> {
+    T getFilter(String input);
 }

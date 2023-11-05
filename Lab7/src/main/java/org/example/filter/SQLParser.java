@@ -1,5 +1,7 @@
 package org.example.filter;
 
+import java.util.Objects;
+
 public class SQLParser {
     private interface ConditionNode {
         String stringExpr();
@@ -19,6 +21,20 @@ public class SQLParser {
         }
         public String stringExpr() {
             return inBrackets(left) + operation + inBrackets(right);
+        }
+    }
+
+    private static class InvertNode implements ConditionNode{
+        private final ConditionNode toInvert;
+
+        public InvertNode(ConditionNode toInvert) {
+            this.toInvert = toInvert;
+        }
+        private String inBrackets(ConditionNode conditionNode) {
+            return "(" + conditionNode.stringExpr() + ")";
+        }
+        public String stringExpr() {
+            return "NOT " + inBrackets(toInvert);
         }
     }
     private static class SimpleConditionNode implements ConditionNode{
@@ -65,12 +81,15 @@ public class SQLParser {
     }
     private ConditionNode parse(String s) {
         s = removeExtraBrackets(s);
+        if (s.startsWith("!")) {
+            return new InvertNode(parse(s.substring(1)));
+        }
         int index = findTopOperation(s);
         if (index==-1) {
-            int operationIndex = operationIndex(s);
-            String left = s.substring(0, operationIndex);
-            String operation = (s.charAt(operationIndex)) + "";
-            String right = s.substring(operationIndex+1);
+            OperationTemp operationTemp = operationIndex(s);
+            String left = s.substring(0, operationTemp.index);
+            String operation = operationTemp.operation;
+            String right = s.substring(operationTemp.next);
             return new SimpleConditionNode(left, operation, right);
         } else {
             ConditionNode left = parse(s.substring(0, index));
@@ -81,15 +100,45 @@ public class SQLParser {
 
     }
 
-    private int operationIndex(String s) {
-        if (s.contains("<")) {
-            return s.indexOf("<");
+    private static final class OperationTemp {
+        private final int index;
+        private final String operation;
+        private final int next;
+        private OperationTemp(int index, String operation) {
+            this.index = index;
+            this.operation = operation;
+            this.next = this.index + this.operation.length();
         }
-        if (s.contains(">")) {
-            return s.indexOf(">");
+        @Override
+        public boolean equals(Object obj) {
+            if (obj == this) return true;
+            if (obj == null || obj.getClass() != this.getClass()) return false;
+            var that = (OperationTemp) obj;
+            return this.index == that.index &&
+                    Objects.equals(this.operation, that.operation);
         }
-        if (s.contains("=")) {
-            return s.indexOf("=");
+
+        @Override
+        public int hashCode() {
+            return Objects.hash(index, operation);
+        }
+
+        @Override
+        public String toString() {
+            return "OperationTemp[" +
+                    "index=" + index + ", " +
+                    "operation=" + operation + ']';
+        }
+
+    }
+    private OperationTemp operationIndex(String s) {
+        final String[] operations = {
+          "<=", "<>", ">=", "!=", "<", "=", ">"
+        };
+        for (String o : operations) {
+            if (s.contains(o)) {
+                return new OperationTemp(s.indexOf(o), o);
+            }
         }
         throw new IllegalArgumentException("Cannot resolve any operation in expression: " + s);
     }
