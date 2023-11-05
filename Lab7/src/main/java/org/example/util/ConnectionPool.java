@@ -21,7 +21,7 @@ public class ConnectionPool implements ConnectionProvider {
         Connection connection = connectionPool.remove(connectionPool.size() - 1);
         return new ConnectionWrapper(this, connection);
     }
-
+    @Override
     public void close() {
         for (Connection connection : connectionPool) {
             try {
