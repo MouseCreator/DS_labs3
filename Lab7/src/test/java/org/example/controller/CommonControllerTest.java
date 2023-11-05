@@ -6,6 +6,7 @@ import org.junit.jupiter.api.Test;
 import java.io.*;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.function.Consumer;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
@@ -45,7 +46,7 @@ class CommonControllerTest {
         List<String> answers = new ArrayList<>();
         for (String line : lines) {
             if (line.startsWith(">")) {
-                answers.add(line.substring(1).trim());
+                answers.add(line.substring(2));
             }
         }
         return answers;
@@ -65,19 +66,11 @@ class CommonControllerTest {
         controller = new CommonController(System.in, printStream);
     }
 
-    private String fullDialogue(String[] lines) {
-        StringBuilder builder = new StringBuilder();
-        for (String line : lines) {
-            builder.append(line).append("\n");
-        }
-        return builder.toString().trim();
-    }
-
-    void testDialog(String[] dialogueLines) {
+    void testDialogue(String[] dialogueLines, Consumer<String> consumer) {
         int currentLine = 0;
         String s = "";
         while (currentLine < dialogueLines.length) {
-            controller.askBoolean(dialogueLines[currentLine]);
+            consumer.accept(dialogueLines[currentLine]);
             String out = outputStream.toString();
             while (out.startsWith(s) && !out.equals(s)) {
                 s += dialogueLines[currentLine];
@@ -98,22 +91,59 @@ class CommonControllerTest {
                 "> false"
         };
         processInput(expectedDialogue);
-        testDialog(expectedDialogue);
+        testDialogue(expectedDialogue, s->controller.askBoolean(s));
     }
 
     @Test
     void askInteger() {
+        String[] expectedDialogue = {
+                "How old are you?",
+                "> 12",
+                "How many friends do you have?",
+                "> 3",
+                "Integer value is expected!",
+                "> 10"
+        };
+        processInput(expectedDialogue);
+        testDialogue(expectedDialogue, s->controller.askInteger(s));
     }
 
     @Test
     void askLong() {
+        String[] expectedDialogue = {
+                "Long time no see!",
+                "> 1000",
+                "Type a number bigger than that!",
+                "> P",
+                "Long value is expected!",
+                "> 2000"
+        };
+        processInput(expectedDialogue);
+        testDialogue(expectedDialogue, s->controller.askLong(s));
     }
 
     @Test
     void askString() {
+        String[] expectedDialogue = {
+                "Type a string",
+                "> ",
+                "String is expected!",
+                ">    ",
+                "String is expected!",
+                "> Here it comes"
+        };
+        processInput(expectedDialogue);
+        testDialogue(expectedDialogue, s->controller.askString(s));
     }
 
     @Test
     void print() {
+        String[] expectedDialogue = {
+                "I am writing",
+                "Strings for you",
+                "When you call me",
+        };
+        processInput(expectedDialogue);
+        testDialogue(expectedDialogue, s->controller.print(s));
     }
 }

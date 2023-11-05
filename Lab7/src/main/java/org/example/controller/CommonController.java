@@ -70,15 +70,21 @@ public class CommonController {
             try {
                 return Long.parseLong(reader.readLine().trim());
             } catch (NumberFormatException | IOException e) {
-                startRequest("Long integer is expected!");
+                startRequest("Long value is expected!");
             }
         }
     }
 
     public String askString(String request) {
         startRequest(request);
-        String s = "";
+        String s;
+        try {
+            s = reader.readLine().trim();
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
         while (s.isEmpty()) {
+            startRequest("String is expected!");
             try {
                 s = reader.readLine().trim();
             } catch (IOException e) {
