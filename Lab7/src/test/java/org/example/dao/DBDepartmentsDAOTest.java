@@ -70,4 +70,43 @@ class DBDepartmentsDAOTest {
         assertEquals(department, all.get(0));
         System.out.println();
     }
+
+    @Test
+    void update() {
+        withTestData();
+
+        String newName = "Prototype";
+        Department department = new Department();
+        department.setId(1L);
+        department.setName(newName);
+        dao.update(department);
+        Optional<Department> departmentOpt = dao.find(1L);
+
+        assertTrue(departmentOpt.isPresent());
+        assertEquals(newName, departmentOpt.get().getName());
+    }
+
+    @Test
+    void delete() {
+        withTestData();
+        Optional<Department> d = dao.find(2L);
+        assertTrue(d.isPresent());
+        assertTrue(dao.delete(2L));
+        deletionConfirm(d.get());
+    }
+
+    @Test
+    void deleteObj() {
+        withTestData();
+        Optional<Department> d = dao.find(2L);
+        assertTrue(d.isPresent());
+        assertDoesNotThrow(() -> dao.delete(d.get()));
+        deletionConfirm(d.get());
+    }
+
+    private void deletionConfirm(Department d) {
+        List<Department> all = dao.findAll();
+        assertEquals(2, all.size());
+        assertFalse(all.contains(d));
+    }
 }
