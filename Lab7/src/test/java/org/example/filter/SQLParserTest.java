@@ -19,13 +19,14 @@ class SQLParserTest {
 
     @Test
     void parseWithBrackets() {
-        testFromTo("a=0 & (b!=a | c<>a) & d>=4", "" +
+        testFromTo("a=0 & (b!=a | c<>a) & d>=4",
                 "(a = 0) AND (((b != a) OR (c <> a)) AND (d >= 4))");
     }
 
     @Test
     void parseWithNegativeSimple() {
-        testFromTo("!!a>0 | !b=a", "NOT (NOT ((a > 0) OR (NOT (b = a))))");
+        testFromTo("!!a>0 | !b=a",
+                "NOT (NOT ((a > 0) OR (NOT (b = a))))");
     }
 
     @Test
