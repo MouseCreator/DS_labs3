@@ -1,7 +1,7 @@
 package org.example.dao;
 
 import org.example.model.Department;
-import org.example.util.ConnectionPool;
+import org.example.util.ConnectionProvider;
 import org.example.util.ConnectionWrapper;
 
 import java.sql.*;
@@ -10,12 +10,11 @@ import java.util.List;
 import java.util.Optional;
 
 public class DBDepartmentsDAO implements DepartmentsDAO {
-    private final ConnectionPool connectionPool;
+    private final ConnectionProvider connectionPool;
     private final String tableName = "departments";
-    public DBDepartmentsDAO(ConnectionPool connectionPool) {
-        this.connectionPool = connectionPool;
+    public DBDepartmentsDAO(ConnectionProvider provider) {
+        this.connectionPool = provider;
     }
-
     public List<Department> findAll() {
         String sql = query("SELECT * FROM %s");
         List<Department> resultList = new ArrayList<>();
