@@ -1,6 +1,6 @@
 package org.example.filter;
 
-public class SQLParser extends AbstractParser<String> {
+class SQLParser extends AbstractParser<String> {
     private interface ConditionNode {
         String stringExpr();
     }
