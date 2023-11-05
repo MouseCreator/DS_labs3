@@ -17,7 +17,7 @@ public class DBDepartmentsDAO implements DepartmentsDAO {
     }
 
     public List<Department> findAll() {
-        String sql = String.format("SELECT * FROM %s", tableName);
+        String sql = query("SELECT * FROM %s");
         List<Department> resultList = new ArrayList<>();
         try(ConnectionWrapper connection = connectionPool.getConnection()) {
             Statement statement = connection.get().createStatement();
@@ -31,10 +31,30 @@ public class DBDepartmentsDAO implements DepartmentsDAO {
         }
         return resultList;
     }
-
+    private String query(String q) {
+        return String.format(q, tableName);
+    }
     @Override
     public Department create(Department department) {
-        return null;
+       String sql = query("INSERT INTO %s (name) VALUES (?)");
+        try (ConnectionWrapper wrapper = connectionPool.getConnection()) {
+            try(PreparedStatement statement = wrapper.get().prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
+                statement.setString(1, department.getName());
+                int affectedRows =  statement.executeUpdate();
+                if (affectedRows < 1) {
+                    throw new RuntimeException("Expected to add at least one row");
+                }
+                ResultSet generatedKeys = statement.getGeneratedKeys();
+                if (generatedKeys.next()) {
+                    Long id = generatedKeys.getObject(1, Long.class);
+                    department.setId(id);
+                }
+                return department;
+            }
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+
     }
 
     @Override
