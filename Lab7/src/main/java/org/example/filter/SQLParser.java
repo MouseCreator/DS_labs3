@@ -1,5 +1,6 @@
 package org.example.filter;
 
+import java.util.Arrays;
 import java.util.Objects;
 
 public class SQLParser {
@@ -52,6 +53,26 @@ public class SQLParser {
             return field + " " + operator + " " + value;
         }
     }
+
+    private static class BooleanConditionNode implements ConditionNode{
+        private final String field;
+        private final boolean value;
+        private boolean toBool(String op, String r) {
+            boolean isTrueCondition = r.contains("T");
+            if (op.equals("!=") || op.equals("<>")) {
+                return !isTrueCondition;
+            }
+            return isTrueCondition;
+        }
+        public BooleanConditionNode(String field, String operation, String boolVal) {
+            this.field = field;
+            this.value = toBool(operation, boolVal);
+        }
+
+        public String stringExpr() {
+            return field + " IS " + (value ? "TRUE" : "FALSE");
+        }
+    }
     public static String removeSpaces(String input) {
         StringBuilder result = new StringBuilder();
         boolean insideQuotes = false;
@@ -74,10 +95,10 @@ public class SQLParser {
 
     public String toSql(String s) {
         s = removeSpaces(s);
-        return parse(s).stringExpr() + ";";
+        return parse(s).stringExpr();
     }
     public String toSqlWithTable(String v, String tName) {
-        return "SELECT * FROM " + tName + " WHERE " + toSql(v);
+        return "SELECT * FROM " + tName + " WHERE " + toSql(v) + ";";
     }
     private ConditionNode parse(String s) {
         s = removeExtraBrackets(s);
@@ -87,10 +108,14 @@ public class SQLParser {
         int index = findTopOperation(s);
         if (index==-1) {
             OperationTemp operationTemp = operationIndex(s);
-            String left = s.substring(0, operationTemp.index);
+            String field = s.substring(0, operationTemp.index);
             String operation = operationTemp.operation;
-            String right = s.substring(operationTemp.next);
-            return new SimpleConditionNode(left, operation, right);
+            String val = s.substring(operationTemp.next);
+            if (isBool(val)) {
+                return new BooleanConditionNode(field, operation, val);
+            } else {
+                return new SimpleConditionNode(field, operation, val);
+            }
         } else {
             ConditionNode left = parse(s.substring(0, index));
             String operation = toOperation(s.charAt(index));
@@ -98,6 +123,13 @@ public class SQLParser {
             return new TopConditionNode(left, operation, right);
         }
 
+    }
+
+    private boolean isBool(String val) {
+        String[] booleans = {
+                "T", "TRUE", "FALSE", "F"
+        };
+        return Arrays.asList(booleans).contains(val);
     }
 
     private static final class OperationTemp {
