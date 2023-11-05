@@ -22,4 +22,18 @@ class EmployeeParserTest {
         employee1.setAge(10);
         assertFalse(predicate.test(employee1));
     }
+
+    @Test
+    void parsePredicateThrows() {
+        EmployeeParser employeeParser = new EmployeeParser();
+        Employee employee = new Employee();
+        employee.setRole("Editor");
+        employee.setAge(22);
+        assertThrows(IllegalArgumentException.class,
+                () -> employeeParser.parse("role <> 'Editor' - age > 20").test(employee));
+        assertThrows(IllegalArgumentException.class,
+                () -> employeeParser.parse("role > 'Editor' & age > 20").test(employee));
+
+
+    }
 }

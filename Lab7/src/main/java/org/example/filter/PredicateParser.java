@@ -96,7 +96,7 @@ public abstract class PredicateParser<T> extends AbstractParser<Predicate<T>>{
             } else if (value.startsWith("'") && value.endsWith("'")) {
                 actualValue = value.substring(1, value.length() - 1);
             } else {
-                throw new RuntimeException("Unable to parse! Invalid input: " + value);
+                throw new IllegalArgumentException("Unable to parse! Invalid input: " + value);
             }
 
             switch (operation) {
