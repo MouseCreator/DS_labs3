@@ -8,6 +8,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import java.util.List;
+import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -30,24 +31,32 @@ class DBDepartmentsDAOTest {
             throw new RuntimeException(e);
         }
     }
-    private void withTestData() {
+    private List<Department> withTestData() {
         TestDataGenerator testDataGenerator = new TestDataGenerator();
         List<Department> departmentList = testDataGenerator.allDepartments().getDepartmentList();
         for (Department department : departmentList) {
             dao.create(department);
         }
-    }
-
-    private List<Department> getTestData() {
-        TestDataGenerator testDataGenerator = new TestDataGenerator();
-        return testDataGenerator.allDepartments().getDepartmentList();
+        return departmentList;
     }
     @Test
     void findAll() {
-        withTestData();
-        List<Department> testData = getTestData();
+        List<Department> testData = withTestData();
         List<Department> allDepartments = dao.findAll();
         TestHelper.compareList(testData, allDepartments);
+    }
+
+    @Test
+    void findById() {
+        List<Department> testData = withTestData();
+        int j = 0;
+        for (long i = 1L; i <= 3L; i++) {
+            Department expected = testData.get(j++);
+            Optional<Department> actual = dao.find(i);
+            assertTrue(actual.isPresent());
+            assertEquals(expected, actual.get());
+        }
+        assertTrue(dao.find(4L).isEmpty());
     }
 
     @Test
