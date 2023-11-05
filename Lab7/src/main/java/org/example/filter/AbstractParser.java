@@ -3,7 +3,7 @@ package org.example.filter;
 import java.util.Arrays;
 import java.util.Objects;
 
-public abstract class AbstractParser<T> {
+public abstract class AbstractParser<T> implements FilterFactory<T> {
     protected static final class OperationTemp {
         private final int index;
         private final String operation;
