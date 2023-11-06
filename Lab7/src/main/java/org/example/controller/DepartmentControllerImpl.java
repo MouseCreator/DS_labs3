@@ -13,7 +13,6 @@ public class DepartmentControllerImpl {
     }
 
     void create(Department department) {
-
         if (departmentsService.containsId(department.getId())) {
             boolean answer = controller.askBoolean("Department with this ID is already in the database! Do you want to override it?");
             if (answer) {
