@@ -1,21 +1,24 @@
 package org.example.dao;
 
-import org.example.filter.DepartmentParser;
-import org.example.filter.FilterFactory;
+import org.example.factory.FilterManagerFactory;
+import org.example.factory.FilterManagerFactoryImpl;
+import org.example.filter.FilterManager;
 import org.example.model.Department;
 import org.example.model.Departments;
 import org.example.parser.Parser;
 import org.example.writer.Writer;
 
 import java.util.*;
-import java.util.function.Predicate;
 
 public class XMLDepartmentsDao extends AbstractXMLDao<Departments, Department> implements DepartmentsDAO {
 
-    private final FilterFactory<Predicate<Department>> filterFactory = new DepartmentParser();
+    private final FilterManager<Department> filterFactory;
 
     public XMLDepartmentsDao(String inputFileXML, Parser<Departments> parser, Writer<Departments> writer) {
         super(inputFileXML, parser, writer);
+
+        FilterManagerFactory factory = new FilterManagerFactoryImpl();
+        filterFactory = factory.getForDepartment();
     }
 
     @Override
@@ -25,8 +28,6 @@ public class XMLDepartmentsDao extends AbstractXMLDao<Departments, Department> i
 
     @Override
     public List<Department> findByFilter(String filterString) {
-        Predicate<Department> predicate = filterFactory.parse(filterString);
-        List<Department> all = findAll();
-        return all.stream().filter(predicate).toList();
+        return filterFactory.filter(findAll(), filterString);
     }
 }
