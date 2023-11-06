@@ -1,18 +1,23 @@
 package org.example.controller;
 
+import org.example.filter.DepartmentParser;
+import org.example.filter.FilterManager;
+import org.example.filter.FilterManagerImpl;
 import org.example.model.Department;
 import org.example.service.DepartmentsService;
 
-public class DepartmentControllerImpl {
+import java.util.List;
+
+public class DepartmentControllerImpl implements DepartmentController {
     private final CommonController controller;
     private final DepartmentsService departmentsService;
-
+    private final FilterManager<Department> filterManager = new FilterManagerImpl<>(new DepartmentParser());
     public DepartmentControllerImpl(CommonController controller, DepartmentsService departmentsService) {
         this.controller = controller;
         this.departmentsService = departmentsService;
     }
 
-    void create(Department department) {
+    public void create(Department department) {
         if (departmentsService.containsId(department.getId())) {
             boolean answer = controller.askBoolean("Department with this ID is already in the database! Do you want to override it?");
             if (answer) {
@@ -38,7 +43,36 @@ public class DepartmentControllerImpl {
         controller.print("Department was created successfully!");
     }
 
-    void update(Department department) {
+    @Override
+    public List<Department> filter(String filterString) {
+        return departmentsService.findFiltered(filterString);
+    }
+
+    @Override
+    public Department get(Long id) {
+        return departmentsService.get(id);
+    }
+
+    @Override
+    public List<Department> getAll() {
+        return departmentsService.findAll();
+    }
+
+    @Override
+    public List<Department> filter(List<Department> result, String fString) {
+        return filterManager.filter(result, fString);
+    }
+
+    @Override
+    public void remove(Long ln) {
+        if (departmentsService.delete(ln)) {
+            controller.print("Removed " + ln + " successfully!");
+        } else {
+            controller.print("No element with id " + ln + " found!");
+        }
+    }
+
+    public void update(Department department) {
         if (departmentsService.containsId(department.getId())) {
             departmentsService.update(department);
             return;

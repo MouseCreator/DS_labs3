@@ -4,6 +4,8 @@ import org.example.dao.DepartmentsDAO;
 import org.example.model.Department;
 
 import java.util.List;
+import java.util.NoSuchElementException;
+import java.util.Optional;
 
 public class DepartmentsServiceImpl implements DepartmentsService{
     private DepartmentsDAO departmentsDAO;
@@ -20,6 +22,16 @@ public class DepartmentsServiceImpl implements DepartmentsService{
     }
 
     @Override
+    public Department get(Long id) {
+        Optional<Department> department = departmentsDAO.find(id);
+        if (department.isPresent()) {
+            return department.get();
+        } else {
+            throw new NoSuchElementException("No such department!");
+        }
+    }
+
+    @Override
     public void create(Department department) {
         departmentsDAO.create(department);
     }
@@ -28,8 +40,8 @@ public class DepartmentsServiceImpl implements DepartmentsService{
         return departmentsDAO.findAll();
     }
     @Override
-    public void delete(Long id) {
-        departmentsDAO.delete(id);
+    public boolean delete(Long id) {
+        return departmentsDAO.delete(id);
     }
     @Override
     public void update(Department department) {
