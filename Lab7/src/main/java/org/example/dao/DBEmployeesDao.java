@@ -1,13 +1,17 @@
 package org.example.dao;
 
+import org.example.model.Department;
 import org.example.model.Employee;
 import org.example.util.ConnectionPool;
+import org.example.util.ConnectionWrapper;
 
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.List;
 
-public class DBEmployeesDao extends AbstractDBCrudDao<Employee> {
+public class DBEmployeesDao extends AbstractDBCrudDao<Employee> implements EmployeesDao {
     public DBEmployeesDao(ConnectionPool connectionPool) {
         super(connectionPool);
     }
@@ -48,4 +52,29 @@ public class DBEmployeesDao extends AbstractDBCrudDao<Employee> {
         employee.setDepartmentId(set.getObject("department", Long.class));
         return employee;
     }
+
+    @Override
+    public List<Employee> findAllEmployeesOfDepartment(Department department) {
+        return findAllEmployeesOfDepartment(department.getId());
+    }
+
+    @Override
+    public List<Employee> findAllEmployeesOfDepartment(Long id) {
+        String sql = "SELECT * FROM employees where department = ?";
+        List<Employee> resultList = new ArrayList<>();
+        try(ConnectionWrapper connection = connectionPool.getConnection()) {
+            PreparedStatement statement = connection.get().prepareStatement(sql);
+            statement.setLong(1, id);
+            ResultSet set = statement.executeQuery(sql);
+            while (set.next()) {
+                resultList.add(toInstance(set));
+            }
+            set.close();
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+        return resultList;
+    }
+
+
 }
