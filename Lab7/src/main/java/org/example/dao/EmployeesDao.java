@@ -7,6 +7,6 @@ import java.util.List;
 
 public interface EmployeesDao extends GenericCrudDao<Employee> {
     List<Employee> findAllEmployeesOfDepartment(Department department);
-
     List<Employee> findAllEmployeesOfDepartment(Long id);
+    List<Employee> findByFilter(String filterString);
 }

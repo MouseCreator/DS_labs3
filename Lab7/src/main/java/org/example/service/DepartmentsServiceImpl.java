@@ -13,6 +13,12 @@ public class DepartmentsServiceImpl implements DepartmentsService{
     public void changeSource(DepartmentsDAO dao) {
         this.departmentsDAO = dao;
     }
+
+    @Override
+    public List<Department> findFiltered(String filter) {
+        return null;
+    }
+
     @Override
     public void create(Department department) {
         departmentsDAO.create(department);

@@ -70,7 +70,7 @@ public abstract class AbstractDBCrudDao<T extends IdIterable> implements Generic
         }
         return resultList;
     }
-    private String query(String q) {
+    protected String query(String q) {
         return String.format(q, getTableName());
     }
     @Override
@@ -145,6 +145,21 @@ public abstract class AbstractDBCrudDao<T extends IdIterable> implements Generic
         } catch (SQLException e) {
             throw new RuntimeException("Cannot connect to DB", e);
         }
+    }
+
+    protected List<T> executeAndGet(String sql) {
+        List<T> resultList = new ArrayList<>();
+        try(ConnectionWrapper connection = provider.getConnection()) {
+            Statement statement = connection.get().createStatement();
+            ResultSet set = statement.executeQuery(sql);
+            while (set.next()) {
+                resultList.add(toInstance(set));
+            }
+            set.close();
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+        return resultList;
     }
 
     protected abstract T toInstance(ResultSet set) throws SQLException;

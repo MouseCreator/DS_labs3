@@ -17,4 +17,9 @@ public class XMLDepartmentsDao extends AbstractXMLDao<Departments, Department> i
     protected List<Department> toCollection(Departments container) {
         return container.getDepartmentList();
     }
+
+    @Override
+    public List<Department> findByFilter(String filterString) {
+        return null;
+    }
 }

@@ -1,5 +1,7 @@
 package org.example.dao;
 
+import org.example.filter.EmployeesSQLFilter;
+import org.example.filter.FilterFactory;
 import org.example.model.Department;
 import org.example.model.Employee;
 import org.example.util.ConnectionProvider;
@@ -12,6 +14,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class DBEmployeesDao extends AbstractDBCrudDao<Employee> implements EmployeesDao {
+
+    private final FilterFactory<String> filterFactory = new EmployeesSQLFilter();
     public DBEmployeesDao(ConnectionProvider connectionPool) {
         super(connectionPool);
     }
@@ -74,6 +78,12 @@ public class DBEmployeesDao extends AbstractDBCrudDao<Employee> implements Emplo
             throw new RuntimeException(e);
         }
         return resultList;
+    }
+
+    @Override
+    public List<Employee> findByFilter(String filterString) {
+        String sql = filterFactory.parse(filterString);
+        return executeAndGet(sql);
     }
 
 

@@ -26,4 +26,9 @@ public class XMLEmployeesDao extends AbstractXMLDao<Departments, Employee> imple
     public List<Employee> findAllEmployeesOfDepartment(Long id) {
         return withReadWrite(container-> toCollection(container).stream().filter(e -> id.equals(e.getDepartmentId())).toList());
     }
+
+    @Override
+    public List<Employee> findByFilter(String filterString) {
+        return null;
+    }
 }
