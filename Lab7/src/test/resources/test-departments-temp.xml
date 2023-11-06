@@ -1,20 +1,22 @@
-<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<?xml version="1.0" encoding="UTF-8" ?>
 <HumanResourceDepartment>
     <Department id="1" name="Info">
-        <Employee age="20" experience="2" id="1" name="Ivanov" role="Copywriter"/>
-        <Employee age="22" experience="1" id="2" name="Petrov" role="Copywriter"/>
-        <Employee age="40" experience="12" id="3" name="Lemon" role="PR Manager"/>
-        <Employee age="35" experience="5" id="4" name="Ivanov" role="Copywriter"/>
+        <Employee id="1" name="Ivanov" age="20" role="Copywriter" experience="2"/>
+        <Employee id="2" name="Petrov" age="22" role="Copywriter" experience="1"/>
+        <Employee id="3" name="Lemon" age="40" role="PR Manager" experience="12"/>
+        <Employee id="4" name="Ivanov" age="35" role="Copywriter" experience="5"/>
     </Department>
+
     <Department id="2" name="Marketing">
-        <Employee age="28" experience="7" id="5" name="Smith" role="Marketing Manager"/>
-        <Employee age="25" experience="3" id="6" name="Johnson" role="Marketing Specialist"/>
-        <Employee age="25" experience="3" id="7" name="Brock" role="Marketing Specialist"/>
-        <Employee age="60" experience="40" id="8" name="Lit" role="Marketing Specialist"/>
+        <Employee id="5" name="Smith" age="28" role="Marketing Manager" experience="7"/>
+        <Employee id="6" name="Johnson" age="25" role="Marketing Specialist" experience="3"/>
+        <Employee id="7" name="Brock" age="25" role="Marketing Specialist" experience="3"/>
+        <Employee id="8" name="Lit" age="60" role="Marketing Specialist" experience="40"/>
     </Department>
+
     <Department id="3" name="Sales">
-        <Employee age="30" experience="8" id="9" name="Brown" role="Sales Manager"/>
-        <Employee age="26" experience="4" id="10" name="Davis" role="Sales Representative"/>
-        <Employee age="44" experience="11" id="11" name="Stevenson" role="Sales Manager"/>
+        <Employee id="9" name="Brown" age="30" role="Sales Manager" experience="8"/>
+        <Employee id="10" name="Davis" age="26" role="Sales Representative" experience="4"/>
+        <Employee id="11" name="Stevenson" age="44" role="Sales Manager" experience="11"/>
     </Department>
 </HumanResourceDepartment>

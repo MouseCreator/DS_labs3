@@ -1,6 +1,7 @@
 package org.example.dao;
 
 import org.example.extra.TestDataGenerator;
+import org.example.extra.TestHelper;
 import org.example.manager.FileManagerImpl;
 import org.example.model.Department;
 import org.example.model.Departments;
@@ -12,6 +13,8 @@ import org.junit.jupiter.api.Test;
 import java.util.List;
 
 class XMLDepartmentsDaoTest extends AbstractCrudDaoTest<Departments, Department> {
+
+    private DepartmentsDAO crudDao;
     private XMLDepartmentsDao createDepartmentsDao() {
         if (writer==null) {
             throw new IllegalStateException("Writer is not initialized");
@@ -74,5 +77,13 @@ class XMLDepartmentsDaoTest extends AbstractCrudDaoTest<Departments, Department>
     @Test
     void find() {
         super.find();
+    }
+
+    @Test
+    void filter() {
+        String filterString = "name = 'Info' | name = 'Marketing'";
+        List<Department> expected = expectedData().stream().filter(d -> d.getName().equals("Info") || d.getName().equals("Marketing")).toList();
+        List<Department> actual = crudDao.findByFilter(filterString);
+        TestHelper.compareList(expected, actual);
     }
 }
