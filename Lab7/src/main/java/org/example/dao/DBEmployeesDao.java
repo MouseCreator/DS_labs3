@@ -2,7 +2,7 @@ package org.example.dao;
 
 import org.example.model.Department;
 import org.example.model.Employee;
-import org.example.util.ConnectionPool;
+import org.example.util.ConnectionProvider;
 import org.example.util.ConnectionWrapper;
 
 import java.sql.PreparedStatement;
@@ -12,7 +12,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class DBEmployeesDao extends AbstractDBCrudDao<Employee> implements EmployeesDao {
-    public DBEmployeesDao(ConnectionPool connectionPool) {
+    public DBEmployeesDao(ConnectionProvider connectionPool) {
         super(connectionPool);
     }
     @Override
@@ -62,10 +62,10 @@ public class DBEmployeesDao extends AbstractDBCrudDao<Employee> implements Emplo
     public List<Employee> findAllEmployeesOfDepartment(Long id) {
         String sql = "SELECT * FROM employees where department = ?";
         List<Employee> resultList = new ArrayList<>();
-        try(ConnectionWrapper connection = connectionPool.getConnection()) {
+        try(ConnectionWrapper connection = provider.getConnection()) {
             PreparedStatement statement = connection.get().prepareStatement(sql);
             statement.setLong(1, id);
-            ResultSet set = statement.executeQuery(sql);
+            ResultSet set = statement.executeQuery();
             while (set.next()) {
                 resultList.add(toInstance(set));
             }

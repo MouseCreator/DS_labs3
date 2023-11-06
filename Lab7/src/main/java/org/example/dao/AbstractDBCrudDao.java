@@ -1,6 +1,6 @@
 package org.example.dao;
 
-import org.example.util.ConnectionPool;
+import org.example.util.ConnectionProvider;
 import org.example.util.ConnectionWrapper;
 
 import java.sql.PreparedStatement;
@@ -13,7 +13,7 @@ import java.util.Optional;
 
 public abstract class AbstractDBCrudDao<T extends IdIterable> implements GenericCrudDao<T> {
 
-    protected final ConnectionPool connectionPool;
+    protected final ConnectionProvider provider;
     protected abstract String getTableName();
     protected String insertSQL() {
         String sql = query("INSERT INTO %s ");
@@ -23,16 +23,17 @@ public abstract class AbstractDBCrudDao<T extends IdIterable> implements Generic
         for (int i = 1; i < fields.length; ++i) {
             builder.append(fields[i]);
             if (i != fields.length -1) {
-                builder.append(" ");
+                builder.append(", ");
             }
         }
         builder.append(") VALUES (");
         for (int i = 1; i < fields.length; ++i) {
             builder.append("?");
             if (i != fields.length -1) {
-                builder.append(" ");
+                builder.append(", ");
             }
         }
+        builder.append(")");
         return builder.toString();
     }
     protected String updateSQL() {
@@ -50,14 +51,14 @@ public abstract class AbstractDBCrudDao<T extends IdIterable> implements Generic
     }
     protected abstract String[] fields();
     protected abstract int applyCreation(PreparedStatement statement, T object) throws SQLException;
-    public AbstractDBCrudDao(ConnectionPool connectionPool) {
-        this.connectionPool = connectionPool;
+    public AbstractDBCrudDao(ConnectionProvider connectionPool) {
+        this.provider = connectionPool;
     }
 
     public List<T> findAll() {
         String sql = query("SELECT * FROM %s");
         List<T> resultList = new ArrayList<>();
-        try(ConnectionWrapper connection = connectionPool.getConnection()) {
+        try(ConnectionWrapper connection = provider.getConnection()) {
             Statement statement = connection.get().createStatement();
             ResultSet set = statement.executeQuery(sql);
             while (set.next()) {
@@ -75,7 +76,7 @@ public abstract class AbstractDBCrudDao<T extends IdIterable> implements Generic
     @Override
     public T create(T object) {
         String sql = insertSQL();
-        try (ConnectionWrapper wrapper = connectionPool.getConnection()) {
+        try (ConnectionWrapper wrapper = provider.getConnection()) {
             try(PreparedStatement statement = wrapper.get().prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
                 applyCreation(statement, object);
                 int affectedRows = statement.executeUpdate();
@@ -96,10 +97,10 @@ public abstract class AbstractDBCrudDao<T extends IdIterable> implements Generic
     @Override
     public void update(T object) {
         String sql = updateSQL();
-        try (ConnectionWrapper wrapper = connectionPool.getConnection()) {
+        try (ConnectionWrapper wrapper = provider.getConnection()) {
             try (PreparedStatement statement = wrapper.get().prepareStatement(sql)) {
                 int fields = applyCreation(statement, object);
-                statement.setLong(fields+1, object.getId());
+                statement.setLong(fields, object.getId());
                 int affectedRows = statement.executeUpdate();
                 if (affectedRows < 1) {
                     throw new RuntimeException("No department with the specified ID found for update.");
@@ -118,7 +119,7 @@ public abstract class AbstractDBCrudDao<T extends IdIterable> implements Generic
     @Override
     public boolean delete(Long id) {
         String sql = query("DELETE FROM %s WHERE id = ?");
-        try (ConnectionWrapper wrapper = connectionPool.getConnection()) {
+        try (ConnectionWrapper wrapper = provider.getConnection()) {
             try (PreparedStatement statement = wrapper.get().prepareStatement(sql)) {
                 statement.setLong(1, id);
                 int affectedRows = statement.executeUpdate();
@@ -131,7 +132,7 @@ public abstract class AbstractDBCrudDao<T extends IdIterable> implements Generic
 
     @Override
     public Optional<T> find(Long id) {
-        try (ConnectionWrapper connection = connectionPool.getConnection()) {
+        try (ConnectionWrapper connection = provider.getConnection()) {
             String sql = String.format("SELECT * FROM %s WHERE id = ?", getTableName());
             try (PreparedStatement statement = connection.get().prepareStatement(sql)) {
                 statement.setLong(1, id);

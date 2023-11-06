@@ -68,7 +68,6 @@ class DBDepartmentsDAOTest {
         assertEquals(1, all.size());
         department.setId(1L);
         assertEquals(department, all.get(0));
-        System.out.println();
     }
 
     @Test
