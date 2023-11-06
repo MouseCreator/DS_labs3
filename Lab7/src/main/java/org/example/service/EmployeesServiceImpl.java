@@ -1,47 +1,74 @@
 package org.example.service;
 
+import org.example.dao.EmployeesDao;
 import org.example.model.Employee;
 
 import java.util.List;
 
 public class EmployeesServiceImpl implements EmployeesService{
-    @Override
-    public void create(Employee department) {
 
+    private EmployeesDao employeesDao;
+
+    public EmployeesServiceImpl(EmployeesDao employeesDao) {
+        this.employeesDao = employeesDao;
+    }
+
+    @Override
+    public void create(Employee employee) {
+        employeesDao.create(employee);
     }
 
     @Override
     public List<Employee> findAll() {
-        return null;
+        return employeesDao.findAll();
     }
 
     @Override
     public void delete(Long id) {
-
+        employeesDao.delete(id);
     }
 
     @Override
-    public void update(Employee department) {
-
+    public void update(Employee employee) {
+        employeesDao.update(employee);
     }
 
     @Override
-    public boolean containsIgnoreId(Employee department) {
-        return false;
+    public boolean containsIgnoreId(Employee employee) {
+        List<Employee> employees = employeesDao.findAll();
+        Long prevId = employee.getId();
+        try {
+            for (Employee current : employees) {
+                employee.setId(current.getId());
+                if (employee.equals(current)) {
+                    return true;
+                }
+            }
+            return false;
+        } finally {
+            employee.setId(prevId);
+        }
     }
 
     @Override
     public boolean containsId(Long id) {
-        return false;
+        if (id == null)
+            return false;
+        return employeesDao.find(id).isPresent();
     }
 
     @Override
     public List<Employee> findEmployeesFromDepartment(Long id) {
-        return null;
+        return employeesDao.findAllEmployeesOfDepartment(id);
     }
 
     @Override
     public List<Employee> findFiltered(String filter) {
-        return null;
+        return employeesDao.findByFilter(filter);
+    }
+
+    @Override
+    public void changeSource(EmployeesDao dao) {
+        this.employeesDao = dao;
     }
 }
