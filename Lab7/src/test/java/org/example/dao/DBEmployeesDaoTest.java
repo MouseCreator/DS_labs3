@@ -113,4 +113,13 @@ class DBEmployeesDaoTest {
         assertEquals(10, all.size());
         assertFalse(all.contains(employee));
     }
+
+    @Test
+    void filter() {
+        List<Employee> employeeList = withTestData();
+        List<Employee> filtered = employeeList.stream().filter(e -> e.getAge() > 20 && e.getAge() < 40).toList();
+        String filter1 = "age > 20 & age < 40";
+        List<Employee> byFilter1 = dao.findByFilter(filter1);
+        TestHelper.compareList(filtered, byFilter1);
+    }
 }
