@@ -108,4 +108,12 @@ class DBDepartmentsDAOTest {
         assertEquals(2, all.size());
         assertFalse(all.contains(d));
     }
+
+    @Test
+    void filter() {
+        withTestData();
+        String filter1 = "name = 'Info' | name = 'Sales'";
+        List<Department> byFilter1 = dao.findByFilter(filter1);
+        assertEquals(2, byFilter1.size());
+    }
 }
