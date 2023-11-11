@@ -36,7 +36,7 @@ public class ApplicationController implements AutoCloseable {
         departmentController = staticControllerFactory.initialDepartmentController();
         ioManager = staticControllerFactory.getCommonController();
         printer = new Printer(ioManager);
-        toSource("db");
+        toSourceInit();
     }
     private void mainLoop() {
         while (true) {
@@ -85,6 +85,13 @@ public class ApplicationController implements AutoCloseable {
         String src = source[0];
         toSource(src);
     }
+    private void toSourceInit() {
+        EmployeesDao employeesDatabaseDAO = staticControllerFactory.getEmployeesDatabaseDAO();
+        DepartmentsDAO departmentsDatabaseDAO = staticControllerFactory.getDepartmentsDatabaseDAO();
+        employeeController.source(employeesDatabaseDAO);
+        departmentController.source(departmentsDatabaseDAO);
+    }
+
     private void toSource(String src) {
         EmployeesDao employeesDatabaseDAO;
         DepartmentsDAO departmentsDatabaseDAO;
