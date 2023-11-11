@@ -1,4 +1,10 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <HumanResourceDepartment>
-    <Department id="1" name="Info"/>
+    <Department id="1" name="Info">
+        <Employee age="40" experience="12" id="6" name="Lemon" role="PR"/>
+        <Employee age="19" experience="3" id="8" name="Mykhailo" role="Copywriter"/>
+    </Department>
+    <Department id="2" name="Marketing">
+        <Employee age="60" experience="40" id="7" name="Lit" role="Specialist"/>
+    </Department>
 </HumanResourceDepartment>
