@@ -39,16 +39,21 @@ public class EmployeesControllerImpl implements EmployeesController {
                 }
             }
         }
-
-        if(service.containsIgnoreId(employee)) {
-            boolean answer = controller.askBoolean("This employee already exists. Do you want to create another one?");
-            if (answer) {
-                service.create(employee);
+        try {
+            if (service.containsIgnoreId(employee)) {
+                boolean answer = controller.askBoolean("This employee already exists. Do you want to create another one?");
+                if (answer) {
+                    service.create(employee);
+                } else {
+                    return;
+                }
             } else {
-                return;
+                service.create(employee);
             }
+            controller.print("Employee was created successfully!");
+        } catch (Exception e) {
+            controller.print("Could not insert employee!");
         }
-        controller.print("Employee was created successfully!");
     }
 
     @Override

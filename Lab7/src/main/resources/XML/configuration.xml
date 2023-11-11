@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <Configuration>
-    <url>jdbc:mysql://localhost:3306/test</url>
+    <url>jdbc:mysql://localhost:3306/department_db</url>
     <user>root</user>
-    <password>password</password>
+    <password>zilTTlA_289AVPT</password>
 </Configuration>

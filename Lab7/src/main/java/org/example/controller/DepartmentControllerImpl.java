@@ -40,6 +40,8 @@ public class DepartmentControllerImpl implements DepartmentController {
             } else {
                 return;
             }
+        } else {
+            departmentsService.create(department);
         }
         controller.print("Department was created successfully!");
     }
