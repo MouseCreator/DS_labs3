@@ -188,7 +188,14 @@ public class ApplicationController implements AutoCloseable {
             String cmd = formatCommand(parts[0]);
             switch (cmd) {
                 case "a", "all" -> result = controller.getAll();
-                case "f", "filter" -> result = controller.filter(parts[1]);
+                case "f", "filter" -> {
+                    try {
+                        result = controller.filter(parts[1]);
+                    } catch (Exception e) {
+                        ioManager.print(e.getMessage());
+                        return;
+                    }
+                }
                 case "id" -> {
                     Long id = Long.parseLong(params[1]);
                     try {
@@ -221,8 +228,12 @@ public class ApplicationController implements AutoCloseable {
                 }
                 case "f", "filter" -> {
                     String fString = commands[1];
-                    result = controller.filter(result, fString);
-                    printer.print(result);
+                    try {
+                        result = controller.filter(result, fString);
+                        printer.print(result);
+                    } catch (Exception e) {
+                        ioManager.print(e.getMessage());
+                    }
                 }
                 case "b", "break" -> {
                     return;
