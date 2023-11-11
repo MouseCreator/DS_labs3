@@ -5,6 +5,8 @@ import org.example.dao.EmployeesDao;
 import org.example.dao.IdIterable;
 import org.example.factory.StaticControllerFactoryImpl;
 import org.example.factory.XMLDAOFactory;
+import org.example.manager.FileManager;
+import org.example.manager.FileManagerImpl;
 import org.example.model.Department;
 import org.example.model.Departments;
 import org.example.model.Employee;
@@ -89,11 +91,27 @@ public class ApplicationController implements AutoCloseable {
             employeesDatabaseDAO = StaticControllerFactoryImpl.get().getEmployeesDatabaseDAO();
             departmentsDatabaseDAO = StaticControllerFactoryImpl.get().getDepartmentsDatabaseDAO();
         } else {
-            employeesDatabaseDAO = XMLDAOFactory.get().getEmployeeXMLDAO(src);
-            departmentsDatabaseDAO = XMLDAOFactory.get().getDepartmentXMLDAO(src);
+            String filename = toFilename(src);
+            if(testDirectory(src)) {
+                employeesDatabaseDAO = XMLDAOFactory.get().getEmployeeXMLDAO(filename);
+                departmentsDatabaseDAO = XMLDAOFactory.get().getDepartmentXMLDAO(filename);
+            } else  {
+                ioManager.print("Could not open file " + filename);
+                return;
+            }
         }
         employeeController.source(employeesDatabaseDAO);
         departmentController.source(departmentsDatabaseDAO);
+    }
+
+    private String toFilename(String src) {
+        String IO_Directory = "src/main/resources/IO/";
+        return IO_Directory + src.replace(".xml", "") + ".xml";
+    }
+
+    private boolean testDirectory(String src)  {
+        FileManager departmentsFileWriter = new FileManagerImpl();
+        return departmentsFileWriter.isFilePresent(src);
     }
 
     private void processDepartments(String[] strings) {
@@ -219,11 +237,14 @@ public class ApplicationController implements AutoCloseable {
         departmentObj.getDepartmentList().addAll(tempDepartmentList.stream().distinct().toList());
         save(filename, departmentObj);
     }
-
     private void save(String filename, Departments departmentsObj) {
         Writer<Departments> writer = new DepartmentsWriter();
-        String absPath = "src/main/resources/IO/" + filename + ".xml";
-        writer.write(absPath, departmentsObj);
+        String absPath = toFilename(filename);
+        try {
+            writer.write(absPath, departmentsObj);
+        } catch (Exception e) {
+            System.out.println("Could not save the file");
+        }
     }
 
     private void processEmployees(String[] strings) {
