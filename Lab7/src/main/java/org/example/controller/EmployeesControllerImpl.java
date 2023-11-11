@@ -10,7 +10,6 @@ import org.example.service.EmployeesService;
 import java.util.List;
 
 public class EmployeesControllerImpl implements EmployeesController {
-
     private final EmployeesService service;
     private final CommonController controller;
     private final FilterManager<Employee> filterManager = new FilterManagerImpl<>(new EmployeeParser());
@@ -81,7 +80,6 @@ public class EmployeesControllerImpl implements EmployeesController {
     public List<Employee> filter(List<Employee> result, String fString) {
         return filterManager.filter(result, fString);
     }
-
     @Override
     public void remove(Long ln) {
         service.delete(ln);

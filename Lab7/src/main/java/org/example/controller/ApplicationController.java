@@ -34,6 +34,7 @@ public class ApplicationController implements AutoCloseable {
         departmentController = staticControllerFactory.initialDepartmentController();
         ioManager = staticControllerFactory.getCommonController();
         printer = new Printer(ioManager);
+        toSource("db");
     }
     private void mainLoop() {
         while (true) {
@@ -221,7 +222,8 @@ public class ApplicationController implements AutoCloseable {
 
     private void save(String filename, Departments departmentsObj) {
         Writer<Departments> writer = new DepartmentsWriter();
-        writer.write(filename, departmentsObj);
+        String absPath = "src/main/resources/IO/" + filename + ".xml";
+        writer.write(absPath, departmentsObj);
     }
 
     private void processEmployees(String[] strings) {
