@@ -89,13 +89,20 @@ public class ApplicationController implements AutoCloseable {
         EmployeesDao employeesDatabaseDAO;
         DepartmentsDAO departmentsDatabaseDAO;
         if (src.equalsIgnoreCase("db")) {
-            employeesDatabaseDAO = staticControllerFactory.getEmployeesDatabaseDAO();
-            departmentsDatabaseDAO = staticControllerFactory.getDepartmentsDatabaseDAO();
+            try {
+                employeesDatabaseDAO = staticControllerFactory.getEmployeesDatabaseDAO();
+                departmentsDatabaseDAO = staticControllerFactory.getDepartmentsDatabaseDAO();
+                ioManager.print("Source is successfully changed to Database");
+            } catch (Exception e) {
+                ioManager.print("Could not change source to Database");
+                return;
+            }
         } else {
             String filename = toFilename(src);
-            if(testDirectory(src)) {
+            if(testDirectory(filename)) {
                 employeesDatabaseDAO = XMLDAOFactory.get().getEmployeeXMLDAO(filename);
                 departmentsDatabaseDAO = XMLDAOFactory.get().getDepartmentXMLDAO(filename);
+                ioManager.print("Source is successfully changed to " + filename);
             } else  {
                 ioManager.print("Could not open file " + filename);
                 return;

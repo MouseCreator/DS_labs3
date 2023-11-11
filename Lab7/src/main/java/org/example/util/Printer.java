@@ -16,9 +16,9 @@ public class Printer {
         StringBuilder builder = new StringBuilder();
         builder.append("[");
         for (T i : list) {
-            builder.append(i).append("\n");
+            builder.append("\n").append(i);
         }
-        builder.append("]");
+        builder.append("\n]");
         controller.print(builder.toString());
     }
 
