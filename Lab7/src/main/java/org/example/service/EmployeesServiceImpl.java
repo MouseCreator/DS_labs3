@@ -4,6 +4,8 @@ import org.example.dao.EmployeesDao;
 import org.example.model.Employee;
 
 import java.util.List;
+import java.util.NoSuchElementException;
+import java.util.Optional;
 
 public class EmployeesServiceImpl implements EmployeesService{
 
@@ -70,5 +72,13 @@ public class EmployeesServiceImpl implements EmployeesService{
     @Override
     public void changeSource(EmployeesDao dao) {
         this.employeesDao = dao;
+    }
+
+    @Override
+    public Employee find(Long id) {
+        Optional<Employee> employee = employeesDao.find(id);
+        if (employee.isPresent())
+            return employee.get();
+        throw new NoSuchElementException("Cannot find employee with id " + id);
     }
 }

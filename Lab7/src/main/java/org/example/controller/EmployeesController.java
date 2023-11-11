@@ -4,6 +4,6 @@ import org.example.model.Employee;
 
 import java.util.List;
 
-public interface EmployeesController {
+public interface EmployeesController extends ModelController<Employee> {
     List<Employee> getAllEmployeesOfDepartment(Long id);
 }

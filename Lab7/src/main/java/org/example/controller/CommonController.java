@@ -101,4 +101,44 @@ public class CommonController {
     protected void supplyInput(BufferedReader reader) {
         this.reader = reader;
     }
+
+    public String askStringOr(String request, String defaultValue) {
+        startRequest(request);
+        String s;
+        try {
+            s = reader.readLine().trim();
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+        if (s.isEmpty()) {
+            return defaultValue;
+        }
+        return s;
+    }
+    public int askIntegerOr(String request, int defaultValue) {
+        startRequest(request);
+        while (true) {
+            try {
+                String value = reader.readLine().trim();
+                if (value.isEmpty())
+                    return defaultValue;
+                return Integer.parseInt(value);
+            } catch (NumberFormatException | IOException e) {
+                startRequest("Integer is expected!");
+            }
+        }
+    }
+    public long askLongOr(String request, long defaultValue) {
+        startRequest(request);
+        while (true) {
+            try {
+                String value = reader.readLine().trim();
+                if (value.isEmpty())
+                    return defaultValue;
+                return Long.parseLong(value);
+            } catch (NumberFormatException | IOException e) {
+                startRequest("Long value is expected!");
+            }
+        }
+    }
 }

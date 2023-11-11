@@ -15,4 +15,5 @@ public interface EmployeesService {
     List<Employee> findEmployeesFromDepartment(Long id);
     List<Employee> findFiltered(String filter);
     void changeSource(EmployeesDao dao);
+    Employee find(Long id);
 }
