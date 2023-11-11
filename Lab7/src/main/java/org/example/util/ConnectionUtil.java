@@ -15,8 +15,8 @@ import java.util.Properties;
 public class ConnectionUtil {
     private static boolean CONFIGURED = false;
     private static String DB_URL;
-    private static final String CONFIG_XML= "src/java/resources/xml/configuration.xml";
-    private static final String CONFIG_XSD = "src/java/resources/xsd/configuration.xsd";
+    private static final String CONFIG_XML= "src/main/resources/XML/configuration.xml";
+    private static final String CONFIG_XSD = "src/main/resources/XSD/configuration.xsd";
     private static Properties DB_PROPERTIES;
 
     private static void configure() {

@@ -53,7 +53,8 @@ public class ApplicationController implements AutoCloseable {
 
     public void close() {
         try {
-            staticControllerFactory.close();
+            if (staticControllerFactory != null)
+                staticControllerFactory.close();
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
@@ -88,8 +89,8 @@ public class ApplicationController implements AutoCloseable {
         EmployeesDao employeesDatabaseDAO;
         DepartmentsDAO departmentsDatabaseDAO;
         if (src.equalsIgnoreCase("db")) {
-            employeesDatabaseDAO = StaticControllerFactoryImpl.get().getEmployeesDatabaseDAO();
-            departmentsDatabaseDAO = StaticControllerFactoryImpl.get().getDepartmentsDatabaseDAO();
+            employeesDatabaseDAO = staticControllerFactory.getEmployeesDatabaseDAO();
+            departmentsDatabaseDAO = staticControllerFactory.getDepartmentsDatabaseDAO();
         } else {
             String filename = toFilename(src);
             if(testDirectory(src)) {
