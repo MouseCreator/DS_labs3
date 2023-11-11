@@ -171,7 +171,7 @@ public class ApplicationController implements AutoCloseable {
             result = controller.getAll();
         } else {
             String[] parts = params[0].split(" ", 2);
-            String cmd = params[0];
+            String cmd = formatCommand(parts[0]);
             switch (cmd) {
                 case "a", "all" -> result = controller.getAll();
                 case "f", "filter" -> result = controller.filter(parts[1]);
@@ -199,7 +199,7 @@ public class ApplicationController implements AutoCloseable {
             switch (ans) {
                 case "s", "save" -> {
                     try {
-                        save.apply(params[1], result);
+                        save.apply(commands[1], result);
                     } catch (Exception e) {
                         ioManager.print("Cannot save to file " + commands[1]);
                     }
@@ -244,7 +244,7 @@ public class ApplicationController implements AutoCloseable {
         try {
             writer.write(absPath, departmentsObj);
         } catch (Exception e) {
-            System.out.println("Could not save the file");
+            ioManager.print("Could not save the file");
         }
     }
 

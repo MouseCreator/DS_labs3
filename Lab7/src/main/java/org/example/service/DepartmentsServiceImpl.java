@@ -18,7 +18,7 @@ public class DepartmentsServiceImpl implements DepartmentsService{
 
     @Override
     public List<Department> findFiltered(String filter) {
-        return null;
+        return departmentsDAO.findByFilter(filter);
     }
 
     @Override
