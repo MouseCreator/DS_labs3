@@ -137,6 +137,7 @@ public class ApplicationController implements AutoCloseable {
             case "get" -> getDepartment(params);
             case "remove" -> removeDepartment(params);
             case "update" -> updateDepartment(params);
+            default -> ioManager.print("Unknown command " + command);
         }
     }
 
@@ -281,6 +282,7 @@ public class ApplicationController implements AutoCloseable {
             case "get" -> getEmployee(params);
             case "remove" -> removeEmployee(params);
             case "update" -> updateEmployee(params);
+            default -> ioManager.print("Unknown command " + command);
         }
     }
 
