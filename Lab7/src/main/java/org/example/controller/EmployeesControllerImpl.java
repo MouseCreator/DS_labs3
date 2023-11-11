@@ -1,5 +1,6 @@
 package org.example.controller;
 
+import org.example.dao.EmployeesDao;
 import org.example.filter.EmployeeParser;
 import org.example.filter.FilterManager;
 import org.example.filter.FilterManagerImpl;
@@ -59,6 +60,11 @@ public class EmployeesControllerImpl implements EmployeesController {
     @Override
     public Employee get(Long id) {
         return service.find(id);
+    }
+
+    @Override
+    public void source(EmployeesDao employeesDatabaseDAO) {
+        service.changeSource(employeesDatabaseDAO);
     }
 
     @Override

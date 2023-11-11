@@ -1,5 +1,6 @@
 package org.example.controller;
 
+import org.example.dao.DepartmentsDAO;
 import org.example.filter.DepartmentParser;
 import org.example.filter.FilterManager;
 import org.example.filter.FilterManagerImpl;
@@ -51,6 +52,11 @@ public class DepartmentControllerImpl implements DepartmentController {
     @Override
     public Department get(Long id) {
         return departmentsService.get(id);
+    }
+
+    @Override
+    public void source(DepartmentsDAO dao) {
+        departmentsService.changeSource(dao);
     }
 
     @Override

@@ -12,4 +12,5 @@ public interface ModelController<T extends IdIterable> {
     void create(T model);
     List<T> filter(String filterString);
     T get(Long id);
+
 }

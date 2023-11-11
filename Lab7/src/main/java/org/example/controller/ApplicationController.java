@@ -1,7 +1,10 @@
 package org.example.controller;
 
+import org.example.dao.DepartmentsDAO;
+import org.example.dao.EmployeesDao;
 import org.example.dao.IdIterable;
 import org.example.factory.StaticControllerFactoryImpl;
+import org.example.factory.XMLDAOFactory;
 import org.example.model.Department;
 import org.example.model.Departments;
 import org.example.model.Employee;
@@ -69,8 +72,27 @@ public class ApplicationController implements AutoCloseable {
         switch (dataType) {
             case "d", "departments" -> processDepartments(nextParts(parts));
             case "e", "employees" -> processEmployees(nextParts(parts));
+            case "s", "source" -> changeSource(nextParts(parts));
             default -> ioManager.print("Unexpected datatype: " + dataType);
         }
+    }
+
+    private void changeSource(String[] source) {
+        String src = source[0];
+        toSource(src);
+    }
+    private void toSource(String src) {
+        EmployeesDao employeesDatabaseDAO;
+        DepartmentsDAO departmentsDatabaseDAO;
+        if (src.equalsIgnoreCase("db")) {
+            employeesDatabaseDAO = StaticControllerFactoryImpl.get().getEmployeesDatabaseDAO();
+            departmentsDatabaseDAO = StaticControllerFactoryImpl.get().getDepartmentsDatabaseDAO();
+        } else {
+            employeesDatabaseDAO = XMLDAOFactory.get().getEmployeeXMLDAO(src);
+            departmentsDatabaseDAO = XMLDAOFactory.get().getDepartmentXMLDAO(src);
+        }
+        employeeController.source(employeesDatabaseDAO);
+        departmentController.source(departmentsDatabaseDAO);
     }
 
     private void processDepartments(String[] strings) {

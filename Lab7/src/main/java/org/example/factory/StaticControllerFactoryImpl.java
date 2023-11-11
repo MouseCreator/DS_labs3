@@ -1,15 +1,13 @@
 package org.example.factory;
 
 import org.example.controller.*;
-import org.example.dao.DBDepartmentsDAO;
-import org.example.dao.DBEmployeesDao;
-import org.example.dao.DepartmentsDAO;
-import org.example.dao.EmployeesDao;
+import org.example.dao.*;
 import org.example.service.DepartmentsService;
 import org.example.service.DepartmentsServiceImpl;
 import org.example.service.EmployeesServiceImpl;
 import org.example.util.ConnectionPool;
 import org.example.util.ConnectionProvider;
+
 
 public class StaticControllerFactoryImpl implements ControllerFactory, AutoCloseable {
     private ConnectionProvider provider;
@@ -60,4 +58,6 @@ public class StaticControllerFactoryImpl implements ControllerFactory, AutoClose
     public CommonController getCommonController() {
         return commonController;
     }
+
+
 }
