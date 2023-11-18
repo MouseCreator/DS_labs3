@@ -23,8 +23,8 @@ import java.net.Socket;
 public class CustomSocketServer implements Server{
     private ServerSocket serverSocket;
     private ThreadPool threadPool;
-    private EmployeesService employeesService;
-    private DepartmentsService departmentsService;
+    private EmployeesController employeesController;
+    private DepartmentController departmentController;
     @Override
     public void start() {
         try {
@@ -39,8 +39,10 @@ public class CustomSocketServer implements Server{
 
     private void initService() {
         ConnectionProvider provider = ConnectionPool.commonPool(4);
-        employeesService = new EmployeesServiceImpl(new DBEmployeesDao(provider));
-        departmentsService = new DepartmentsServiceImpl(new DBDepartmentsDAO(provider));
+        EmployeesService employeesService = new EmployeesServiceImpl(new DBEmployeesDao(provider));
+        DepartmentsService departmentsService = new DepartmentsServiceImpl(new DBDepartmentsDAO(provider));
+        employeesController = new SimpleEmployeeController(employeesService);
+        departmentController = new SimpleDepartmentController(departmentsService);
     }
 
     @Override
@@ -70,9 +72,6 @@ public class CustomSocketServer implements Server{
             outputStream.flush();
             ObjectInputStream inputStream = new ObjectInputStream(clientSocket.getInputStream());
             ServerCommunicator communicator = new ServerSocketCommunicator(outputStream, inputStream);
-            CommonController controller = new SocketController(communicator);
-            EmployeesController employeesController = new EmployeesControllerImpl(employeesService, controller);
-            DepartmentController departmentController = new DepartmentControllerImpl(controller, departmentsService);
             CommonServerController commonServerController = new CommonServerController();
             commonServerController.init(departmentController, employeesController);
             processRequests(communicator, commonServerController);
