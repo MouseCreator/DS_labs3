@@ -17,20 +17,17 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.NoSuchElementException;
 
-public class CommonClientController {
+public class CommonClientController implements Client {
     private final ClientCommunicator communicator;
     public CommonClientController(ClientCommunicator communicator) {
         this.communicator = communicator;
-    }
-    private CommonController ioManager;
-    private Printer printer;
-    public void start() {
-        initialize();
-        mainLoop();
-    }
-    private void initialize() {
         ioManager = LocalController.consoleController();
         printer = new Printer(ioManager);
+    }
+    private final CommonController ioManager;
+    private final Printer printer;
+    public void start() {
+        mainLoop();
     }
     private void mainLoop() {
         while (true) {
