@@ -1,4 +1,4 @@
-package org.example.server;
+package org.example.client;
 
 public interface Client extends AutoCloseable {
     void start();

@@ -1,6 +1,6 @@
 package org.example.server;
 
-public class CustomClient {
+public class CustomServer {
     public static void main(String[] args) {
 
     }

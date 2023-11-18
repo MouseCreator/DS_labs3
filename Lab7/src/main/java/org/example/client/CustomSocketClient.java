@@ -1,4 +1,4 @@
-package org.example.server;
+package org.example.client;
 
 public class CustomSocketClient implements Client{
     @Override
