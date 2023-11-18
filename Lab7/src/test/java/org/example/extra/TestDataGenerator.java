@@ -61,4 +61,7 @@ public class TestDataGenerator {
         departments.setEmployeeList(generateAllEmployees());
         return departments;
     }
+    public static TestDataGenerator get() {
+        return new TestDataGenerator();
+    }
 }
