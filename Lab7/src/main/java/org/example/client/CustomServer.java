@@ -1,6 +1,6 @@
 package org.example.client;
 
-public class CustomSocketClient {
+public class CustomServer {
     public static void main(String[] args) {
 
     }
