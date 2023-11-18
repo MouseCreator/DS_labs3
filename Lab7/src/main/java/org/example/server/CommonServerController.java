@@ -28,18 +28,10 @@ public class CommonServerController {
         Response response = new Response();
         String method = request.getMethod().toUpperCase();
         switch (method) {
-            case "POST" -> {
-                postMethod(request, response);
-            }
-            case "GET" -> {
-                getMethod(request, response);
-            }
-            case "DELETE" -> {
-                //delete
-            }
-            case "UPDATE" -> {
-                //update
-            }
+            case "POST" -> postMethod(request, response);
+            case "GET" -> getMethod(request, response);
+            case "DELETE" -> deleteMethod(request, response);
+            case "UPDATE" -> updateMethod(request, response);
             default -> {
                 response.setStatus(Status.CLIENT_ERROR);
                 response.setDetailsString("Unknown method: " + method);
@@ -48,22 +40,90 @@ public class CommonServerController {
         return response;
     }
 
+    private void updateMethod(Request request, Response response) {
+        StringBuilder builder = new StringBuilder();
+        Departments departments = request.getDepartments();
+        String target = request.getTarget();
+        if (target.equals("Department")) {
+            for (Department department : departments.getDepartmentList()) {
+                try {
+                    departmentController.update(department);
+                } catch (Exception e) {
+                    builder.append("Could not update department ").append(department).append(": ").append(e.getMessage());
+                }
+            }
+        } else if (target.equals("Employee")) {
+            for (Employee employee : departments.getEmployeeList()) {
+                try {
+                    employeesController.update(employee);
+                } catch (Exception e) {
+                    builder.append("Could not update employee ").append(employee).append(": ").append(e.getMessage());
+                }
+            }
+        } else {
+            unknownTargetResponse(response, target);
+            return;
+        }
+        String details = builder.toString();
+        if (details.isEmpty()) {
+            details = "Update success!";
+            response.setStatus(Status.SUCCESS);
+        } else {
+            response.setStatus(Status.WARNING);
+        }
+        response.setDetailsString(details);
+    }
+
+    private void deleteMethod(Request request, Response response) {
+        String target = request.getTarget();
+        if (target.equals("Department")) {
+            try {
+                Long id = Long.parseLong(response.getDetailsString().trim());
+                departmentController.remove(id);
+                response.setStatus(Status.SUCCESS);
+                response.setDetailsString("Removed department successfully!");
+            } catch (Exception e) {
+                response.setStatus(Status.SERVER_ERROR);
+                response.setDetailsString(e.getMessage());
+            }
+        } else if (target.equals("Employee")) {
+            try {
+                Long id = Long.parseLong(response.getDetailsString().trim());
+                employeesController.remove(id);
+                response.setStatus(Status.SUCCESS);
+                response.setDetailsString("Removed employee successfully!");
+            } catch (Exception e) {
+                response.setStatus(Status.SERVER_ERROR);
+                response.setDetailsString(e.getMessage());
+            }
+        } else {
+            unknownTargetResponse(response, target);
+        }
+    }
+
     private void postMethod(Request request, Response response) {
         StringBuilder builder = new StringBuilder();
         Departments departments = request.getDepartments();
-        for (Department department : departments.getDepartmentList()) {
-            try {
-                departmentController.create(department);
-            } catch (Exception e) {
-                builder.append("Could not create department ").append(department).append(": ").append(e.getMessage());
+        String target = request.getTarget();
+        if (target.equals("Department")) {
+            for (Department department : departments.getDepartmentList()) {
+                try {
+                    departmentController.create(department);
+                } catch (Exception e) {
+                    builder.append("Could not create department ").append(department).append(": ").append(e.getMessage());
+                }
             }
-        }
-        for (Employee employee : departments.getEmployeeList()) {
-            try {
-                employeesController.create(employee);
-            } catch (Exception e) {
-                builder.append("Could not create employee ").append(employee).append(": ").append(e.getMessage());
+        } else if (target.equals("Employee")) {
+            for (Employee employee : departments.getEmployeeList()) {
+                try {
+                    employeesController.create(employee);
+                } catch (Exception e) {
+                    builder.append("Could not create employee ").append(employee).append(": ").append(e.getMessage());
+                }
             }
+        } else {
+            unknownTargetResponse(response, target);
+            return;
         }
         String details = builder.toString();
         if (details.isEmpty()) {
@@ -74,6 +134,12 @@ public class CommonServerController {
         }
         response.setDetailsString(details);
     }
+
+    private static void unknownTargetResponse(Response response, String target) {
+        response.setStatus(Status.CLIENT_ERROR);
+        response.setTarget("Unknown target: " + target);
+    }
+
     private <T extends IdIterable> List<T> getModel(ModelController<T> controller, String request) {
         List<T> result = new ArrayList<>();
         if (request.isEmpty()) {
@@ -84,17 +150,13 @@ public class CommonServerController {
             String cmd = formatCommand(parts[0]);
             switch (cmd) {
                 case "a", "all" -> result = controller.getAll();
-                case "f", "filter" -> {
-                    result = controller.filter(parts[1]);
-                }
+                case "f", "filter" -> result = controller.filter(parts[1]);
                 case "id" -> {
                     Long id = Long.parseLong(parts[1]);
                     T model = controller.get(id);
                     result.add(model);
                 }
-                default -> {
-                    throw new IllegalArgumentException("Cannot resolve " + cmd);
-                }
+                default -> throw new IllegalArgumentException("Cannot resolve " + cmd);
             }
         }
         return result;
