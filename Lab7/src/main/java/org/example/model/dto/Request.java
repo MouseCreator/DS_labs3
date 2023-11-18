@@ -7,5 +7,6 @@ import org.example.model.Departments;
 public class Request {
     private String method;
     private String target;
+    private String details;
     private Departments departments;
 }

@@ -2,6 +2,7 @@ package org.example.server;
 
 import org.example.model.dto.Request;
 import org.example.model.dto.Response;
+import org.example.model.dto.Status;
 
 import java.io.IOException;
 import java.net.ServerSocket;
@@ -51,8 +52,5 @@ public class CustomSocketServer implements Server{
         }
     }
 
-    private void processRequest(Request request) {
-        Response response = new Response();
-        String method = request.getMethod();
-    }
+
 }

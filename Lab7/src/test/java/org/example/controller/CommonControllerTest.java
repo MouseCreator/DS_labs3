@@ -32,7 +32,7 @@ class CommonControllerTest {
         }
     }
 
-    private CommonController controller;
+    private LocalController controller;
     private OutputStream outputStream;
     private void processInput(String[] lines) {
         List<String> input = toAnswers(lines);
@@ -63,7 +63,7 @@ class CommonControllerTest {
     void setUp() {
         outputStream = new ByteArrayOutputStream();
         PrintStream printStream = new PrintStream(outputStream);
-        controller = new CommonController(System.in, printStream);
+        controller = new LocalController(System.in, printStream);
     }
 
     void testDialogue(String[] dialogueLines, Consumer<String> consumer) {

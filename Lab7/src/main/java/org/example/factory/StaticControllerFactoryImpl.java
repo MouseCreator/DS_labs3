@@ -27,7 +27,7 @@ public class StaticControllerFactoryImpl implements ControllerFactory, AutoClose
         provider = ConnectionPool.commonPool(16);
         departmentsDatabaseDAO = new DBDepartmentsDAO(provider);
         employeesDatabaseDAO = new DBEmployeesDao(provider);
-        commonController = CommonController.consoleController();
+        commonController = LocalController.consoleController();
     }
 
     @Override
