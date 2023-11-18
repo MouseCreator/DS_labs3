@@ -33,11 +33,19 @@ public class CommonClientController implements Client {
         while (true) {
             String command = readCommand();
             if (command.trim().equals("close")) {
+                closeConnection();
                 break;
             }
             commandProcessor(command);
         }
     }
+
+    private void closeConnection() {
+        Request request = new Request();
+        request.setMethod("CLOSE");
+        communicator.send(request);
+    }
+
     private String readCommand() {
         return ioManager.askString("Enter command");
     }
