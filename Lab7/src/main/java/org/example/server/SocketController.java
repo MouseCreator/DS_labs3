@@ -1,15 +1,15 @@
 package org.example.server;
 
-import org.example.communicator.ClientServerCommunicator;
+import org.example.communicator.ServerCommunicator;
 import org.example.controller.CommonController;
 import org.example.model.dto.Request;
 import org.example.model.dto.Response;
 import org.example.model.dto.Status;
 
 public class SocketController implements CommonController {
-    private final ClientServerCommunicator communicator;
-    public SocketController(ClientServerCommunicator clientServerCommunicator) {
-        this.communicator = clientServerCommunicator;
+    private final ServerCommunicator communicator;
+    public SocketController(ServerCommunicator serverCommunicator) {
+        this.communicator = serverCommunicator;
     }
 
     private Response createResponse(String message) {

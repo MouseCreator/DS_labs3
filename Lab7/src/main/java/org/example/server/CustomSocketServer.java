@@ -1,16 +1,11 @@
 package org.example.server;
 
-import org.example.model.dto.Request;
-import org.example.model.dto.Response;
-import org.example.model.dto.Status;
-
 import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
 
 public class CustomSocketServer implements Server{
     private ServerSocket serverSocket;
-
     private ThreadPool threadPool;
     @Override
     public void start() {
@@ -29,12 +24,12 @@ public class CustomSocketServer implements Server{
     }
 
     private void mainServerLoop() {
-        try {
-            while (true) {
+        while (true) {
+            try {
                 acceptAndProcess();
+            } catch (IOException e) {
+                throw new RuntimeException(e);
             }
-        } catch (IOException e) {
-            throw new RuntimeException(e);
         }
     }
 

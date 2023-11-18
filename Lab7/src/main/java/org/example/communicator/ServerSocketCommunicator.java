@@ -7,11 +7,11 @@ import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 
-public class SocketCommunicator implements ClientServerCommunicator {
+public class ServerSocketCommunicator implements ServerCommunicator {
     private final ObjectOutputStream outputStream;
     private final ObjectInputStream inputStream;
 
-    public SocketCommunicator(ObjectOutputStream outputStream, ObjectInputStream inputStream) {
+    public ServerSocketCommunicator(ObjectOutputStream outputStream, ObjectInputStream inputStream) {
         this.outputStream = outputStream;
         this.inputStream = inputStream;
     }
