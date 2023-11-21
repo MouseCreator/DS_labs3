@@ -94,7 +94,6 @@ public class CommonClientController implements Client {
         while (true) {
             Response response = communicator.receive();
             int status = response.getStatus();
-
             switch (status) {
                 case Status.SUCCESS, Status.WARNING -> {
                     ioManager.print(response.getDetailsString());

@@ -174,7 +174,7 @@ public class CommonServerController {
             try {
                 List<Department> modelList = getModel(departmentController, details);
                 departments.setDepartmentList(modelList);
-                response.setStatus(Status.SUCCESS);
+                response.setStatus(Status.COLLECTION);
             } catch (Exception e) {
                 response.setDetailsString(e.getMessage());
                 response.setStatus(Status.SERVER_ERROR);
@@ -183,7 +183,7 @@ public class CommonServerController {
             try {
                 List<Employee> modelList = getModel(employeesController, details);
                 departments.setEmployeeList(modelList);
-                response.setStatus(Status.SUCCESS);
+                response.setStatus(Status.COLLECTION);
             } catch (Exception e) {
                 response.setDetailsString(e.getMessage());
                 response.setStatus(Status.SERVER_ERROR);
