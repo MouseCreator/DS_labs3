@@ -92,10 +92,14 @@ public class CommonClientController implements Client {
         switch (status) {
             case Status.SUCCESS, Status.WARNING -> ioManager.print(response.getDetailsString());
             case Status.COLLECTION -> {
-                printer.print(response.getDepartments());
+                printResultCollection(response);
                 processSave(request, response);
             } default -> throw new IllegalArgumentException("Status unknown: " + status);
         }
+    }
+
+    private void printResultCollection(Response response) {
+        printer.print(response.getDepartments());
     }
 
     private void processSave(Request request, Response response) {
@@ -247,7 +251,7 @@ public class CommonClientController implements Client {
         Request request = new Request();
         request.setTarget("Employee");
         request.setMethod("get");
-        request.setDetails(String.valueOf(id));
+        request.setDetails("id " + id);
         Response result = communicator.sendAndReceive(request);
         if (result.getDepartments().getEmployeeList().isEmpty())
             throw new NoSuchElementException("Cannot find employee with id " + id);
@@ -258,9 +262,9 @@ public class CommonClientController implements Client {
         Request request = new Request();
         request.setTarget("Department");
         request.setMethod("get");
-        request.setDetails(String.valueOf(id));
+        request.setDetails("id " + id);
         Response result = communicator.sendAndReceive(request);
-        if (result.getDepartments().getEmployeeList().isEmpty())
+        if (result.getDepartments().getDepartmentList().isEmpty())
             throw new NoSuchElementException("Cannot find department with id " + id);
         return result.getDepartments().getDepartmentList().get(0);
     }
