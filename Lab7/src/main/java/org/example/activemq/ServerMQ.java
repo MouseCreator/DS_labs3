@@ -1,6 +1,7 @@
 package org.example.activemq;
 
 import org.apache.activemq.ActiveMQConnectionFactory;
+import org.example.rmi.server.ControllerInitializer;
 import org.example.server.CommonServerController;
 import org.example.server.ThreadPool;
 import org.example.server.ThreadPoolImpl;
@@ -11,8 +12,12 @@ public class ServerMQ implements ExceptionListener {
     public Session session = null;
     private MessageConsumer declarationConsumer = null;
     private final ThreadPool threadPool = new ThreadPoolImpl(4);
+
+    private CommonServerController controllerInstance;
     public void initialize(String declareDestinationStr) {
         try {
+            ControllerInitializer initializer = new ControllerInitializer();
+            controllerInstance = initializer.simpleDepartmentController();
             ActiveMQConnectionFactory connectionFactory = new ActiveMQConnectionFactory("vm://localhost");
             Connection connection = connectionFactory.createConnection();
             connection.start();
@@ -27,7 +32,7 @@ public class ServerMQ implements ExceptionListener {
     }
 
     public void runServer() {
-        while (true) {
+        while (!Thread.currentThread().isInterrupted()) {
             try {
                 Message message = declarationConsumer.receive(1000);
                 if (message == null)
@@ -51,8 +56,7 @@ public class ServerMQ implements ExceptionListener {
         MessageProducer producer = session.createProducer(serverDestination);
         producer.setDeliveryMode(DeliveryMode.NON_PERSISTENT);
         ServerCommunicatorMQ serverCommunicatorMQ = new ServerCommunicatorMQ(consumer, producer, session);
-        CommonServerController controller = new CommonServerController();
-        threadPool.submit(new ServerRunnable(serverCommunicatorMQ, controller));
+        threadPool.submit(new ServerRunnable(serverCommunicatorMQ, controllerInstance));
     }
 
     @Override
