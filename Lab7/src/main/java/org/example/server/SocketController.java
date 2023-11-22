@@ -141,7 +141,7 @@ public class SocketController implements CommonController {
     @Override
     public void print(String s) {
         Response response = new Response();
-        response.setStatus(Status.INFO);
+        response.setStatus(Status.WARNING);
         response.setDetailsString(s);
         communicator.send(response);
     }
