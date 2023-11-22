@@ -35,7 +35,11 @@ public class CommonClientController implements Client {
             if (command.trim().equals("close")) {
                 break;
             }
-            commandProcessor(command);
+            try {
+                commandProcessor(command);
+            } catch (Exception e) {
+                ioManager.print("Error: " + e.getMessage());
+            }
         }
     }
 
@@ -59,7 +63,7 @@ public class CommonClientController implements Client {
             ioManager.print("Cannot execute command! Expected input format: [data type] [command] [parameters]");
             return;
         }
-        String dataType = formatCommand(parts[0]);
+        String dataType = formatCommand(safeParam(parts));
         Request request = new Request();
         switch (dataType) {
             case "d", "departments" -> processDepartments(request, nextParts(parts));
@@ -70,7 +74,7 @@ public class CommonClientController implements Client {
 
     private void processDepartments(Request request, String[] strings) {
         request.setTarget("Department");
-        String command = strings[0];
+        String command = safeParam(strings);
         String[] params = nextParts(strings);
         switch (command) {
             case "add" -> addDepartment(request, params);
@@ -86,15 +90,11 @@ public class CommonClientController implements Client {
         Response response = communicator.sendAndReceive(request);
         int status = response.getStatus();
         switch (status) {
-            case Status.SUCCESS, Status.WARNING -> {
-                ioManager.print(response.getDetailsString());
-            }
+            case Status.SUCCESS, Status.WARNING -> ioManager.print(response.getDetailsString());
             case Status.COLLECTION -> {
                 printer.print(response.getDepartments());
                 processSave(request, response);
-            } default -> {
-                throw new IllegalArgumentException("Status unknown: " + status);
-            }
+            } default -> throw new IllegalArgumentException("Status unknown: " + status);
         }
     }
 
@@ -130,7 +130,7 @@ public class CommonClientController implements Client {
             return;
         }
         request.setMethod("update");
-        Long id = Long.parseLong(params[0]);
+        Long id = Long.parseLong(safeParam(params));
         Department department = findDepartmentById(id);
         editDepartment(department);
         Departments departments = initDepartments(department);
@@ -142,7 +142,7 @@ public class CommonClientController implements Client {
             ioManager.print("Expected one parameter!");
             return;
         }
-        request.setDetails(params[0]);
+        request.setDetails(safeParam(params));
     }
 
     private void addDepartment(Request request, String[] params) {
@@ -161,8 +161,12 @@ public class CommonClientController implements Client {
     }
 
     private void getDepartment(Request request, String[] params) {
-        request.setDetails(params[0]);
+        request.setDetails(safeParam(params));
         request.setMethod("get");
+    }
+
+    private static String safeParam(String[] params) {
+        return params.length == 0 ? "" : params[0];
     }
 
     private void saveToFile(String filename, List<Department> departments) {
@@ -211,7 +215,7 @@ public class CommonClientController implements Client {
 
     private void processEmployees(Request request, String[] strings) {
         request.setTarget("Employee");
-        String command = strings[0];
+        String command = safeParam(strings);
         String[] params = nextParts(strings);
         switch (command) {
             case "add" -> addEmployee(request, params);
@@ -220,6 +224,7 @@ public class CommonClientController implements Client {
             case "update" -> updateEmployee(request, params);
             default -> ioManager.print("Unknown command " + command);
         }
+        sendAndProcess(request);
     }
 
     private void updateEmployee(Request request, String[] params) {
@@ -227,7 +232,7 @@ public class CommonClientController implements Client {
             ioManager.print("Expected one parameter!");
         }
         request.setMethod("update");
-        Long id = Long.parseLong(params[0]);
+        Long id = Long.parseLong(safeParam(params));
         try {
             Employee employee = findEmployeeById(id);
             printer.print(employee);
@@ -264,12 +269,15 @@ public class CommonClientController implements Client {
         if (params.length!=1) {
             ioManager.print("Expected one parameter!");
         }
-        request.setDetails(params[0]);
+        request.setDetails(safeParam(params));
         request.setMethod("delete");
     }
 
     private void getEmployee(Request request, String[] params) {
-        request.setDetails(params[0]);
+        if (params.length == 0)
+            request.setDetails("");
+        else
+            request.setDetails(safeParam(params));
         request.setMethod("get");
     }
 
