@@ -16,8 +16,7 @@ public class SocketClientCommunicator implements ClientCommunicator {
         this.inputStream = inputStream;
     }
 
-    @Override
-    public void send(Request r) {
+    private void send(Request r) {
         try {
             outputStream.writeObject(r);
         } catch (IOException e) {
@@ -25,13 +24,18 @@ public class SocketClientCommunicator implements ClientCommunicator {
         }
     }
 
-    @Override
-    public Response receive() {
+    private Response receive() {
         try {
             return (Response) inputStream.readObject();
         } catch (IOException | ClassNotFoundException e) {
             throw new RuntimeException(e);
         }
+    }
+
+    @Override
+    public Response sendAndReceive(Request request) {
+        send(request);
+        return receive();
     }
 
     @Override

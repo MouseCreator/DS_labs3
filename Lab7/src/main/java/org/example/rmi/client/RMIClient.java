@@ -13,13 +13,18 @@ public class RMIClient {
         String departmentsUrl = "//localhost:1234/Departments";
         try {
             DepartmentRemote departmentRemote = (DepartmentRemote) Naming.lookup(departmentsUrl);
-            Request request = new Request();
-            request.setMethod("Get");
-            request.setTarget("Department");
-            request.setDetails("all");
+            Request request = createRequest();
             System.out.println(departmentRemote.get(request));
         } catch (NotBoundException | RemoteException | MalformedURLException e) {
             throw new RuntimeException(e);
         }
+    }
+
+    private static Request createRequest() {
+        Request request = new Request();
+        request.setMethod("Get");
+        request.setTarget("Department");
+        request.setDetails("all");
+        return request;
     }
 }

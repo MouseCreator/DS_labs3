@@ -33,17 +33,10 @@ public class CommonClientController implements Client {
         while (true) {
             String command = readCommand();
             if (command.trim().equals("close")) {
-                closeConnection();
                 break;
             }
             commandProcessor(command);
         }
-    }
-
-    private void closeConnection() {
-        Request request = new Request();
-        request.setMethod("CLOSE");
-        communicator.send(request);
     }
 
     private String readCommand() {
@@ -90,21 +83,17 @@ public class CommonClientController implements Client {
     }
 
     private void sendAndProcess(Request request) {
-        communicator.send(request);
-        while (true) {
-            Response response = communicator.receive();
-            int status = response.getStatus();
-            switch (status) {
-                case Status.SUCCESS, Status.WARNING -> {
-                    ioManager.print(response.getDetailsString());
-                    return;
-                }
-                case Status.INFO -> ioManager.print(response.getDetailsString());
-                case Status.COLLECTION -> {
-                    printer.print(response.getDepartments());
-                    processSave(request, response);
-                    return;
-                }
+        Response response = communicator.sendAndReceive(request);
+        int status = response.getStatus();
+        switch (status) {
+            case Status.SUCCESS, Status.WARNING -> {
+                ioManager.print(response.getDetailsString());
+            }
+            case Status.COLLECTION -> {
+                printer.print(response.getDepartments());
+                processSave(request, response);
+            } default -> {
+                throw new IllegalArgumentException("Status unknown: " + status);
             }
         }
     }
@@ -202,8 +191,7 @@ public class CommonClientController implements Client {
         request.setTarget("Employee");
         request.setMethod("get");
         request.setDetails("f department="+id);
-        communicator.send(request);
-        Response result = communicator.receive();
+        Response result = communicator.sendAndReceive(request);
         return result.getDepartments().getEmployeeList();
     }
     private void save(String filename, Departments departmentsObj) {
@@ -255,8 +243,7 @@ public class CommonClientController implements Client {
         request.setTarget("Employee");
         request.setMethod("get");
         request.setDetails(String.valueOf(id));
-        communicator.send(request);
-        Response result = communicator.receive();
+        Response result = communicator.sendAndReceive(request);
         if (result.getDepartments().getEmployeeList().isEmpty())
             throw new NoSuchElementException("Cannot find employee with id " + id);
         return result.getDepartments().getEmployeeList().get(0);
@@ -267,8 +254,7 @@ public class CommonClientController implements Client {
         request.setTarget("Department");
         request.setMethod("get");
         request.setDetails(String.valueOf(id));
-        communicator.send(request);
-        Response result = communicator.receive();
+        Response result = communicator.sendAndReceive(request);
         if (result.getDepartments().getEmployeeList().isEmpty())
             throw new NoSuchElementException("Cannot find department with id " + id);
         return result.getDepartments().getDepartmentList().get(0);
