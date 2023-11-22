@@ -15,13 +15,14 @@ public class ServerRunnable implements Runnable{
     }
     @Override
     public void run() {
-        while (true) {
+        while (!Thread.currentThread().isInterrupted()) {
             Request request = serverCommunicator.receive();
             if (request.getMethod().equals("CLOSE")) {
                 return;
             }
             Response response = controller.get(request);
             serverCommunicator.send(response);
+
         }
     }
 }

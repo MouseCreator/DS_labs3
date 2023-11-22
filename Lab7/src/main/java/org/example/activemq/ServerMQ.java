@@ -43,6 +43,10 @@ public class ServerMQ implements ExceptionListener {
                     createNewCommunicator(parts[0], parts[1]);
                 }
             } catch (JMSException e) {
+                if (e.getLinkedException() instanceof InterruptedException) {
+                    threadPool.shutdown();
+                    return;
+                }
                 throw new RuntimeException(e);
             }
         }
