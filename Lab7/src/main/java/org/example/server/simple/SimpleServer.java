@@ -11,9 +11,7 @@ public class SimpleServer {
         try (ServerSocket serverSocket = new ServerSocket(7777)) {
             Socket clientSocket = serverSocket.accept();
             ObjectOutputStream outputStream = new ObjectOutputStream(clientSocket.getOutputStream());
-            outputStream.flush();
             ObjectInputStream inputStream = new ObjectInputStream(clientSocket.getInputStream());
-
             String s = (String) (inputStream.readObject());
             outputStream.writeObject(s + "2");
         } catch (IOException | ClassNotFoundException e) {

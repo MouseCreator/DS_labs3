@@ -78,7 +78,7 @@ public class CommonServerController implements RequestProcessor {
         String target = request.getTarget();
         if (target.equals("Department")) {
             try {
-                Long id = Long.parseLong(response.getDetailsString().trim());
+                Long id = Long.parseLong(request.getDetails().trim());
                 departmentController.remove(id);
                 response.setStatus(Status.SUCCESS);
                 response.setDetailsString("Removed department successfully!");
@@ -88,7 +88,7 @@ public class CommonServerController implements RequestProcessor {
             }
         } else if (target.equals("Employee")) {
             try {
-                Long id = Long.parseLong(response.getDetailsString().trim());
+                Long id = Long.parseLong(request.getDetails().trim());
                 employeesController.remove(id);
                 response.setStatus(Status.SUCCESS);
                 response.setDetailsString("Removed employee successfully!");

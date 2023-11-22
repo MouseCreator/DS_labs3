@@ -94,7 +94,9 @@ public class CommonClientController implements Client {
             case Status.COLLECTION -> {
                 printResultCollection(response);
                 processSave(request, response);
-            } default -> throw new IllegalArgumentException("Status unknown: " + status);
+            }
+            case Status.SERVER_ERROR, Status.CLIENT_ERROR -> ioManager.print(response.getStatus() + ": " + response.getDetailsString());
+            default -> throw new IllegalArgumentException("Status unknown: " + status);
         }
     }
 
@@ -146,6 +148,7 @@ public class CommonClientController implements Client {
             ioManager.print("Expected one parameter!");
             return;
         }
+        request.setMethod("DELETE");
         request.setDetails(safeParam(params));
     }
 
