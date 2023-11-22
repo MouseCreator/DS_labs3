@@ -14,7 +14,7 @@ import org.example.model.dto.Status;
 import java.util.ArrayList;
 import java.util.List;
 
-public class CommonServerController {
+public class CommonServerController implements RequestProcessor {
     private DepartmentController departmentController;
     private EmployeesController employeesController;
     public void init(DepartmentController departmentController, EmployeesController employeesController) {
