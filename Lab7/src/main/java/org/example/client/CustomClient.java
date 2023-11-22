@@ -12,11 +12,10 @@ public class CustomClient {
     public static void main(String[] args) {
         Socket socket = null;
         try {
-            socket = new Socket("localhost", 7777);
+            socket = new Socket("127.0.0.1", 7777);
             ObjectInputStream objectInputStream = new ObjectInputStream(socket.getInputStream());
             ObjectOutputStream objectOutputStream = new ObjectOutputStream(socket.getOutputStream());
             objectOutputStream.flush();
-            System.out.println("Pass!");
             ClientCommunicator communicator = new SocketClientCommunicator(objectOutputStream, objectInputStream);
             try (CommonClientController controller = new CommonClientController(communicator)) {
                 controller.start();
