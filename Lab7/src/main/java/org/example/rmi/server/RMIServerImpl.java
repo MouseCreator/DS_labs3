@@ -1,4 +1,6 @@
-package org.example.rmi;
+package org.example.rmi.server;
+
+import org.example.rmi.rinterface.DepartmentRemote;
 
 import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;

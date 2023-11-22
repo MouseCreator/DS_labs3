@@ -1,4 +1,6 @@
-package org.example.rmi;
+package org.example.rmi.client;
+
+import org.example.rmi.rinterface.DepartmentRemote;
 
 import java.net.MalformedURLException;
 import java.rmi.Naming;
