@@ -8,17 +8,17 @@ import org.example.server.ThreadPoolImpl;
 import javax.jms.*;
 
 public class ServerMQ implements ExceptionListener {
-
     public Session session = null;
     private MessageConsumer declarationConsumer = null;
     private final ThreadPool threadPool = new ThreadPoolImpl(4);
-    public void initialize(Destination declareDestination) {
+    public void initialize(String declareDestinationStr) {
         try {
             ActiveMQConnectionFactory connectionFactory = new ActiveMQConnectionFactory("vm://localhost");
             Connection connection = connectionFactory.createConnection();
             connection.start();
             connection.setExceptionListener(this);
             session = connection.createSession(false, Session.AUTO_ACKNOWLEDGE);
+            Destination declareDestination = session.createQueue(declareDestinationStr);
             declarationConsumer = session.createConsumer(declareDestination);
         } catch (Exception e) {
             System.out.println("Caught exception: " + e);
@@ -30,8 +30,7 @@ public class ServerMQ implements ExceptionListener {
         while (true) {
             try {
                 Message message = declarationConsumer.receive(1000);
-                if (message instanceof TextMessage) {
-                    TextMessage textMessage = (TextMessage) message;
+                if (message instanceof TextMessage textMessage) {
                     String[] parts = textMessage.getText().split(" ");
                     if (parts.length != 2)
                         continue;

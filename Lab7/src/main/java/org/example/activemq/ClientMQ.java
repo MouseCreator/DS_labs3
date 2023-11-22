@@ -12,7 +12,7 @@ public class ClientMQ implements ExceptionListener, ClientCommunicator {
     private MessageConsumer consumer = null;
     private MessageProducer producer = null;
     private Connection connection = null;
-    public void start(Destination declareDestination) {
+    public void start(String declareDestinationStr) {
         try {
             ActiveMQConnectionFactory connectionFactory = new ActiveMQConnectionFactory("vm://localhost");
             connection = connectionFactory.createConnection();
@@ -23,6 +23,7 @@ public class ClientMQ implements ExceptionListener, ClientCommunicator {
             String serverQueueName = "SERVER." + connection.getClientID();
             Destination clientDestination = session.createQueue(clientQueueName);
             Destination serverDestination = session.createQueue(serverQueueName);
+            Destination declareDestination = session.createQueue(declareDestinationStr);
             connect(clientQueueName, serverQueueName, declareDestination);
             consumer = session.createConsumer(serverDestination);
             producer = session.createProducer(clientDestination);
