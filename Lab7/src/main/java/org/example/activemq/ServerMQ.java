@@ -12,7 +12,6 @@ public class ServerMQ implements ExceptionListener {
     public Session session = null;
     private MessageConsumer declarationConsumer = null;
     private final ThreadPool threadPool = new ThreadPoolImpl(4);
-
     private CommonServerController controllerInstance;
     public void initialize(String declareDestinationStr) {
         try {

@@ -2,17 +2,9 @@ package org.example.server;
 
 import org.example.communicator.ServerCommunicator;
 import org.example.communicator.ServerSocketCommunicator;
-import org.example.controller.*;
-import org.example.dao.DBDepartmentsDAO;
-import org.example.dao.DBEmployeesDao;
 import org.example.model.dto.Request;
 import org.example.model.dto.Response;
-import org.example.service.DepartmentsService;
-import org.example.service.DepartmentsServiceImpl;
-import org.example.service.EmployeesService;
-import org.example.service.EmployeesServiceImpl;
-import org.example.util.ConnectionPool;
-import org.example.util.ConnectionProvider;
+import org.example.rmi.server.ControllerInitializer;
 
 import java.io.IOException;
 import java.io.ObjectInputStream;
@@ -23,8 +15,7 @@ import java.net.Socket;
 public class CustomSocketServer implements Server{
     private ServerSocket serverSocket;
     private ThreadPool threadPool;
-    private EmployeesController employeesController;
-    private DepartmentController departmentController;
+    private CommonServerController commonServerController;
     @Override
     public void start() {
         try {
@@ -38,11 +29,8 @@ public class CustomSocketServer implements Server{
     }
 
     private void initService() {
-        ConnectionProvider provider = ConnectionPool.commonPool(4);
-        EmployeesService employeesService = new EmployeesServiceImpl(new DBEmployeesDao(provider));
-        DepartmentsService departmentsService = new DepartmentsServiceImpl(new DBDepartmentsDAO(provider));
-        employeesController = new SimpleEmployeeController(employeesService);
-        departmentController = new SimpleDepartmentController(departmentsService);
+        ControllerInitializer controllerInitializer = new ControllerInitializer();
+        commonServerController = controllerInitializer.simpleDepartmentController();
     }
 
     @Override
@@ -72,8 +60,6 @@ public class CustomSocketServer implements Server{
             outputStream.flush();
             ObjectInputStream inputStream = new ObjectInputStream(clientSocket.getInputStream());
             ServerCommunicator communicator = new ServerSocketCommunicator(outputStream, inputStream);
-            CommonServerController commonServerController = new CommonServerController();
-            commonServerController.init(departmentController, employeesController);
             processRequests(communicator, commonServerController);
         } catch (Exception e) {
             throw new RuntimeException(e);
