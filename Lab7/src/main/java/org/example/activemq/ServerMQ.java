@@ -22,7 +22,7 @@ public class ServerMQ implements ExceptionListener {
             declarationConsumer = session.createConsumer(declareDestination);
         } catch (Exception e) {
             System.out.println("Caught exception: " + e);
-            e.printStackTrace();
+            throw new RuntimeException(e);
         }
     }
 
@@ -30,6 +30,8 @@ public class ServerMQ implements ExceptionListener {
         while (true) {
             try {
                 Message message = declarationConsumer.receive(1000);
+                if (message == null)
+                    continue;
                 if (message instanceof TextMessage textMessage) {
                     String[] parts = textMessage.getText().split(" ");
                     if (parts.length != 2)
@@ -37,7 +39,7 @@ public class ServerMQ implements ExceptionListener {
                     createNewCommunicator(parts[0], parts[1]);
                 }
             } catch (JMSException e) {
-                System.out.println(e.getMessage());
+                throw new RuntimeException(e);
             }
         }
     }

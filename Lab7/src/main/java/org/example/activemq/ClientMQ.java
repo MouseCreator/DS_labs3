@@ -30,12 +30,11 @@ public class ClientMQ implements ExceptionListener, ClientCommunicator {
             producer.setDeliveryMode(DeliveryMode.NON_PERSISTENT);
         } catch (Exception e) {
             System.out.println("Caught exception: " + e);
-            e.printStackTrace();
+            throw new RuntimeException(e);
         }
     }
 
     private void connect(String clientQueueName, String serverQueueName, Destination declareDestination) throws JMSException {
-        producer.setDeliveryMode(DeliveryMode.NON_PERSISTENT);
         MessageProducer declareProducer = session.createProducer(declareDestination);
         declareProducer.setDeliveryMode(DeliveryMode.NON_PERSISTENT);
         Message message = session.createTextMessage(clientQueueName + " " + serverQueueName);

@@ -29,7 +29,11 @@ public class ServerCommunicatorMQ implements ServerCommunicator {
     public Request receive() {
         while (true) {
             try {
-                ObjectMessage message = (ObjectMessage) consumer.receive(500);
+                Message tempMsg = consumer.receive(500);
+                if (tempMsg == null) {
+                    continue;
+                }
+                ObjectMessage message = (ObjectMessage) tempMsg;
                 return (Request) message.getObject();
             } catch (JMSException e) {
                 System.out.println(e.getMessage());
