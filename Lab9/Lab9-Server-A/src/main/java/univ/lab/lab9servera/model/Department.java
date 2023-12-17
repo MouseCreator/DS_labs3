@@ -13,4 +13,8 @@ public class Department {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     private String name;
+
+    public Department(Long id) {
+        this.id = id;
+    }
 }
