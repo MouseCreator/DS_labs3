@@ -8,8 +8,12 @@ import univ.lab.dto.DepartmentUpdateDTO;
 import univ.lab.dto.EmployeeCreateDTO;
 import univ.lab.dto.EmployeeUpdateDTO;
 import univ.lab.model.Department;
+import univ.lab.model.Departments;
 import univ.lab.model.Employee;
+import univ.lab.writer.DepartmentsWriter;
+import univ.lab.writer.Writer;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -114,6 +118,43 @@ public class UserCommunicator {
 
         List<Employee> employees = employeeGetter(commandStack);
         ioManager.print(employees.toString());
+
+        if(ioManager.askBoolean("Save to file?")) {
+            String filename = ioManager.askString("Enter filename:");
+            saveEmployees(filename, employees);
+        }
+    }
+    private void saveEmployees(String filename, List<Employee> list) {
+        Departments departmentObj = new Departments();
+        departmentObj.getEmployeeList().addAll(list);
+        List<Department> tempDepartmentList = new ArrayList<>();
+        for (Employee employee : list) {
+            tempDepartmentList.add(clientCommunicator.getDepartmentById(employee.getDepartmentId()));
+        }
+        departmentObj.getDepartmentList().addAll(tempDepartmentList.stream().distinct().toList());
+        save(filename, departmentObj);
+    }
+    private void saveDepartments(String filename, List<Department> departments) {
+        Departments departmentsObj = new Departments();
+        departmentsObj.setDepartmentList(departments);
+        for (Department department : departments) {
+            List<Employee> employeeList = clientCommunicator.getEmployeesByDepartment(department.getId());
+            departmentsObj.getEmployeeList().addAll(employeeList);
+        }
+        save(filename, departmentsObj);
+    }
+    private String toFilename(String src) {
+        String IO_Directory = "src/main/resources/IO/";
+        return IO_Directory + src.replace(".xml", "") + ".xml";
+    }
+    private void save(String filename, Departments departmentsObj) {
+        Writer<Departments> writer = new DepartmentsWriter();
+        String absPath = toFilename(filename);
+        try {
+            writer.write(absPath, departmentsObj);
+        } catch (Exception e) {
+            ioManager.print("Could not save the file");
+        }
     }
 
     private void addEmployee(CommandStack commandStack) {
@@ -178,6 +219,11 @@ public class UserCommunicator {
 
         List<Department> departments = departmentGetter(commandStack);
         ioManager.print(departments.toString());
+
+        if(ioManager.askBoolean("Save to file?")) {
+            String filename = ioManager.askString("Enter filename:");
+            saveDepartments(filename, departments);
+        }
     }
 
     private void addDepartment(CommandStack commandStack) {
