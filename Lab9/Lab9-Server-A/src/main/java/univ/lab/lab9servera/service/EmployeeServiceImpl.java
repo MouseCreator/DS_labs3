@@ -4,6 +4,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import univ.lab.lab9servera.dto.EmployeeCreateDTO;
 import univ.lab.lab9servera.dto.EmployeeResponseDTO;
+import univ.lab.lab9servera.dto.EmployeeUpdateDTO;
 import univ.lab.lab9servera.exception.EntityNotFoundException;
 import univ.lab.lab9servera.mapper.EmployeeMapper;
 import univ.lab.lab9servera.model.Department;
@@ -53,5 +54,17 @@ public class EmployeeServiceImpl implements EmployeeService {
         return employeeRepository.findAllByDepartment(department).stream()
                 .map(employeeMapper::toResponse)
                 .toList();
+    }
+
+    @Override
+    public EmployeeResponseDTO update(EmployeeUpdateDTO employeeUpdateDTO) {
+        Employee employee = employeeMapper.toEmployee(employeeUpdateDTO);
+        return employeeMapper.toResponse(employeeRepository.save(employee));
+
+    }
+
+    @Override
+    public void delete(Long id) {
+        employeeRepository.deleteById(id);
     }
 }

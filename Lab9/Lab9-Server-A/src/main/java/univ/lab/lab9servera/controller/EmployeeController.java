@@ -1,9 +1,9 @@
 package univ.lab.lab9servera.controller;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
-import univ.lab.lab9servera.dto.EmployeeCreateDTO;
-import univ.lab.lab9servera.dto.EmployeeResponseDTO;
+import univ.lab.lab9servera.dto.*;
 import univ.lab.lab9servera.service.EmployeeService;
 
 import java.util.List;
@@ -37,5 +37,15 @@ public class EmployeeController {
     @GetMapping("/by-department")
     public List<EmployeeResponseDTO> getAllByName(@RequestParam Long departmentId) {
         return employeeService.getAllByDepartment(departmentId);
+    }
+
+    @PutMapping
+    public EmployeeResponseDTO update(@RequestBody EmployeeUpdateDTO employeeUpdateDTO) {
+        return employeeService.update(employeeUpdateDTO);
+    }
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    @DeleteMapping("/{id}")
+    public void deleteById(@PathVariable Long id) {
+        employeeService.delete(id);
     }
 }
