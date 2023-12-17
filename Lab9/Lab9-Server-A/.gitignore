@@ -31,4 +31,6 @@ build/
 
 ### VS Code ###
 .vscode/
-lab9_boot\
+
+#Docker
+docker-compose.yml
