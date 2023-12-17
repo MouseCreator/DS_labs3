@@ -1,8 +1,6 @@
 package univ.lab.lab9servera.model;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.Id;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
@@ -12,6 +10,7 @@ import lombok.NoArgsConstructor;
 @Table(name="departments")
 public class Department {
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     private String name;
 }

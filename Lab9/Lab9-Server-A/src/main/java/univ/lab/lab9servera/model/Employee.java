@@ -1,11 +1,10 @@
 package univ.lab.lab9servera.model;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.Id;
-import jakarta.persistence.ManyToOne;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
+import lombok.ToString;
 
 @Entity
 @Data
@@ -13,13 +12,15 @@ import lombok.NoArgsConstructor;
 @Table(name="employees")
 public class Employee {
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-
     private String name;
     private Integer age;
     private String role;
     private Integer experienceYears;
     @ManyToOne
+    @ToString.Exclude
+    @EqualsAndHashCode.Exclude
     private Department department;
 
 }

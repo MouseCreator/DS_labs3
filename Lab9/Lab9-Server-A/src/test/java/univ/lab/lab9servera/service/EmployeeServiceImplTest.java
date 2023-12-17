@@ -22,7 +22,6 @@ class EmployeeServiceImplTest {
     @Test
     void testSaveAndFindAll() {
         Employee employee = new Employee();
-        employee.setId(1L);
         employee.setName("John");
         employee.setAge(30);
         employee.setRole("Developer");
