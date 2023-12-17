@@ -1,0 +1,49 @@
+databaseChangeLog:
+  - changeSet:
+      id: 1
+      author: Mykhailo Tyshchenko
+      changes:
+        - createTable:
+            tableName: departments
+            columns:
+              - column:
+                  name: id
+                  type: bigint
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: name
+                  type: varchar(255)
+
+  - changeSet:
+      id: 2
+      author: Mykhailo Tyshchenko
+      changes:
+        - createTable:
+            tableName: employees
+            columns:
+              - column:
+                  name: id
+                  type: bigint
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: name
+                  type: varchar(255)
+              - column:
+                  name: age
+                  type: integer
+              - column:
+                  name: role
+                  type: varchar(255)
+              - column:
+                  name: experience_years
+                  type: integer
+              - column:
+                  name: department_id
+                  type: bigint
+                  constraints:
+                    foreignKeyName: fk_department
+                    references: departments(id)
