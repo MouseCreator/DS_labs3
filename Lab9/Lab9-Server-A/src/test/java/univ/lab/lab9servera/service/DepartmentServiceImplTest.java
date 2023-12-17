@@ -5,7 +5,8 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
-import univ.lab.lab9servera.model.Department;
+import univ.lab.lab9servera.dto.DepartmentCreateDTO;
+import univ.lab.lab9servera.dto.DepartmentResponseDTO;
 
 import java.util.List;
 
@@ -21,21 +22,21 @@ class DepartmentServiceImplTest {
 
     @Test
     void testSaveAndFindAll() {
-        Department department = new Department();
+        DepartmentCreateDTO department = new DepartmentCreateDTO();
         department.setName("IT");
 
-        Department department2 = new Department();
+        DepartmentCreateDTO department2 = new DepartmentCreateDTO();
         department2.setName("Sales");
 
         departmentService.save(department);
         departmentService.save(department2);
-        List<Department> departments = departmentService.findAll();
+        List<DepartmentResponseDTO> departments = departmentService.findAll();
 
         assertNotNull(departments);
         assertFalse(departments.isEmpty());
         assertEquals(2, departments.size());
 
-        List<String> names = departments.stream().map(Department::getName).sorted(String::compareTo).toList();
+        List<String> names = departments.stream().map(DepartmentResponseDTO::getName).sorted(String::compareTo).toList();
         assertEquals("IT", names.get(0));
         assertEquals("Sales", names.get(1));
 

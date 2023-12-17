@@ -1,10 +1,11 @@
 package univ.lab.lab9servera.service;
 
-import univ.lab.lab9servera.model.Department;
+import univ.lab.lab9servera.dto.DepartmentCreateDTO;
+import univ.lab.lab9servera.dto.DepartmentResponseDTO;
 
 import java.util.List;
 
 public interface DepartmentService {
-    List<Department> findAll();
-    Department save(Department department);
+    List<DepartmentResponseDTO> findAll();
+    DepartmentResponseDTO save(DepartmentCreateDTO department);
 }
