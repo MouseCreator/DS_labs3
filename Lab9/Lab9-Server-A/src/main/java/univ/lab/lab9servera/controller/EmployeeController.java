@@ -33,4 +33,9 @@ public class EmployeeController {
     public List<EmployeeResponseDTO> getAllByName(@RequestParam String name) {
         return employeeService.getAllByName(name);
     }
+
+    @GetMapping("/by-department")
+    public List<EmployeeResponseDTO> getAllByName(@RequestParam Long departmentId) {
+        return employeeService.getAllByDepartment(departmentId);
+    }
 }

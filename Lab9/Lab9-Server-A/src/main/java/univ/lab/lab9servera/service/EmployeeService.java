@@ -11,4 +11,5 @@ public interface EmployeeService {
     EmployeeResponseDTO save(EmployeeCreateDTO employee);
     EmployeeResponseDTO findById(Long id);
     List<EmployeeResponseDTO> getAllByName(String name);
+    List<EmployeeResponseDTO> getAllByDepartment(Long departmentId);
 }
