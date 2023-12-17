@@ -10,7 +10,7 @@ public interface DepartmentService {
     List<DepartmentResponseDTO> findAll();
     DepartmentResponseDTO save(DepartmentCreateDTO department);
     DepartmentResponseDTO findById(Long id);
-    List<DepartmentResponseDTO> findAllByName(String name);
     DepartmentResponseDTO update(DepartmentUpdateDTO departmentUpdateDTO);
     void delete(Long id);
+    List<DepartmentResponseDTO> getAllByName(String name);
 }

@@ -81,11 +81,17 @@ class DepartmentServiceImplTest {
         DepartmentCreateDTO department = new DepartmentCreateDTO();
         department.setName("IT");
         departmentService.save(department);
-        DepartmentResponseDTO departmentResponse = departmentService.findById(1L);
-        assertEquals("IT", departmentResponse.getName());
 
-        departmentService.delete(1L);
+        DepartmentCreateDTO department2= new DepartmentCreateDTO();
+        department2.setName("Culture");
+        departmentService.save(department2);
+        List<DepartmentResponseDTO> namesWithT = departmentService.getAllByName("T");
+        assertEquals(2, namesWithT.size());
 
-        assertThrows(EntityNotFoundException.class, ()->departmentService.findById(1L));
+        List<DepartmentResponseDTO> namesWithI = departmentService.getAllByName("I");
+        assertEquals(1, namesWithI.size());
+
+        List<DepartmentResponseDTO> namesWithO = departmentService.getAllByName("O");
+        assertEquals(0, namesWithO.size());
     }
 }

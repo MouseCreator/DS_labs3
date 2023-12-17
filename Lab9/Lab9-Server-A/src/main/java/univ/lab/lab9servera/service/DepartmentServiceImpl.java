@@ -41,7 +41,7 @@ public class DepartmentServiceImpl implements DepartmentService {
     }
 
     @Override
-    public List<DepartmentResponseDTO> findAllByName(String name) {
+    public List<DepartmentResponseDTO> getAllByName(String name) {
         return departmentRepository.findAllByNameContainingIgnoreCase(name).stream()
                 .map(departmentMapper::toResponse)
                 .toList();

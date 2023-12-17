@@ -34,4 +34,9 @@ public class DepartmentController {
     public void deleteById(@PathVariable Long id) {
         departmentService.delete(id);
     }
+
+    @GetMapping("/by-name")
+    public List<DepartmentResponseDTO> getAllByName(@RequestParam String name) {
+        return departmentService.getAllByName(name);
+    }
 }
