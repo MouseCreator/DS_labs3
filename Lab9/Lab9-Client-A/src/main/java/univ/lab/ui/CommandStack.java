@@ -13,7 +13,7 @@ public class CommandStack {
 
     public static CommandStack create(String source) {
         source = source.replace(" +", " ");
-        String[] parts = source.trim().split(" ", 3);
+        String[] parts = source.trim().split(" ");
         List<String> stream = new ArrayList<>(Arrays.asList(parts));
         return new CommandStack(stream);
     }

@@ -8,7 +8,7 @@ import univ.lab.model.Employee;
 
 @Generated(
     value = "org.mapstruct.ap.MappingProcessor",
-    date = "2023-12-17T23:28:54+0200",
+    date = "2023-12-17T23:45:24+0200",
     comments = "version: 1.5.5.Final, compiler: javac, environment: Java 19 (Oracle Corporation)"
 )
 @Component
