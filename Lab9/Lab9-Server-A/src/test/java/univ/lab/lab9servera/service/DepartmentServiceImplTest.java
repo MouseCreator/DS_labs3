@@ -5,8 +5,8 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
-import univ.lab.lab9servera.dto.DepartmentCreateDTO;
-import univ.lab.lab9servera.dto.DepartmentResponseDTO;
+import univ.lab.lab9servera.dto.*;
+import univ.lab.lab9servera.exception.EntityNotFoundException;
 
 import java.util.List;
 
@@ -40,5 +40,52 @@ class DepartmentServiceImplTest {
         assertEquals("IT", names.get(0));
         assertEquals("Sales", names.get(1));
 
+    }
+
+    @Test
+    void testUpdate() {
+        DepartmentCreateDTO department = new DepartmentCreateDTO();
+        department.setName("IT");
+
+        departmentService.save(department);
+
+        DepartmentResponseDTO departmentResponse = departmentService.findById(1L);
+        assertEquals("IT", departmentResponse.getName());
+        DepartmentUpdateDTO departmentUpdateDTO = new DepartmentUpdateDTO();
+        departmentUpdateDTO.setId(1L);
+        departmentUpdateDTO.setName("Sales");
+
+        DepartmentResponseDTO updated = departmentService.update(departmentUpdateDTO);
+
+        assertEquals("Sales", updated.getName());
+
+        departmentResponse = departmentService.findById(1L);
+        assertEquals("Sales", departmentResponse.getName());
+    }
+
+    @Test
+    void testDelete() {
+        DepartmentCreateDTO department = new DepartmentCreateDTO();
+        department.setName("IT");
+        departmentService.save(department);
+        DepartmentResponseDTO departmentResponse = departmentService.findById(1L);
+        assertEquals("IT", departmentResponse.getName());
+
+        departmentService.delete(1L);
+
+        assertThrows(EntityNotFoundException.class, ()->departmentService.findById(1L));
+    }
+
+    @Test
+    void testSearchByName() {
+        DepartmentCreateDTO department = new DepartmentCreateDTO();
+        department.setName("IT");
+        departmentService.save(department);
+        DepartmentResponseDTO departmentResponse = departmentService.findById(1L);
+        assertEquals("IT", departmentResponse.getName());
+
+        departmentService.delete(1L);
+
+        assertThrows(EntityNotFoundException.class, ()->departmentService.findById(1L));
     }
 }
