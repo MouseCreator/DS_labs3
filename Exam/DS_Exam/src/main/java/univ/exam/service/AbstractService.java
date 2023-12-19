@@ -15,8 +15,8 @@ public abstract class AbstractService<T extends Entity> implements CrudService<T
     }
 
     @Override
-    public T add(T entity) {
-        return repository.add(entity);
+    public T add(T letter) {
+        return repository.add(letter);
     }
 
     @Override
@@ -35,8 +35,8 @@ public abstract class AbstractService<T extends Entity> implements CrudService<T
     }
 
     @Override
-    public T update(T entity) {
-        return repository.update(entity);
+    public T update(T letter) {
+        return repository.update(letter);
     }
 
     @Override
